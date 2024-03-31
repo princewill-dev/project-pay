@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Treemium</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+    <!-- toastr -->
+    <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+
+<div class="main-wrapper">
+   <!--===================== Sidebar Start =====================-->
+ <section class="sidebar">
+    <nav class="navbar navbar-expand-lg navbar-light flex-nowrap flex-column justify-content-between align-items-start p-0">
+        <div class="mb-lg-5 w-100">
+            <div class="d-none d-lg-block">
+                <a class="navbar-brand d-flex align-items-start mb-5" href="index.html">
+                    <img src="images/logo.png" alt="" class="mb-2">
+                    <span class="fw-bold ms-2">Treemium</span>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse collapse show" id="navbarNavAltMarkup">
+              <ul class="navbar-nav flex-row flex-lg-column justify-content-between align-items-center align-items-lg-start">
+                <li>
+                  <a class="nav-link d-flex align-items-center active" href="index.html" data-tooltip="home" data-placement="top">
+                    <i class="mdi mdi-view-dashboard"></i><div class="nav-text d-none d-md-block">Home</div>
+                  </a>
+              </li>
+              <li>
+                  <a class="nav-link d-flex align-items-center @@buy-sell" href="buy-sell.html" data-tooltip="exchange" data-placement="top">
+                    <i class="mdi mdi-repeat"></i><div class="nav-text d-none d-md-block">exchange</div>
+                  </a>
+              </li>
+              <li>
+                  <a class="nav-link d-flex align-items-center @@accounts" href="accounts.html" data-tooltip="account" data-placement="top">
+                    <i class="mdi mdi-account"></i><div class="nav-text d-none d-md-block">account</div>
+                  </a>
+              </li>
+              <li>
+                  <a class="nav-link d-flex align-items-center @@settings" href="settings.html" data-tooltip="settings" data-placement="top">
+                    <i class="mdi mdi-cog"></i></i><div class="nav-text d-none d-md-block">settings</div>
+                  </a>
+              </li>
+              </ul>
+            </div>
+        </div>
+        <div class="d-none d-lg-block w-100 pb-5">
+          <div class="social_icon ms-0 ps-0 mb-2">
+            <a href="https://www.youtube.com/channel/UChN1goECpg64jlUxSzySiNg?view_as=subscriber" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/quixlab" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          </div>
+            <div class="copyright">
+                <p>&copy; <script>document.write(new Date().getFullYear());</script> <a href="https://themeforest.net/user/quixlab" target="_blank">Quixlab</a></p>
+            </div>
+        </div>
+    </nav>
+</section>
+  <!--===================== Sidebar End =====================-->
+  <section class="ms-lg-240 px-lg-4 px-xl-0 mb-100 mb-lg-0">
+    <!--===================== Navigation Start =====================-->
+<div class="navigation-2 d-flex sticky-top px-lg-4 px-xl-0">
+  <div class="container">
+      <div class="row">
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <div class="d-block d-lg-none">
+              <a class="navbar-brand d-flex align-items-start" href="#">
+                  <img src="images/logo.png" alt="" class="mb-2">
+                  <span class=" fw-bold  ms-2">Treemium</span>
+                </a>
+            </div>
+            <div class="search-form">
+              <form action="#" class="form">
+                    <div class="input-group">
+                      <input type="text" placeholder="search" class="form-control">
+                      <div class="input-group-append  d-flex">
+                          <button type="button" class="">
+                              <span class="input-text"><i class="fa fa-search"></i></span>
+                          </button>
+                      </div>
+                  </div>
+              </form>
+            </div>
+            <!-- search form end -->
+            <div class="d-flex align-items-center">
+              <button type="button" class="search-btn rounded-circle d-md-none border-0">
+                <span class="input-text d-flex align-items-center justify-content-center"><i class="fa fa-search"></i></span>
+              </button>
+                <div class="dropdown text-center text-sm-start">
+                    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown">
+                        <span class="user-icon rounded-circle text-white"><i class="mdi mdi-account"></i></span>
+                        <span class="user-name fw-medium ms-2 d-none d-sm-inline-block">Carla Pascle</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-light w-100 box-shadow border-0 p-0 mt-2 rounded" aria-labelledby="dropdownMenuButton2">
+                        <li><a class="dropdown-item" href="accounts.html"><i class="mdi mdi-account"></i>account</a></li>
+                        <li><a class="dropdown-item" href="history.html"><i class="la la-book"></i>history</a></li>
+                        <li><a class="dropdown-item" href="settings.html"><i class="mdi mdi-cog"></i>settings</a></li>
+                        <li><a class="dropdown-item" href="lock.html"><i class="la la-lock"></i>lock</a></li>
+                        <li><a class="dropdown-item logout" href="signin.html"><i class="mdi mdi-logout"></i>logout</a></li>
+                    </ul>
+                </div>
+                <!-- dropdown end -->
+            </div>
+
+          </div>
+      </div>
+  </div>
+</div>
+<!--===================== Navigation End =====================-->
+    
+    <!--===================== Content body Start =====================-->
+    <div class="content-body">
+      <!--===================== Page title Start =====================-->
+<div class="page_title">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="page_title-content">
+          <p>Welcome Back,<span> Carla Pascle</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--===================== Page title End =====================-->
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="row">
+              <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="widget-card">
+                  <div class="widget-title">
+                    <h5>Balance</h5>
+                    <p class="text-success">133% <span><i class="las la-arrow-up"></i></span></p>
+                  </div>
+                  <div class="widget-info">
+                    <h3>$18,235.0</h3>
+                    <p>USD</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="widget-card">
+                  <div class="widget-title">
+                    <h5>Balance</h5>
+                    <p class="text-danger">133% <span><i class="las la-arrow-down"></i></span></p>
+                  </div>
+                  <div class="widget-info">
+                    <h3>$18,235.0</h3>
+                    <p>USD</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="widget-card">
+                  <div class="widget-title">
+                    <h5>Balance</h5>
+                    <p class="text-success">133% <span><i class="las la-arrow-up"></i></span></p>
+                  </div>
+                  <div class="widget-info">
+                    <h3>$18,235.0</h3>
+                    <p>USD</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="widget-card">
+                  <div class="widget-title">
+                    <h5>Balance</h5>
+                    <p class="text-danger">133% <span><i class="las la-arrow-down"></i></span></p>
+                  </div>
+                  <div class="widget-info">
+                    <h3>$18,235.0</h3>
+                    <p>USD</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-xl-8">
+                <div class="card profile_chart transparent px-0">
+                  <div class="card-header px-0">
+                    <div class="chart_current_data">
+                      <h3>254856 <span>USD</span></h3>
+                      <p class="text-success">125648 <span>USD (20%)</span></p>
+                    </div>
+                    <div class="duration-option">
+                      <a id="all" class="active mb-2 mb-sm-0">ALL</a>
+                      <a id="one_month" class="mb-2 mb-sm-0">1M</a>
+                      <a id="six_months" class="mb-2 mb-sm-0">6M</a>
+                      <a id="one_year" class="mb-2 mb-sm-0">1Y</a>
+                      <a id="ytd" class="mb-2 mb-sm-0">YTD</a>
+                    </div>
+                  </div>
+                  <div class="card-body px-0">
+                    <div id="timeline-chart"></div>
+                    <div class="chart-content text-center">
+                      <div class="row">
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">24hr Volume</p>
+                            <strong>$1236548.325</strong>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">Market Cap</p>
+                            <strong>19B USD</strong>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">Circulating</p>
+                            <strong>29.4M BTC</strong>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">All Time High</p>
+                            <strong>19.783.06 USD</strong>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">Typical hold </p>
+                            <strong>88 days</strong>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                          <div class="chart-stat">
+                            <p class="mb-1">Trading activity </p>
+                            <strong>70% buy </strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-12 col-xxl-4">
+                <div class="card balance-widget transparent">
+                  <div class="card-body">
+                    <div id="wallet-chart"></div>
+                    <div class="balance-widget">
+                      <h4>Total Balance : <strong>$125480</strong></h4>
+                      <ul class="list-unstyled">
+                        <li class="d-flex align-items-center justify-content-between border-bottom  rounded-default">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center ">
+                                  <i class="cc BTC fs-30"></i>
+                                </span>
+                                <h5 class="mb-0">Bitcoin</h5>
+                            </div>
+                            <div class="text-end">
+                                <h5 class=" mb-2">0.000242 BTC</h5>
+                                <span>0.125 USD</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between border-bottom  rounded-default">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="cc LTC fs-30"></i>
+                                </span>
+                                <h5 class="mb-0">Litecoin</h5>
+                            </div>
+                            <div class="text-end">
+                                <h5 class=" mb-2">0.000242 BTC</h5>
+                                <span>0.125 USD</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between border-bottom  rounded-default">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="cc XRP fs-30"></i>
+                                </span>
+                                <h5 class="mb-0">Ripple</h5>
+                            </div>
+                            <div class="text-end">
+                                <h5 class=" mb-2">0.000242 BTC</h5>
+                                <span>0.125 USD</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between border-bottom  rounded-default">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center">
+                                  <i class="cc DASH fs-30"></i>
+                                </span>
+                                <h5 class="mb-0">Dash</h5>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="mb-2">0.000242 BTC</h5>
+                                <span>0.125 USD</span>
+                            </div>
+                        </li>
+                    </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-12 col-lg-12 col-xxl-12">
+                <div class="row">
+                  <div class="col-xl-4">
+                    <div class="widget-card">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="widget-stat">
+                          <div class="coin-title">
+                            <span><i class="cc BTC-alt"></i></span>
+                            <h5 class="d-inline-block ms-2 mb-3">Bitcoin
+                              <sapn>(24h)</span>
+                            </h5>
+                          </div>
+                          <h4>USD 1254.36 <span class="badge badge-success ms-2">+
+                              06%</span>
+                          </h4>
+                        </div>
+                        <div id="btcChart"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4">
+                    <div class="widget-card">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="widget-stat">
+                          <div class="coin-title">
+                            <span><i class="cc ETH-alt"></i></span>
+                            <h5 class="d-inline-block ms-2 mb-3">Ethereum
+                              <span>(24h)</span>
+                            </h5>
+                          </div>
+                          <h4>USD 1254.36 <span class="badge badge-danger ms-2 text-white">-
+                              06%</span>
+                          </h4>
+                        </div>
+                        <div id="ltcChart"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4">
+                    <div class="widget-card">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="widget-stat">
+                          <div class="coin-title">
+                            <span><i class="cc LTC-alt"></i></span>
+                            <h5 class="d-inline-block ms-2 mb-3">Litecoin
+                              <span>(24h)</span>
+                            </h5>
+                          </div>
+                          <h4>USD 1254.36 <span class="badge badge-primary ms-2">
+                              06%</span>
+                          </h4>
+                        </div>
+                        <div id="xrpChart"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-12">
+            <div class="row">
+              <div class="col-xl-6 col-lg-12 col-xxl-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Exchange</h4>
+                  </div>
+                  <div class="card-body">
+                    <div class="buy-sell-widget">
+                      <form method="post" name="myform" class="currency_validate">
+                        <div class="form-group">
+                          <label class="me-sm-2">Currency</label>
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <label class="input-group-text"><i class="cc BTC-alt"></i></label>
+                            </div>
+                            <select name='currency' class="form-select">
+                              <option value="">Select</option>
+                              <option value="bitcoin">Bitcoin</option>
+                              <option value="litecoin">Litecoin</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="me-sm-2">Payment Method</label>
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <label class="input-group-text"><i class="fas fa-university"></i></label>
+                            </div>
+                            <select class="form-select" name="method">
+                              <option value="">Select</option>
+                              <option value="bank">Bank of America ********45845</option>
+                              <option value="master">Master Card ***********5458</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="me-sm-2">Enter your amount</label>
+                          <div class="input-group">
+                            <input type="text" name="currency_amount" class="form-control" placeholder="0.0214 BTC">
+                            <input type="text" name="usd_amount" class="form-control" placeholder="125.00 USD">
+                          </div>
+                          <div class="d-flex justify-content-between mt-3">
+                            <p class="mb-0">Monthly Limit</p>
+                            <h6 class="mb-0">$49750 remaining</h6>
+                          </div>
+                        </div>
+                        <button type="submit" name="submit" class="btn btn-success w-100">Exchange
+                          Now</button>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-12 col-xxl-8">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Transaction </h4>
+                  </div>
+                  <div class="card-body">
+                    <div class="transaction-widget">
+                      <ul class="p-0 m-0 list-unstyled">
+                        <li class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center bg-danger">
+                                  <i class="las la-arrow-down"></i>
+                                </span>
+                                <div>
+                                    <p class="mb-2">9 November, 2020 15:33</p>
+                                    <h5>15f5s8s47bhj61r8w4e77e5e56</h5>
+                                </div>
+                            </div>
+                            <div class="ms-5 mt-3 text-sm-end">
+                                <h4>0.000242 BTC</h4>
+                            </div>
+                        </li>
+                        <li class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center bg-success">
+                                  <i class="las la-arrow-up"></i>
+                                </span>
+                                <div>
+                                    <p class="mb-2">9 November, 2020 15:33</p>
+                                    <h5>15f5s8s47bhj61r8w4e77e5e56</h5>
+                                </div>
+                            </div>
+                            <div class="ms-5 mt-3 text-sm-end text-sm-end">
+                                <h4>0.000242 LTC</h4>
+                            </div>
+                        </li>
+                        <li class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center bg-danger"><i class="las la-arrow-down"></i></span>
+                                <div>
+                                    <p class="mb-2">9 November, 2020 15:33</p>
+                                    <h5>15f5s8s47bhj61r8w4e77e5e56</h5>
+                                </div>
+                            </div>
+                            <div class="ms-5 mt-3 text-sm-end text-sm-end">
+                                <h4>0.000242 XRP</h4>
+                            </div>
+                        </li>
+                        <li class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center bg-success"><i class="las la-arrow-up"></i></span>
+                                <div>
+                                    <p class="mb-2">9 November, 2020 15:33</p>
+                                    <h5>15f5s8s47bhj61r8w4e77e5e56</h5>
+                                </div>
+                            </div>
+                            <div class="ms-5 mt-3 text-sm-end text-sm-end">
+                                <h4>0.000242 XRP</h4>
+                            </div>
+                        </li>
+                        <li class="d-sm-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="icon me-3 rounded-circle d-flex align-items-center justify-content-center bg-success"><i class="las la-arrow-up"></i></span>
+                                <div>
+                                    <p class="mb-2">9 November, 2020 15:33</p>
+                                    <h5>15f5s8s47bhj61r8w4e77e5e56</h5>
+                                </div>
+                            </div>
+                            <div class="ms-5 mt-3 text-sm-end text-sm-end">
+                                <h4>0.000242 XRP</h4>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--===================== Content body End =====================-->
+  </section>
+</div>
+<!-- jquery -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<!-- bootstrap -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- toastr -->
+<script src="plugins/toastr/toastr.min.js"></script>
+<script src="plugins/toastr/toastr-init.js"></script>
+<!-- circle-progress -->
+<script src="plugins/circle-progress/circle-progress.min.js"></script>
+<script src="plugins/circle-progress/circle-progress-init.js"></script>
+<!--  flot-chart js -->
+<script src="plugins/apexchart/apexcharts.min.js"></script>
+<script src="plugins/apexchart/apexchart-init.js"></script>
+<script src="plugins/apexchart/apexchart2-init.js"></script>
+<!-- scripts -->
+<script src="js/scripts.js"></script>
+
+</body>
+</html>

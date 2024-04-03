@@ -16,42 +16,66 @@
                   <!-- <a href="index.html"><img src="/static/onboarding/assets/images/logo/logo4.png" alt="" class="logo4"></a>
                   <div class="space16"></div> -->
 
-                  <a href="index.html"><b>Digit-Pay</b></a>
+                  <a href="{% url 'homepage' %}"><b>Digit-Pay</b></a>
                   <div class="space16"></div>
                   <a href="index.html">Home <i class="fa-solid fa-angle-right"></i> <span>Sign Up</span></a>
               </div>
               <div class="space50"></div>
-              <div class="login-boxarea heading6">
-                  <h2>Creat Your Account</h2>
-                  <div class="space16"></div>
-                  <p>Create an account today and start using Quad.</p>
-                  <div class="space50"></div>
-                  <!-- <div class="input-area">
-                      <h4>Name</h4>
-                      <div class="space16"></div>
-                      <input type="text" placeholder="Your Name">
-                  </div> -->
-                  <div class="space16"></div>
-                  <div class="input-area">
-                      <h4>Email</h4>
-                      <div class="space16"></div>
-                      <input type="email" placeholder="Email Address">
-                  </div>
-                  <div class="space24"></div>
-                  <div class="input-area">
-                      <h4>Password</h4>
-                      <div class="space16"></div>
-                      <input type="text" placeholder="Enter Your Password">
-                  </div>
-                  <div class="space32"></div>
-                  <div class="input-area">
-                      <a href="signup.html" class="header-btn2">Creat Your Account</a>
-                  </div>
-                  <div class="space32"></div>
-                  <div class="sign-text">
-                      <p>I have read and agree to the </p><a href="#">Terms & Conditions</a>
-                  </div>
-              </div>
+
+              <form method="post">
+                {% csrf_token %}
+                
+                <div class="login-boxarea heading6">
+                    {{ form.non_field_errors }}
+                    <h2>Creat Your Account</h2>
+                    <div class="space16"></div>
+                    <p>Create an account today and start using Quad.</p>
+                    <div class="space16"></div>
+  
+  
+                    <div class="input-area">
+                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}:</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                        <div class="space16"></div>
+                        <!-- <input type="email" placeholder="Email Address"> -->
+                    </div>
+                    <div class="space24"></div>
+  
+  
+                    <div class="input-area">
+                        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}:</label>
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                        <div class="space16"></div>
+                        <!-- <input type="text" placeholder="Enter Your Password"> -->
+                    </div>
+                    <div class="space32"></div>
+
+                    <div class="input-area">
+                        <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}:</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                        <div class="space16"></div>
+                        <!-- <input type="text" placeholder="Confirm Your Password"> -->
+                    </div>
+                    <div class="space32"></div>
+  
+  
+                    <div class="input-area">
+                        <button type="submit" class="header-btn2">Register</button>
+                        <!-- <a href="signup.html" class="header-btn2">Creat Your Account</a> -->
+                    </div>
+                    <div class="space32"></div>
+  
+  
+                    <div class="sign-text">
+                        <p>I have read and agree to the </p><a href="#">Terms & Conditions</a>
+                    </div>
+                </div>
+              </form>
+
+              
           </div>
       </div>
   </div>

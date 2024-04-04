@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.contrib import messages
 import random
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 def homepage(request):
     return render(request, 'home/index.html')
@@ -54,15 +55,32 @@ def email_verification_view(request):
     if request.method == 'POST':
         otp = request.POST.get('otp')
         user = request.user
-        if user.otp_code == otp and user.otp_created_at >= timezone.now() - timezone.timedelta(minutes=5):
+        if user.otp_code == otp and user.otp_created_at >= timezone.now() - timezone.timedelta(minutes=10):
             user.is_active = True
             user.email_verification = 'verified'
             user.otp_code = None
+            user.otp_verified_at = timezone.now()
             user.save()
             return redirect('plans')
         else:
             messages.error(request, 'Invalid OTP code. Please try again.')
     return render(request, 'home/verify.html')
+
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         form = CustomAuthenticationForm(request, data=request.POST)
+#         if form.is_valid():
+#             email = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+#             otp = form.cleaned_data['otp']
+#             user = authenticate(request, username=email, password=password, otp=otp)
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect('plans')
+#     else:
+#         form = CustomAuthenticationForm()
+#     return render(request, 'home/login.html', {'form': form})
 
 
 def login_view(request):
@@ -71,11 +89,15 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            otp = form.cleaned_data['otp']
-            user = authenticate(request, username=email, password=password, otp=otp)
+            user = get_user_model().objects.filter(email=email).first()  # Get the user instance associated with the email
             if user is not None:
-                login(request, user)
-                return redirect('plans')
+                user = authenticate(request, username=email, password=password)
+                if user is not None:
+                    login(request, user)  # Log the user in first
+                    if user.email_verification == 'unverified':
+                        return redirect('email_verification')
+                    else:
+                        return redirect('plans')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'home/login.html', {'form': form})

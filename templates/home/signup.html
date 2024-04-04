@@ -18,7 +18,7 @@
 
                   <a href="{% url 'homepage' %}"><b>Digit-Pay</b></a>
                   <div class="space16"></div>
-                  <a href="index.html">Home <i class="fa-solid fa-angle-right"></i> <span>Sign Up</span></a>
+                  <a href="{% url 'homepage' %}">Home <i class="fa-solid fa-angle-right"></i> <span>Sign Up</span></a>
               </div>
               <div class="space50"></div>
 
@@ -29,39 +29,26 @@
                     {{ form.non_field_errors }}
                     <h2>Creat Your Account</h2>
                     <div class="space16"></div>
-                    <p>Create an account today and start using Quad.</p>
+                    <p>Create an account today and start using Digit-Pay.</p>
                     <div class="space16"></div>
   
   
                     <div class="input-area">
-                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}:</label>
                         {{ form.email }}
                         {{ form.email.errors }}
-                        <div class="space16"></div>
-                        <!-- <input type="email" placeholder="Email Address"> -->
                     </div>
-                    <div class="space24"></div>
-  
-  
+                    <div class="space32"></div>
                     <div class="input-area">
-                        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}:</label>
                         {{ form.password1 }}
                         {{ form.password1.errors }}
-                        <div class="space16"></div>
-                        <!-- <input type="text" placeholder="Enter Your Password"> -->
                     </div>
                     <div class="space32"></div>
 
                     <div class="input-area">
-                        <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}:</label>
                         {{ form.password2 }}
                         {{ form.password2.errors }}
-                        <div class="space16"></div>
-                        <!-- <input type="text" placeholder="Confirm Your Password"> -->
-                    </div>
+                    </div>  
                     <div class="space32"></div>
-  
-  
                     <div class="input-area">
                         <button type="submit" class="header-btn2">Register</button>
                         <!-- <a href="signup.html" class="header-btn2">Creat Your Account</a> -->
@@ -70,7 +57,7 @@
   
   
                     <div class="sign-text">
-                        <p>I have read and agree to the </p><a href="#">Terms & Conditions</a>
+                        <p>Have account? </p><a href="{% url 'login_page' %}">Login</a>
                     </div>
                 </div>
               </form>

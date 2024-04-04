@@ -20,6 +20,7 @@ class CustomPasswordField(forms.CharField):
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = CustomEmailField(label='Email')
+    password = CustomPasswordField(label='Password')
 
     class Meta:
         model = User

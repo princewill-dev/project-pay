@@ -21,6 +21,25 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'onboarding.User'
+
+
+# this was added in the process of email OTP implementation
+
+# SITE_ID = 1
+
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# ]
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_EMAIL_SUBJECT_PREFIX = 'My Site '
+# ACCOUNT_SIGNUP_FORM_CLASS = 'onboarding.forms.CustomSignupForm'
+
+# this was added in the process of email OTP implementation
 
 # Application definition
 
@@ -33,6 +52,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'processor.apps.ProcessorConfig',
     'onboarding.apps.OnboardingConfig',
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 import string
 import random
@@ -23,7 +23,6 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
@@ -48,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         help_text=_('The groups this user belongs to. A user will get all permissions '
                     'granted to each of their groups.'),
-        related_name='custom_user_set',  # Add a custom related_name
+        related_name='custom_user_set',
         related_query_name='user',
     )
     user_permissions = models.ManyToManyField(
@@ -56,9 +55,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name=_('user permissions'),
         blank=True,
         help_text=_('Specific permissions for this user.'),
-        related_name='custom_user_set',  # Add a custom related_name
+        related_name='custom_user_set',
         related_query_name='user',
     )
 
     def __str__(self):
         return self.email
+
+class EmailVerification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"OTP for {self.email}"

@@ -29,9 +29,17 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
 
+    def delete_user(self, email):
+        user = self.get(email=email)
+        user.delete()
+
 class User(AbstractBaseUser, PermissionsMixin):
     account_id = models.CharField(max_length=12, unique=True, default=generate_account_id)
     email = models.EmailField(_('email address'), unique=True)
+    email_verification = models.CharField(default='unverified', max_length=255)
+    otp_code = models.CharField(max_length=6, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
+    otp_verified_at = models.DateTimeField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -46,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name=_('groups'),
         blank=True,
         help_text=_('The groups this user belongs to. A user will get all permissions '
-                    'granted to each of their groups.'),
+                   'granted to each of their groups.'),
         related_name='custom_user_set',
         related_query_name='user',
     )
@@ -61,12 +69,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-class EmailVerification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    email = models.EmailField()
-    otp = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"OTP for {self.email}"

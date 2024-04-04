@@ -23,11 +23,29 @@
                     <div class="space32"></div>
                     <h2 class="text-center">Verify Your Email!</h2>
                     <div class="space16"></div>
-                    <p class="text-center">We sent you a verification link via email. Please <br> click it to verify your email address if you don’t <br> see it, please wait up to 5 mins or check your <br> SPAM folder.</p>
+                    <p class="text-center">We sent you a verification code via email. Please <br> enter the code to verify your account<br> see it, please wait up to 5 mins or check your <br> SPAM folder.</p>
                     <div class="space32"></div>
-                    <div class="input-area">
-                        <a href="verify.html" class="header-btn2">Open Email</a>
-                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'email_verification' %}">
+                        {% csrf_token %}
+                        <div class="input-area">
+                            <input type="text" name="otp" placeholder="Your Name">
+                            <div class="space16"></div>
+                        </div>
+
+                        <div class="input-area">
+                            <button type="submit" class="header-btn2">Verifiy Email</button>
+                        </div>
+                        
+                    </form>
+
+                    
                 </div>
             </div>
         </div>

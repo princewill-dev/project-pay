@@ -23,6 +23,8 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'onboarding.User'
 
+LOGIN_URL = 'login_page'
+
 
 # this was added in the process of email OTP implementation
 

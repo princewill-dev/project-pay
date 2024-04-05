@@ -11,6 +11,13 @@ from django.contrib import messages
 import random
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+import datetime
+from django.utils.dateparse import parse_datetime
+
+
+
+
+
 
 def homepage(request):
     return render(request, 'home/index.html')
@@ -25,6 +32,9 @@ def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
 
 def signup_view(request):
+    if request.user.is_authenticated:  # Check if the user is already authenticated
+        return redirect('plans')  # Redirect to 'plans' page
+    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -55,35 +65,43 @@ def email_verification_view(request):
     if request.method == 'POST':
         otp = request.POST.get('otp')
         user = request.user
-        if user.otp_code == otp and user.otp_created_at >= timezone.now() - timezone.timedelta(minutes=10):
-            user.is_active = True
-            user.email_verification = 'verified'
-            user.otp_code = None
-            user.otp_verified_at = timezone.now()
-            user.save()
-            return redirect('plans')
+        if user.otp_code == otp:
+            if user.otp_created_at >= timezone.now() - timezone.timedelta(minutes=10):
+                user.is_active = True
+                user.email_verification = 'verified'
+                user.otp_code = None
+                user.otp_verified_at = timezone.now()
+                user.save()
+                return redirect('plans')
+            else:
+                messages.error(request, 'OTP expired. Please request for another one.')
         else:
             messages.error(request, 'Invalid OTP code. Please try again.')
     return render(request, 'home/verify.html')
 
 
-# def login_view(request):
-#     if request.method == 'POST':
-#         form = CustomAuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             email = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             otp = form.cleaned_data['otp']
-#             user = authenticate(request, username=email, password=password, otp=otp)
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('plans')
-#     else:
-#         form = CustomAuthenticationForm()
-#     return render(request, 'home/login.html', {'form': form})
+@login_required
+def generate_otp_view(request):
+    last_access = request.session.get('last_access', None)
+    if last_access:
+        last_access = parse_datetime(last_access)  # Convert the string back to a datetime object
+        time_since_last_access = timezone.now() - last_access
+        if time_since_last_access.total_seconds() < 600:  # 600 seconds = 10 minutes
+            messages.error(request, 'You can only generate a new OTP once every 10 minutes.')
+            return redirect('email_verification')
+    user = request.user
+    user.otp_code = ''.join(random.choice('0123456789') for _ in range(6))  # Generate a new 6-digit OTP
+    user.otp_created_at = timezone.now()  # Update the OTP creation time
+    user.save()
+    messages.success(request, 'New OTP has been generated.')  # Add a success message
+    request.session['last_access'] = str(timezone.now().isoformat())  # Convert the datetime object to a string before storing it in the session
+    return redirect('email_verification')  # Redirect back to the email verification page
 
 
 def login_view(request):
+    if request.user.is_authenticated:  # Check if the user is already authenticated
+        return redirect('plans')  # Redirect to 'plans' page
+    
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():

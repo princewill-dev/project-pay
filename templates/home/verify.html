@@ -23,28 +23,53 @@
                     <div class="space32"></div>
                     <h2 class="text-center">Verify Your Email!</h2>
                     <div class="space16"></div>
-                    <p class="text-center">We sent you a verification code via email. Please <br> enter the code to verify your account<br> see it, please wait up to 5 mins or check your <br> SPAM folder.</p>
+                    <p class="text-center">We sent you a verification code via email. Please enter the code to verify your account</p>
                     <div class="space32"></div>
 
                     {% if messages %}
                         {% for message in messages %}
-                        <div class="alert alert-danger">{{ message }}</div>
+
+                        <div id="notify" class="alert alert-info">{{ message }}</div>
+                        <script>
+                            // Get the element you want to disappear
+                            const element = document.getElementById('notify');
+
+                            // Set a timeout to hide the element after 3 seconds
+                            setTimeout(function() {
+                            element.style.display = 'none';
+                            }, 5000);
+                        </script>
+
                         {% endfor %}
                     {% endif %}
+
+                    
+                    <!-- {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %} -->
+                    
 
                     <form method="post" action="{% url 'email_verification' %}">
                         {% csrf_token %}
                         <div class="input-area">
-                            <input type="text" name="otp" placeholder="Your Name">
+                            <input type="text" name="otp" placeholder="Enter Code">
                             <div class="space16"></div>
                         </div>
 
                         <div class="input-area">
                             <button type="submit" class="header-btn2">Verifiy Email</button>
                         </div>
-                        
+                        <div class="space32"></div>
                     </form>
 
+                    <center>
+                        <form method="post" action="{% url 'generate_otp' %}">
+                            {% csrf_token %}
+                            <button type="submit">Request New OTP</button>
+                        </form>
+                    </center>
                     
                 </div>
             </div>

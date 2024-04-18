@@ -20,23 +20,19 @@
 
                   <li><a href="{% url 'plans' %}">Pricing</a></li>
 
-                  <!-- <li><a href="#">Resource <i class="fa-solid fa-angle-down"></i></a>
-                    <ul class="dropdown-padding">
-                      <li><a href="blogv1.html">Blog V1</a></li>
-                      <li><a href="blogv2.html">Blog V2</a></li>
-                      <li><a href="blog-left.html">Blog Left</a></li>
-                      <li><a href="blog-right.html">Blog Right</a></li>
-                      <li><a href="blog-details.html">Blog Single</a></li>
-                    </ul>
-                  </li> -->
-
                   <li><a href="contact.html">Contact</a></li>
 
+
+                  {% if request.user.is_authenticated %}
+
+                  <li><a href="{% url 'choose_action' %}">Actions</a></li>
+                  
+                  {% endif %}
                 </ul>
 
 
                 {% if request.user.is_authenticated %}
-
+                
                 <a href="{% url 'logout' %}" class="header-btn3">Logout</a>
                 
                 {% else %}

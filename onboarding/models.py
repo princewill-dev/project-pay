@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 import string
 import random
+from django.utils import timezone
 
 def generate_account_id():
     characters = string.ascii_letters + string.digits
@@ -69,3 +70,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+
+class PaymentLink(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    link_id = models.CharField(max_length=20, unique=True, default=generate_account_id)
+    # link = models.URLField(max_length=200)
+    wallet = models.CharField(max_length=200, null=True, blank=True)
+    crypto = models.CharField(max_length=200, null=True, blank=True)
+    tag_name = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.link_id

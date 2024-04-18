@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User
+from .models import User, PaymentLink
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.conf import settings
@@ -27,6 +27,12 @@ def email_verification_view(request):
 
 def plan_view(request):
     return render(request, 'home/pricing-plan.html')
+
+def choose_action_view(request):
+    return render(request, 'home/choose-action.html')
+
+def create_payment_view(request):
+    return render(request, 'home/create-payment-link.html')
 
 def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
@@ -72,7 +78,7 @@ def email_verification_view(request):
                 user.otp_code = None
                 user.otp_verified_at = timezone.now()
                 user.save()
-                return redirect('plans')
+                return redirect('choose_action')
             else:
                 messages.error(request, 'OTP expired. Please request for another one.')
         else:
@@ -100,7 +106,7 @@ def generate_otp_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
-        return redirect('plans')  # Redirect to 'plans' page
+        return redirect('choose_action')  # Redirect to 'choose_action' page
     
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
@@ -115,7 +121,7 @@ def login_view(request):
                     if user.email_verification == 'unverified':
                         return redirect('email_verification')
                     else:
-                        return redirect('plans')
+                        return redirect('choose_action')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'home/login.html', {'form': form})
@@ -130,23 +136,26 @@ def home_view(request):
     return render(request, 'home/index.html')
 
 
-# def email_verification_view(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         otp = request.POST.get('otp')
-#         try:
-#             verification = EmailVerification.objects.get(email=email, otp=otp)
-#             user = verification.user
-#             user.is_active = True
-#             user.save()
-#             verification.delete()
-#             # Authenticate and login the user
-#             user_auth = authenticate(request, username=user.email, password=user.password)
-#             if user_auth is not None:
-#                 login(request, user_auth)
-#             return redirect('home')
-#         except EmailVerification.DoesNotExist:
-#             return render(request, 'home/verify.html', {'error': 'Invalid email or OTP'})
-#     return render(request, 'home/verify.html')
+def create_payment_save(request):
+    if request.method == 'POST':
+        wallet = request.POST.get('wallet')
+        crypto = request.POST.get('crypto')
+        tag_name = request.POST.get('tag_name')
+
+        payment_link = PaymentLink.objects.create(
+            user=request.user,
+            wallet=wallet,
+            crypto=crypto,
+            tag_name=tag_name,
+            # Add other fields as necessary
+        )
+
+        payment_link.save()
+
+
+        messages.success(request, 'Your payment link has been created.')  # Add a success message
+        return redirect('create_payment')  # Redirect to a success page
+
+    return render(request, 'create-payment-link.html')
 
 

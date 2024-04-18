@@ -5,6 +5,12 @@
 {% block content %}
 
 
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
 <!--===== WELCOME STARTS =======-->
 
 
@@ -16,8 +22,8 @@
                   <!-- <a href="index.html"><img src="/static/onboarding/assets/images/logo/logo4.png" alt="" class="logo4"></a>
                   <div class="space16"></div> -->
 
-                  <a href="{% url 'homepage' %}"><b>Digit-Pay</b></a>
-                  <div class="space16"></div>
+                  <!-- <a href="{% url 'homepage' %}"><b>Digit-Pay</b></a>
+                  <div class="space16"></div> -->
                   <a href="{% url 'homepage' %}">Home <i class="fa-solid fa-angle-right"></i> <span>Login</span></a>
               </div>
               <div class="space50"></div>

@@ -35,7 +35,14 @@ def plan_view(request):
     return render(request, 'home/pricing-plan.html')
 
 def choose_action_view(request):
-    return render(request, 'home/choose-action.html')
+
+    payment_links = PaymentLink.objects.filter(user=request.user)
+    print(payment_links.count())  # This should print a non-zero value
+
+    context = {
+        'payment_links': payment_links
+    }
+    return render(request, 'home/choose-action.html', context)
 
 def create_payment_view(request):
     return render(request, 'home/create-payment-link.html')

@@ -25,6 +25,8 @@
 
                   {% if request.user.is_authenticated %}
 
+                  <li><a href="{% url 'pay_links' %}">Payment Links</a></li>
+
                   <li><a href="{% url 'choose_action' %}">Actions</a></li>
                   
                   {% endif %}

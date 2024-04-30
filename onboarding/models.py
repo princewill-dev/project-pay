@@ -74,7 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    link_id = models.CharField(max_length=20, unique=True, default=generate_account_id)
+    # link_id = models.CharField(max_length=20, unique=True, default=generate_account_id)
+    link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
     # link = models.URLField(max_length=200)
     wallet = models.CharField(max_length=200, null=True, blank=True)
     crypto = models.CharField(max_length=200, null=True, blank=True)

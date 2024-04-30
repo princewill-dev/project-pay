@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
 from .models import User, PaymentLink
 from .utils import generate_otp
@@ -9,13 +9,19 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib import messages
 import random
+import string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 import datetime
 from django.utils.dateparse import parse_datetime
+from django.shortcuts import get_object_or_404
 
 
 
+def generate_random_string(length=20):
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 
 
 
@@ -135,7 +141,7 @@ def logout_view(request):
 def home_view(request):
     return render(request, 'home/index.html')
 
-
+@login_required
 def create_payment_save(request):
     if request.method == 'POST':
         wallet = request.POST.get('wallet')
@@ -144,6 +150,7 @@ def create_payment_save(request):
 
         payment_link = PaymentLink.objects.create(
             user=request.user,
+            link_id=generate_random_string(),
             wallet=wallet,
             crypto=crypto,
             tag_name=tag_name,
@@ -152,10 +159,31 @@ def create_payment_save(request):
 
         payment_link.save()
 
-
         messages.success(request, 'Your payment link has been created.')  # Add a success message
-        return redirect('create_payment')  # Redirect to a success page
+        return redirect('pay_links')
+        # return redirect(reverse('payment_link', args=[payment_link.link_id]))
+        # return redirect(reverse('payment_link', args=[payment_link.payment_link]))
 
     return render(request, 'create-payment-link.html')
 
 
+@login_required
+def pay_links_view(request):
+    # Get all the payment links created by the current user
+    payment_links = PaymentLink.objects.filter(user=request.user)
+
+    context = {
+        'payment_links': payment_links
+    }
+
+    return render(request, 'home/pay_links.html', context)
+
+
+@login_required
+def payment_link_view(request, link_id):
+
+    instance = get_object_or_404(PaymentLink, link_id=link_id)
+
+    return render(request, 'home/payment_link.html', {'instance': instance})
+
+    # return render(request, 'home/payment_link.html')

@@ -1,0 +1,48 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'choose_action' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>Payment link</span></a>
+                </div>
+                <div class="space50"></div>
+                <div class="login-boxarea heading6">
+
+                    <div>
+                        <p>Payment ID: {{ instance.link_id }}</p>
+                        <div class="space16"></div>
+                        <p>Tag name: {{ instance.tag_name }}</p>
+                        <div class="space16"></div>
+                        <p>Crypto: {{ instance.crypto }}</p>
+                        <div class="space16"></div>
+                        <p>Recieving Wallet: {{ instance.wallet }}</p>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

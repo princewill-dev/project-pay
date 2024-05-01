@@ -1,0 +1,7 @@
+services:
+  - name: web
+    build_command: python manage.py collectstatic --noinput
+    static_builds:
+      - paths:
+          - staticfiles/
+        url: /staticfiles/

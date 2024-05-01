@@ -36,4 +36,6 @@ urlpatterns = [
 
     path('api/generate_tx/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
+    path('tx/<str:tx_id>', views.get_transaction_view, name='get_transaction'),
+
 ]

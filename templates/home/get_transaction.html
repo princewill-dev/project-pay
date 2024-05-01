@@ -4,9 +4,9 @@
 
 {% block content %}
 
-{% include 'home/navbar.html' %}
+<!-- {% include 'home/navbar.html' %}
   
-{% include 'home/mobile-nav.html' %}
+{% include 'home/mobile-nav.html' %} -->
 
 {% include 'home/mobile-sidebar.html' %}
 
@@ -15,27 +15,22 @@
 
 <div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
     <div class="space16"></div>
-    <div class="space16"></div>
-    <div class="space16"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'pay_links' %}">Payment Links <i class="fa-solid fa-angle-right"></i> <span>{{ instance.link_id }}</span></a>
+                    <span class="text-white">Here is your payment link</span>
                 </div>
+
                 <div class="space50"></div>
                 <div class="login-boxarea heading6">
 
-                    <div>
-                        <p>Payment ID: {{ instance.link_id }}</p>
-                        <div class="space16"></div>
-                        <p>Tag name: {{ instance.tag_name }}</p>
-                        <div class="space16"></div>
-                        <p>Crypto: {{ instance.crypto }}</p>
-                        <div class="space16"></div>
-                        <p>Recieving Wallet: {{ instance.wallet }}</p>
+                    <p class="text-center">ID: {{tx_instance.transaction_id}}</p>
+                    <div class="input-area">
+                        <a href="submit" class="header-btn2">Share link</a>
                     </div>
-                    
+                    <div class="space32"></div>
+
                 </div>
                 
             </div>

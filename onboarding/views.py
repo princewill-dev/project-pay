@@ -289,12 +289,28 @@ def generate_transaction_view(request, link_id):
                 customer_name=data['customer_name'],
                 customer_email=data['customer_email'],
                 customer_phone=data['customer_phone'],
+                success_url=data['success_url'],
             )
-            return JsonResponse({"message": "Payment created successfully"}, status=201)
+            return JsonResponse({
+
+                "message": "payment generated successfully",
+                "transaction_id": payment.transaction_id,
+                "transactin_url": f"http://127.0.0.1:8000/tx/{payment.transaction_id}",
+
+                }, status=201)
         except IntegrityError as e:
             return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
     else:
         return HttpResponse(status=405)
     
 
+def get_transaction_view(request, tx_id):
 
+    tx_instance = get_object_or_404(Payments, transaction_id=tx_id)
+    
+
+    context = {
+        'tx_instance': tx_instance
+    }
+
+    return render(request, 'home/get_transaction.html', {'context': context})

@@ -85,3 +85,20 @@ class PaymentLink(models.Model):
     def __str__(self):
         return self.link_id
     
+
+class Payments(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_link = models.ForeignKey(PaymentLink, on_delete=models.CASCADE)
+    transaction_id = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    item = models.CharField(max_length=200)
+    customer_name = models.CharField(max_length=200)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=200)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=200, default='pending')
+
+    def __str__(self):
+        return self.transaction_id
+    

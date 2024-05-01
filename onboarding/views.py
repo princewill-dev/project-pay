@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User, PaymentLink
+from .models import User, PaymentLink, Payments
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.conf import settings
@@ -16,11 +16,16 @@ import datetime
 from django.utils.dateparse import parse_datetime
 from django.shortcuts import get_object_or_404
 import qrcode
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from io import BytesIO
 import os
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+import json
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 
 
 
@@ -45,8 +50,11 @@ def choose_action_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
     print(payment_links.count())  # This should print a non-zero value
 
+    account_id = request.user.account_id
+
     context = {
-        'payment_links': payment_links
+        'payment_links': payment_links,
+        'account_id': account_id,
     }
     return render(request, 'home/choose-action.html', context)
 
@@ -239,5 +247,33 @@ def payment_link_view(request, link_id):
     instance = get_object_or_404(PaymentLink, link_id=link_id)
 
     return render(request, 'home/payment_link.html', {'instance': instance})
+
+
+@csrf_exempt
+def generate_transaction_view(request, link_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            payment_link = PaymentLink.objects.get(link_id=link_id)
+        except PaymentLink.DoesNotExist:
+            return JsonResponse({"error": "Invalid payment link ID"}, status=400)
+
+        try:
+            payment = Payments.objects.create(
+                user=payment_link.user,
+                payment_link=payment_link,
+                transaction_id=generate_random_string(),
+                amount=data['amount'],
+                item=data['item'],
+                customer_name=data['customer_name'],
+                customer_email=data['customer_email'],
+                customer_phone=data['customer_phone'],
+            )
+            return JsonResponse({"message": "Payment created successfully"}, status=201)
+        except IntegrityError as e:
+            return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
+    else:
+        return HttpResponse(status=405)
+    
 
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, PaymentLink
+from .models import User, PaymentLink, Payments
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('account_id', 'email', 'email_verification', 'is_staff', 'is_active', 'date_joined')
@@ -25,8 +25,13 @@ class PaymentLinkAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'created_at')
 
 
+class PaymentsAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'user', 'payment_link', 'amount', 'created_at', 'is_paid', 'status')
+    search_fields = ('user__email', 'payment_link__link_id')
+    list_filter = ('created_at', 'transaction_id')
 
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(PaymentLink, PaymentLinkAdmin)
+admin.site.register(PaymentLink, PaymentLinkAdmin,)
+admin.site.register(Payments, PaymentsAdmin)

@@ -15,5 +15,6 @@ urlpatterns = [
     path('accounts/plans/', login_required(views.plan_view), name='plans'),
     path('accounts/email_verification/', views.email_verification_view, name='email_verification'),
     path('generate_otp/', views.generate_otp_view, name='generate_otp'),
+    path('pay/<str:link_id>', views.get_pay_view, name='get_pay_view'),
     # path('accounts/create_invoice/', login_required(views.create_invoice_view), name='create_invoice'),
 ]

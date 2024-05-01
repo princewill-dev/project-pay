@@ -75,7 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
-    # link_type = models.CharField(max_length=200, null=True, blank=True, unique=True)
+    qr_code_image = models.FileField(upload_to='qr_codes', blank=True, null=True)
     wallet = models.CharField(max_length=200, null=True, blank=True)
     crypto = models.CharField(max_length=200, null=True, blank=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)

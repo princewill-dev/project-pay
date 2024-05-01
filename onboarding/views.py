@@ -15,6 +15,14 @@ from django.contrib.auth import get_user_model
 import datetime
 from django.utils.dateparse import parse_datetime
 from django.shortcuts import get_object_or_404
+import qrcode
+from django.http import HttpResponse
+from io import BytesIO
+import os
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+
+
 
 
 
@@ -22,8 +30,6 @@ def generate_random_string(length=20):
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
-
-
 
 def homepage(request):
     return render(request, 'home/index.html')
@@ -44,8 +50,7 @@ def choose_action_view(request):
     }
     return render(request, 'home/choose-action.html', context)
 
-def create_payment_view(request):
-    return render(request, 'home/create-payment-link.html')
+
 
 def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
@@ -67,7 +72,7 @@ def signup_view(request):
             login(request, user)
 
             # send_mail(
-            #     'Welcome to Digit-Pay', 
+            #     'Welcome to bitwade.com', 
             #     f'Here is your email verification code: {otp_code}',
             #     'api@princewilldev.com',
             #     [user.email],
@@ -148,30 +153,72 @@ def logout_view(request):
 def home_view(request):
     return render(request, 'home/index.html')
 
+
+def generate_qr_code(text):
+    # Create a QR code instance
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+
+    # Add the text to the QR code
+    qr.add_data(text)
+    qr.make(fit=True)
+
+    # Generate the QR code image
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Create a BytesIO object to store the image data
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return buffer
+
+
+
+def create_payment_view(request):
+    return render(request, 'home/create-payment-link.html')
+
+
+
 @login_required
-def create_payment_save(request):
+def create_payment_save(request):    
+
     if request.method == 'POST':
-        wallet = request.POST.get('wallet')
         crypto = request.POST.get('crypto')
         tag_name = request.POST.get('tag_name')
+        link_id = generate_random_string()
+        wallet = request.POST.get('wallet')
+        qr_code_image = generate_qr_code(wallet)
+        filename = f'qr_code_{wallet}.png'
+        path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
 
         payment_link = PaymentLink.objects.create(
             user=request.user,
-            link_id=generate_random_string(),
+            link_id=link_id,
             wallet=wallet,
             crypto=crypto,
             tag_name=tag_name,
-            # Add other fields as necessary
+            qr_code_image=path,
         )
 
         payment_link.save()
 
-        messages.success(request, 'Your payment link has been created.')  # Add a success message
-        return redirect('pay_links')
-        # return redirect(reverse('payment_link', args=[payment_link.link_id]))
-        # return redirect(reverse('payment_link', args=[payment_link.payment_link]))
+    messages.success(request, 'Your payment link has been created.')
+    return redirect('pay_links')
+    
 
-    return render(request, 'create-payment-link.html')
+def get_pay_view(request, link_id):
+    instance = get_object_or_404(PaymentLink, link_id=link_id)
+    context = {
+        'instance': instance,
+    }
+
+    return render(request, 'home/receive_pay.html', context)
+
 
 
 @login_required
@@ -193,4 +240,4 @@ def payment_link_view(request, link_id):
 
     return render(request, 'home/payment_link.html', {'instance': instance})
 
-    # return render(request, 'home/payment_link.html')
+

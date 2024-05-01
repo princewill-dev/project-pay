@@ -21,10 +21,28 @@
                 <div class="about-welcome-header text-center heading3">
                     <span class="text-white">Here is your payment link</span>
                 </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+
+                    <div id="notify" class="alert alert-info">{{ message }}</div>
+                    <script>
+                        // Get the element you want to disappear
+                        const element = document.getElementById('notify');
+
+                        // Set a timeout to hide the element after 3 seconds
+                        setTimeout(function() {
+                        element.style.display = 'none';
+                        }, 5000);
+                    </script>
+
+                    {% endfor %}
+                {% endif %}
+
                 <div class="space50"></div>
                 <div class="login-boxarea heading6">
 
-                    <p class="text-center">Tag: {{instance.tag_name}}</p>
+                    <p class="text-center">Business Name: {{instance.tag_name}}</p>
                     <div class="text-center">
                         <img src="{{ instance.qr_code_image.url }}" alt="QR Code">
                     </div>

@@ -97,6 +97,7 @@ class Payments(models.Model):
     customer_phone = models.CharField(max_length=200)
     created_at = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
+    success_url = models.URLField(null=True)
     status = models.CharField(max_length=200, default='pending')
 
     def __str__(self):

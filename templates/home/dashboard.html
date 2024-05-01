@@ -47,19 +47,8 @@
       <div class="space60"></div>
       <div class="pricing-plans">
         <div class="container">
-          <!-- <div class="row">
-            <div class="col-12 text-center">
-              <div class="plan-toggle-wrap">
-                <div class="toggle-inner">
-                  <input id="ce-toggle" checked="" type="checkbox">
-                  <span class="custom-toggle"></span>
-                  <span class="t-month">Monthly</span>
-                  <span class="t-year">Annual</span>
-                </div>
-              </div>
-              <div class="space40"></div>
-            </div>
-          </div> -->
+          
+
           <div class="tab-content">
               <div id="monthly" style="display: block;">
                 <div class="row">
@@ -68,14 +57,32 @@
                     <div class="price-box">
                       <div class="hadding">
                         <div class="pricing-area">
-                          <h3>Create Payment Link</h3>
+                          <h3>Payment Links</h3>
                           <div class="space16"></div>
                           <p>Recive crypto payments through digital portals that aupdates automatically once a payment is dictated</p>
                           <div class="space24"></div>
                           <div>
-                            <a href="{% url 'pay_links' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view links ({{ payment_links|length }}) </a>
+                            <a href="{% url 'my_payment_links' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view links ({{ payment_links|length }}) </a>
 
-                            <a href="{% url 'create_payment' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">create </a>
+                            <a href="{% url 'create_payment_link' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">create </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="price-box">
+                      <div class="hadding">
+                        <div class="pricing-area">
+                          <h3>Transactions</h3>
+                          <div class="space16"></div>
+                          <p>Recive crypto payments on yur websites through digital portal that aupdates automatically once a payment is dictated</p>
+                          <div class="space24"></div>
+                          <div>
+                            <a href="{% url 'payments' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">
+                              view transactions ({{ payments|length }})
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -98,21 +105,7 @@
                     </div>
                   </div>
 
-                  <div class="col-md-4">
-                    <div class="price-box">
-                      <div class="hadding">
-                        <div class="pricing-area">
-                          <h3>View Payments</h3>
-                          <div class="space16"></div>
-                          <p>Recive crypto payments on yur websites through digital portal that aupdates automatically once a payment is dictated</p>
-                          <div class="space24"></div>
-                          <div>
-                            <a href="contact.html" class="header-btn2">View payments </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  
 
                 </div>
               </div>

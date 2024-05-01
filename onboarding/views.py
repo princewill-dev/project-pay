@@ -31,37 +31,61 @@ from django.db import IntegrityError
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def generate_random_string(length=20):
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
 
+
 def homepage(request):
     return render(request, 'home/index.html')
+
+
+def success_page_view(request):
+    return render(request, 'home/temp_success_page.html')
+
 
 def email_verification_view(request):
     return render(request, 'home/verify.html')
 
+
 def plan_view(request):
-    return render(request, 'home/pricing-plan.html')
+    return render(request, 'home/pricing_plan.html')
+
 
 def choose_action_view(request):
-
     payment_links = PaymentLink.objects.filter(user=request.user)
-    print(payment_links.count())  # This should print a non-zero value
-
+    print(payment_links.count())
+    payments = Payments.objects.filter(user=request.user)
+    print(payments.count())
     account_id = request.user.account_id
-
     context = {
+        'payments': payments,
         'payment_links': payment_links,
         'account_id': account_id,
     }
-    return render(request, 'home/choose-action.html', context)
-
+    return render(request, 'home/dashboard.html', context)
 
 
 def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
+
 
 def signup_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
@@ -91,6 +115,7 @@ def signup_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'home/signup.html', {'form': form})
+
 
 @login_required
 def email_verification_view(request):
@@ -133,7 +158,6 @@ def generate_otp_view(request):
 def login_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
         return redirect('choose_action')  # Redirect to 'choose_action' page
-    
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -157,6 +181,7 @@ def logout_view(request):
     logout(request)
     return redirect('homepage')
 
+
 @login_required
 def home_view(request):
     return render(request, 'home/index.html')
@@ -170,31 +195,24 @@ def generate_qr_code(text):
         box_size=10,
         border=4,
     )
-
     # Add the text to the QR code
     qr.add_data(text)
     qr.make(fit=True)
-
     # Generate the QR code image
     img = qr.make_image(fill_color="black", back_color="white")
-
     # Create a BytesIO object to store the image data
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     buffer.seek(0)
-
     return buffer
 
 
-
-def create_payment_view(request):
-    return render(request, 'home/create-payment-link.html')
-
+def create_payment_link_view(request):
+    return render(request, 'home/create_payment_link.html')
 
 
 @login_required
-def create_payment_save(request):    
-
+def save_payment_link_view(request):    
     if request.method == 'POST':
         crypto = request.POST.get('crypto')
         tag_name = request.POST.get('tag_name')
@@ -212,40 +230,43 @@ def create_payment_save(request):
             tag_name=tag_name,
             qr_code_image=path,
         )
-
         payment_link.save()
-
     messages.success(request, 'Your payment link has been created.')
-    return redirect('pay_links')
-    
+    return redirect('my_payment_links')
 
-def get_pay_view(request, link_id):
+
+# shows all payments made to the user
+@login_required
+def show_payments_view(request):
+    transactions = Payments.objects.filter(user=request.user)
+    context = {
+        'transactions': transactions,
+    }
+    return render(request, 'home/transactions_table.html', context)
+
+
+# shows individual payment link created by a user
+def show_pay_link(request, link_id):
     instance = get_object_or_404(PaymentLink, link_id=link_id)
     context = {
         'instance': instance,
     }
-
-    return render(request, 'home/show_pay_link.html', context)
-
+    return render(request, 'home/show_payment_link.html', context)
 
 
+# Get all the payment links created by the current user
 @login_required
 def pay_links_view(request):
-    # Get all the payment links created by the current user
     payment_links = PaymentLink.objects.filter(user=request.user)
-
     context = {
         'payment_links': payment_links
     }
-
-    return render(request, 'home/pay_links.html', context)
+    return render(request, 'home/payment_links.html', context)
 
 
 @login_required
 def payment_link_view(request, link_id):
-
     instance = get_object_or_404(PaymentLink, link_id=link_id)
-
     return render(request, 'home/payment_link.html', {'instance': instance})
 
 

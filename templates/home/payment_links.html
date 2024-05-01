@@ -32,7 +32,7 @@
                             <div>
                                 <p>Payment ID: {{ link.link_id }}</p>
                                 <div class="space16"></div>
-                                <p>Tag name: {{ link.tag_name }}</p>
+                                <p>Business Name: {{ link.tag_name }}</p>
                                 <div class="space16"></div>
                                 <p>Crypto: {{ link.crypto }}</p>
                                 <div class="space16"></div>
@@ -40,7 +40,7 @@
                                 <div class="space16"></div>
                                 <!-- <a href="https://bitwade.com/pay/{{ link.link_id }}" target="_blank">bitwade.com/pay/{{ link.link_id }}</a> -->
                                 <div class="space16"></div>
-                                <a href="{% url 'payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view link</a>
+                                <a href="{% url 'get_pay_view' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view link</a>
 
                                 <!-- <a href="{% url 'payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">create invoice </a> -->
                             </div>

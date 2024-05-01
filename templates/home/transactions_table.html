@@ -1,0 +1,53 @@
+{% extends 'home/main.html' %}
+{% load static %}
+{% block content %}
+{% include 'home/navbar.html' %}
+{% include 'home/mobile-nav.html' %}
+{% include 'home/mobile-sidebar.html' %}
+<!--===== WELCOME STARTS =======-->
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'choose_action' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Transactions</span></a>
+                </div>
+                <!-- table -->
+                <table class="table table-striped" style="background: #fff;">
+                    <thead>
+                        <tr>
+                            <th>Transactions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Add table rows here -->
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>
+                                    TxID: {{ transaction.transaction_id }}
+                                    <br>
+                                    Amount: {{ transaction.amount }}
+                                    <br>
+                                    Status: {{ transaction.status }}
+                                    <br>
+                                    Date: {{ transaction.created_at }}
+                                    <br>
+                                    <br>
+                                    <a href="#" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px;">details </a>
+                                    <br>
+                                    <br>
+                                </td>
+                            </tr>
+                            <br>
+                            {% endfor %}
+                        </tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+{% endblock %}

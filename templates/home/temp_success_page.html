@@ -1,0 +1,34 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<!--===== WELCOME STARTS =======-->
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'homepage' %}"><b>bitwade.com</b></a>
+                    <div class="space16"></div>
+                    <a href="{% url 'homepage' %}">Home <i class="fa-solid fa-angle-right"></i> <span>Success</span></a>
+                </div>
+                <div class="space50"></div>
+                <div class="login-boxarea heading6">
+                    <div class="icons">
+                        <img src="/static/onboarding/assets/images/icons/success_icon.png" alt="">
+                    </div>
+                    <div class="space32"></div>
+                    <h2 class="text-center">Your Payment Was Suucessfull!</h2>
+                    <div class="space16"></div>                
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+{% endblock %}

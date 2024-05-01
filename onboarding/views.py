@@ -217,7 +217,7 @@ def get_pay_view(request, link_id):
         'instance': instance,
     }
 
-    return render(request, 'home/receive_pay.html', context)
+    return render(request, 'home/show_pay_link.html', context)
 
 
 

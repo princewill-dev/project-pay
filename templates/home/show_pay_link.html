@@ -1,0 +1,47 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- {% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %} -->
+
+{% include 'home/mobile-sidebar.html' %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <span class="text-white">Here is your payment link</span>
+                </div>
+                <div class="space50"></div>
+                <div class="login-boxarea heading6">
+
+                    <p class="text-center">Tag: {{instance.tag_name}}</p>
+                    <img src="{{ instance.qr_code_image.url }}" alt="QR Code">
+                    <p class="text-center">ID: {{instance.link_id}}</p>
+                    <div class="space16"></div>
+                    <p class="text-center">wallet. {{instance.wallet}}</p>
+                    <div class="space24"></div>
+                    <div class="input-area">
+                        <a href="submit" class="header-btn2">Share link</a>
+                    </div>
+                    <div class="space32"></div>
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

@@ -25,7 +25,9 @@
                 <div class="login-boxarea heading6">
 
                     <p class="text-center">Tag: {{instance.tag_name}}</p>
-                    <img src="{{ instance.qr_code_image.url }}" alt="QR Code">
+                    <div class="text-center">
+                        <img src="{{ instance.qr_code_image.url }}" alt="QR Code">
+                    </div>
                     <p class="text-center">ID: {{instance.link_id}}</p>
                     <div class="space16"></div>
                     <p class="text-center">wallet. {{instance.wallet}}</p>

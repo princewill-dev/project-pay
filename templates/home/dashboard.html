@@ -62,7 +62,7 @@
                           <p>Recive crypto payments through digital portals that aupdates automatically once a payment is dictated</p>
                           <div class="space24"></div>
                           <div>
-                            <a href="{% url 'my_payment_links' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view links ({{ payment_links|length }}) </a>
+                            <a href="{% url 'show_all_payment_links' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">view links ({{ payment_links|length }}) </a>
 
                             <a href="{% url 'create_payment_link' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">create </a>
                           </div>
@@ -80,7 +80,7 @@
                           <p>Recive crypto payments on yur websites through digital portal that aupdates automatically once a payment is dictated</p>
                           <div class="space24"></div>
                           <div>
-                            <a href="{% url 'payments' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">
+                            <a href="{% url 'show_transactions' %}" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">
                               view transactions ({{ payments|length }})
                             </a>
                           </div>
@@ -98,7 +98,7 @@
                           <p>Recive crypto payments through digital invoices that aupdates automatically once a payment is dictated</p>
                           <div class="space24"></div>
                           <div>
-                            <a href="contact.html" class="header-btn2">create invoices </a>
+                            <a href="#" class="header-btn2">create invoices </a>
                           </div>
                         </div>
                       </div>

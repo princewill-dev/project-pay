@@ -65,11 +65,11 @@ def email_verification_view(request):
     return render(request, 'home/verify.html')
 
 
-def plan_view(request):
+def plans_view(request):
     return render(request, 'home/pricing_plan.html')
 
 
-def choose_action_view(request):
+def dashboard_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
     print(payment_links.count())
     payments = Payments.objects.filter(user=request.user)
@@ -129,7 +129,7 @@ def email_verification_view(request):
                 user.otp_code = None
                 user.otp_verified_at = timezone.now()
                 user.save()
-                return redirect('choose_action')
+                return redirect('dashboard')
             else:
                 messages.error(request, 'OTP expired. Please request for another one.')
         else:
@@ -157,7 +157,7 @@ def generate_otp_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
-        return redirect('choose_action')  # Redirect to 'choose_action' page
+        return redirect('dashboard')  # Redirect to 'dashboard' page
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -171,7 +171,7 @@ def login_view(request):
                     if user.email_verification == 'unverified':
                         return redirect('email_verification')
                     else:
-                        return redirect('choose_action')
+                        return redirect('dashboard')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'home/login.html', {'form': form})
@@ -237,7 +237,7 @@ def save_payment_link_view(request):
 
 # shows all payments made to the user
 @login_required
-def show_payments_view(request):
+def show_transactions_view(request):
     transactions = Payments.objects.filter(user=request.user)
     context = {
         'transactions': transactions,
@@ -246,7 +246,7 @@ def show_payments_view(request):
 
 
 # shows individual payment link created by a user
-def show_pay_link(request, link_id):
+def show_payment_link_view(request, link_id):
     instance = get_object_or_404(PaymentLink, link_id=link_id)
     context = {
         'instance': instance,
@@ -256,7 +256,7 @@ def show_pay_link(request, link_id):
 
 # Get all the payment links created by the current user
 @login_required
-def pay_links_view(request):
+def show_all_payment_links_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
     context = {
         'payment_links': payment_links
@@ -264,10 +264,10 @@ def pay_links_view(request):
     return render(request, 'home/payment_links.html', context)
 
 
-@login_required
-def payment_link_view(request, link_id):
-    instance = get_object_or_404(PaymentLink, link_id=link_id)
-    return render(request, 'home/payment_link.html', {'instance': instance})
+# @login_required
+# def payment_link_view(request, link_id):
+#     instance = get_object_or_404(PaymentLink, link_id=link_id)
+#     return render(request, 'home/payment_link.html', {'instance': instance})
 
 
 @csrf_exempt

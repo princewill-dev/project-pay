@@ -25,6 +25,8 @@
 
                   {% if request.user.is_authenticated %}
 
+                  <li><a href="{% url 'show_transactions' %}">Transactions</a></li>
+
                   <li><a href="{% url 'show_all_payment_links' %}">Payment Links</a></li>
 
                   <li><a href="{% url 'dashboard' %}">Dashboard</a></li>

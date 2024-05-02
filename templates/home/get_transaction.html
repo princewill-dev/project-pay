@@ -14,15 +14,13 @@
 
 
 <div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
-    <div class="space16"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <span class="text-white">Complete your purchase on {{user_info.tag_name}}</span>
+                    <span class="text-white">Complete your purchase on <br> {{user_info.tag_name}}</span>
                 </div>
 
-                <div class="space50"></div>
                 <div class="login-boxarea heading6">
 
                     <p class="text-center">Amount: {{transaction_details.amount}}</p>
@@ -31,15 +29,11 @@
                         <img src="{{ user_info.qr_code_image }}" alt="QR Code">
                     </div>
 
-                    <p class="text-center">Crypto Network: {{user_info.crypto}}</p>
+                    <p class="text-center">Network: {{user_info.crypto}}</p>
 
-                    <p class="text-center">Address: {{user_info.wallet}}</p>
+                    <p class="text-center" style="font-size: 12px;">{{user_info.wallet}}</p>
 
-                    <div class="space16"></div>
-
-                    <p class="text-center">Payment status: {{transaction_details.status}} ...</p>
-
-                    <div class="space16"></div>
+                    <p class="text-center">Status: {{transaction_details.status}} ...</p>
 
                     <div class="text-center">
                         <img src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="30px">

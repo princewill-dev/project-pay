@@ -302,15 +302,41 @@ def generate_transaction_view(request, link_id):
             return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
     else:
         return HttpResponse(status=405)
-    
+
 
 def get_transaction_view(request, tx_id):
+    # Get the Payments object with the given transaction ID
+    invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
 
-    tx_instance = get_object_or_404(Payments, transaction_id=tx_id)
-    
-
-    context = {
-        'tx_instance': tx_instance
+    # Get the transaction details
+    transaction_details = {
+        'transaction_id': invoice_tx.transaction_id,
+        'payment_link': invoice_tx.payment_link.link_id,
+        'amount': invoice_tx.amount,
+        'item': invoice_tx.item,
+        'customer_name': invoice_tx.customer_name,
+        'customer_email': invoice_tx.customer_email,
+        'customer_phone': invoice_tx.customer_phone,
+        'created_at': invoice_tx.created_at,
+        'is_paid': invoice_tx.is_paid,
+        'status': invoice_tx.status,
     }
 
-    return render(request, 'home/get_transaction.html', {'context': context})
+    # Get the user's information
+    user_info = {
+        'tag_name': invoice_tx.payment_link.tag_name,
+        'wallet': invoice_tx.payment_link.wallet,
+        'crypto': invoice_tx.payment_link.crypto,
+        'qr_code_image': invoice_tx.payment_link.qr_code_image.url if invoice_tx.payment_link.qr_code_image else '',
+        
+        # Add other user info here...
+    }
+
+    # Combine the user info and transaction details into one context
+    context = {
+        'user_info': user_info,
+        'transaction_details': transaction_details,
+    }
+
+    # Render the context to a template
+    return render(request, 'home/get_transaction.html', context)

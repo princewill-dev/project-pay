@@ -19,17 +19,31 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <span class="text-white">Here is your payment link</span>
+                    <span class="text-white">Complete your purchase on {{user_info.tag_name}}</span>
                 </div>
 
                 <div class="space50"></div>
                 <div class="login-boxarea heading6">
 
-                    <p class="text-center">ID: {{tx_instance.transaction_id}}</p>
-                    <div class="input-area">
-                        <a href="submit" class="header-btn2">Share link</a>
+                    <p class="text-center">Amount: {{transaction_details.amount}}</p>
+
+                    <div class="text-center">
+                        <img src="{{ user_info.qr_code_image }}" alt="QR Code">
                     </div>
-                    <div class="space32"></div>
+
+                    <p class="text-center">Crypto Network: {{user_info.crypto}}</p>
+
+                    <p class="text-center">Address: {{user_info.wallet}}</p>
+
+                    <div class="space16"></div>
+
+                    <p class="text-center">Payment status: {{transaction_details.status}} ...</p>
+
+                    <div class="space16"></div>
+
+                    <div class="text-center">
+                        <img src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="30px">
+                    </div>
 
                 </div>
                 

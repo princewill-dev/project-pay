@@ -22,7 +22,7 @@
 
                 <div class="login-boxarea heading6">
 
-                    <p class="text-center" id="amount">Amount: {{transaction_details.amount}}</p>
+                    <p class="text-center" id="amount">Amount: {{transaction_details.amount}} {{user_info.crypto}}</p>
 
                     <center>
                         <img id="wallet_qrcode_image" src="{{ user_info.qr_code_image }}" alt="QR Code">
@@ -48,6 +48,9 @@
                     </div>
 
                     <p class="text-center" id="redirect_to_store" style="font-size: 12px; display: none;">redirecting to store <span id="redirect_counter"></span></p>
+
+                    <br>
+                    <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
 
                 </div>
 
@@ -100,7 +103,7 @@
 
                                     // Redirect to the new URL after 5 seconds
                                     setTimeout(() => {
-                                        window.location.href = 'http://127.0.0.1:8000/store/success/';
+                                        window.location.href = window.location.origin + '/store/success/';
                                     }, 5000);
                                 }
 

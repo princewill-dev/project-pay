@@ -50,10 +50,21 @@ import time
 
 
 
-def generate_random_string(length=20):
-    characters = string.ascii_letters + string.digits
-    random_string = ''.join(random.choice(characters) for _ in range(length))
+# def generate_random_string(length=20):
+#     characters = string.ascii_lowercase + string.digits
+#     random_string = ''.join(random.choice(characters) for _ in range(length))
+#     return random_string
+
+# def generate_random_string():
+#     random_string = ''.join(random.choice(string.digits) for _ in range(12))
+#     formatted_string = '-'.join([random_string[i:i+4] for i in range(0, len(random_string), 4)])
+#     return formatted_string
+
+
+def generate_random_string():
+    random_string = ''.join(random.choice(string.digits) for _ in range(12))
     return random_string
+
 
 
 def homepage(request):
@@ -298,9 +309,10 @@ def generate_transaction_view(request, link_id):
 
                 "message": "payment generated successfully",
                 "transaction_id": payment.transaction_id,
-                "transactin_url": f"http://127.0.0.1:8000/tx/{payment.transaction_id}",
+                "transactin_url": f"{request.get_host()}/tx/{payment.transaction_id}",
 
-                }, status=201)
+            }, status=201)
+        
         except IntegrityError as e:
             return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
     else:
@@ -418,6 +430,13 @@ def get_transaction_details(request, tx_id):
                                         'amount': contract['parameter']['value']['amount'],
                                         'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
                                     }
+                                    if transaction_details['confirmed']:
+                                        invoice_tx.status = 'successful'
+                                        invoice_tx.is_paid = True
+                                        invoice_tx.crypto_network = 'TRON'
+                                        invoice_tx.business_name = invoice_tx.payment_link.tag_name
+                                        invoice_tx.transaction_hash = transaction_details['hash']
+                                        invoice_tx.save()
                                     return JsonResponse(transaction_details)
 
                 attempts += 1

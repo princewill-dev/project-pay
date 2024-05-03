@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'choose_action' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>Create Payment link</span></a>
+                    <a href="{% url 'dashboard' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>Create Payment link</span></a>
                 </div>
                 <div class="space50"></div>
                 <form action="{% url 'save_payment_link' %}" method="post">
@@ -37,13 +37,13 @@
                         <div class="space16"></div>
                         <div class="input-area">
                             <select name="crypto" id="" class="form-control">
-                                <option value="Litecoin">Litecoin</option>
+                                <option value="Tron">Tron</option>
                             </select>
                         </div>
 
                         <div class="space16"></div>
                         <div class="input-area">
-                            <input type="text" name="wallet" placeholder="Litecoin wallet Address">
+                            <input type="text" name="wallet" placeholder="wallet Address">
                         </div>
                         
                         <div class="space32"></div>

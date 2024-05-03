@@ -6,7 +6,7 @@ urlpatterns = [
 
     path('', views.homepage, name='homepage'),
 
-    path('success/', views.success_page_view, name='success_page'),
+    path('store/success/', views.success_page_view, name='success_page'),
 
     path('signup/', views.signup_view, name='signup_page'),
 
@@ -37,5 +37,7 @@ urlpatterns = [
     path('api/generate_tx/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
     path('tx/<str:tx_id>', views.get_transaction_view, name='get_transaction'),
+
+    path('api/get_transaction_details/<str:tx_id>', views.get_transaction_details, name='get_transaction_details'),
 
 ]

@@ -5,7 +5,6 @@ from .forms import CustomAuthenticationForm, CustomUserCreationForm
 from .models import User, PaymentLink, Payments
 from .utils import generate_otp
 from django.core.mail import send_mail
-from django.conf import settings
 from django.utils import timezone
 from django.contrib import messages
 import random
@@ -16,7 +15,7 @@ import datetime
 from django.utils.dateparse import parse_datetime
 from django.shortcuts import get_object_or_404
 import qrcode
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from io import BytesIO
 import os
 from django.core.files.base import ContentFile
@@ -26,7 +25,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-
+import requests
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.conf import settings
+import time
 
 
 
@@ -232,7 +235,7 @@ def save_payment_link_view(request):
         )
         payment_link.save()
     messages.success(request, 'Your payment link has been created.')
-    return redirect('my_payment_links')
+    return redirect('show_all_payment_links')
 
 
 # shows all payments made to the user
@@ -340,3 +343,50 @@ def get_transaction_view(request, tx_id):
 
     # Render the context to a template
     return render(request, 'home/get_transaction.html', context)
+
+
+def get_transaction_details(request, tx_id):
+
+    invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
+
+    target_amount = invoice_tx.amount
+
+    target_wallet = invoice_tx.payment_link.wallet
+
+    # Get the API endpoint URL from your Django settings
+    api_url = f'https://apilist.tronscanapi.com/api/transfer/trx?address={target_wallet}&start=0&limit=20&direction=0&reverse=true&fee=true&db_version=1&start_timestamp=&end_timestamp='
+
+    while True:
+        try:
+            # Make a GET request to the API endpoint
+            response = requests.get(api_url)
+            response.raise_for_status()
+
+            # Parse the JSON response
+            data = response.json()
+
+            # Check if the target amount is present in the response data
+            for transaction in data['data']:
+                if int(transaction['amount']) == target_amount:
+                    # If the target amount is found, return the transaction details
+                    transaction_details = {
+                        'hash': transaction['hash'],
+                        'amount': transaction['amount'],
+                        'confirmed': transaction['confirmed'],
+                    }
+                    json_data = json.dumps(transaction_details)
+                    return HttpResponse(json_data, content_type='application/json')
+
+            # If the target amount is not found, sleep for a few seconds before checking again
+            time.sleep(5)
+
+        except requests.exceptions.RequestException as e:
+            # Handle any exceptions that occur during the API request
+            error_response = {'error': str(e)}
+            json_data = json.dumps(error_response)
+            return HttpResponse(json_data, content_type='application/json', status=500)
+    
+
+
+
+

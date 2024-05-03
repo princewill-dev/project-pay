@@ -345,48 +345,89 @@ def get_transaction_view(request, tx_id):
     return render(request, 'home/get_transaction.html', context)
 
 
-def get_transaction_details(request, tx_id):
+# def get_transaction_details(request, tx_id):
 
-    invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
+#     invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
 
-    target_amount = invoice_tx.amount
+#     target_amount = invoice_tx.amount
 
-    target_wallet = invoice_tx.payment_link.wallet
+#     target_wallet = invoice_tx.payment_link.wallet
 
-    # Get the API endpoint URL from your Django settings
-    api_url = f'https://apilist.tronscanapi.com/api/transfer/trx?address={target_wallet}&start=0&limit=20&direction=0&reverse=true&fee=true&db_version=1&start_timestamp=&end_timestamp='
+#     # Get the API endpoint URL from your Django settings
+#     api_url = f'https://apilist.tronscanapi.com/api/transfer/trx?address={target_wallet}&start=0&limit=20&direction=0&reverse=true&fee=true&db_version=1&start_timestamp=&end_timestamp='
 
-    while True:
-        try:
-            # Make a GET request to the API endpoint
-            response = requests.get(api_url)
-            response.raise_for_status()
+#     while True:
+#         try:
+#             # Make a GET request to the API endpoint
+#             response = requests.get(api_url)
+#             response.raise_for_status()
 
-            # Parse the JSON response
-            data = response.json()
+#             # Parse the JSON response
+#             data = response.json()
 
-            # Check if the target amount is present in the response data
-            for transaction in data['data']:
-                if int(transaction['amount']) == target_amount:
-                    # If the target amount is found, return the transaction details
-                    transaction_details = {
-                        'hash': transaction['hash'],
-                        'amount': transaction['amount'],
-                        'confirmed': transaction['confirmed'],
-                    }
-                    json_data = json.dumps(transaction_details)
-                    return HttpResponse(json_data, content_type='application/json')
+#             # Check if the target amount is present in the response data
+#             for transaction in data['data']:
+#                 if int(transaction['amount']) == target_amount:
+#                     # If the target amount is found, return the transaction details
+#                     transaction_details = {
+#                         'hash': transaction['hash'],
+#                         'amount': transaction['amount'],
+#                         'confirmed': transaction['confirmed'],
+#                     }
+#                     json_data = json.dumps(transaction_details)
+#                     return HttpResponse(json_data, content_type='application/json')
 
-            # If the target amount is not found, sleep for a few seconds before checking again
-            time.sleep(5)
+#             # If the target amount is not found, sleep for a few seconds before checking again
+#             time.sleep(5)
 
-        except requests.exceptions.RequestException as e:
-            # Handle any exceptions that occur during the API request
-            error_response = {'error': str(e)}
-            json_data = json.dumps(error_response)
-            return HttpResponse(json_data, content_type='application/json', status=500)
+#         except requests.exceptions.RequestException as e:
+#             # Handle any exceptions that occur during the API request
+#             error_response = {'error': str(e)}
+#             json_data = json.dumps(error_response)
+#             return HttpResponse(json_data, content_type='application/json', status=500)
+
+
+
     
 
+def get_transaction_details(request, tx_id):
+    try:
+        invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
+        target_amount = invoice_tx.amount * 1000000
+        target_wallet = invoice_tx.payment_link.wallet
+
+        api_url = f'https://api.trongrid.io/v1/accounts/{target_wallet}/transactions/'
+
+        max_attempts = 5
+        attempts = 0
+
+        while attempts < max_attempts:
+            try:
+                response = requests.get(api_url)
+                response.raise_for_status()
+
+                data = response.json()
+
+                for transaction in data['data']:
+                    if 'contract' in transaction['raw_data']:
+                        for contract in transaction['raw_data']['contract']:
+                            if 'parameter' in contract and 'value' in contract['parameter']:
+                                if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
+                                    transaction_details = {
+                                        'hash': transaction['txID'],
+                                        'amount': contract['parameter']['value']['amount'],
+                                        'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
+                                    }
+                                    return JsonResponse(transaction_details)
+
+                attempts += 1
+
+            except requests.exceptions.RequestException as e:
+                return JsonResponse({'error': str(e)}, status=500)
+
+        return JsonResponse({'error': 'Target amount not found.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 

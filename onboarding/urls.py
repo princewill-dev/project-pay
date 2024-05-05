@@ -24,6 +24,8 @@ urlpatterns = [
 
     path('create_payment_link/', login_required(views.create_payment_link_view), name='create_payment_link'),
 
+    path('delete_payment_link/<str:link_id>', login_required(views.delete_payment_link_view), name='delete_payment_link'),
+
     path('save_payment_link/', login_required(views.save_payment_link_view), name='save_payment_link'),
 
     path('payment_links/', login_required(views.show_all_payment_links_view), name='show_all_payment_links'),
@@ -34,10 +36,12 @@ urlpatterns = [
 
     path('paylink/<str:link_id>', views.show_payment_link_view, name='show_payment_link'),
 
-    path('api/generate_tx/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
+    path('receive/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
-    path('tx/<str:tx_id>', views.get_transaction_view, name='get_transaction'),
+    path('invoice/<str:tx_id>', views.get_transaction_view, name='get_transaction'),
 
-    path('api/get_transaction_details/<str:tx_id>', views.get_transaction_details, name='get_transaction_details'),
+    path('find_invoice/<str:tx_id>', views.get_transaction_details, name='get_transaction_details'),
+
+    path('create_invoice/', login_required(views.create_invoice_view), name='create_invoice'),
 
 ]

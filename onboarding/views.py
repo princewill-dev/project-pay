@@ -278,6 +278,14 @@ def show_all_payment_links_view(request):
     return render(request, 'home/payment_links.html', context)
 
 
+@login_required
+def delete_payment_link_view(request, link_id):
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
+    payment_link.delete()
+    messages.success(request, 'Payment link deleted successfully.')
+    return redirect('show_all_payment_links')
+
+
 # @login_required
 # def payment_link_view(request, link_id):
 #     instance = get_object_or_404(PaymentLink, link_id=link_id)
@@ -299,17 +307,13 @@ def generate_transaction_view(request, link_id):
                 payment_link=payment_link,
                 transaction_id=generate_random_string(),
                 amount=data['amount'],
-                item=data['item'],
-                customer_name=data['customer_name'],
-                customer_email=data['customer_email'],
-                customer_phone=data['customer_phone'],
                 success_url=data['success_url'],
             )
             return JsonResponse({
 
                 "message": "payment generated successfully",
                 "transaction_id": payment.transaction_id,
-                "transactin_url": f"{request.get_host()}/tx/{payment.transaction_id}",
+                "transactin_url": f"{request.get_host()}/invoice/{payment.transaction_id}",
 
             }, status=201)
         
@@ -328,10 +332,7 @@ def get_transaction_view(request, tx_id):
         'transaction_id': invoice_tx.transaction_id,
         'payment_link': invoice_tx.payment_link.link_id,
         'amount': invoice_tx.amount,
-        'item': invoice_tx.item,
-        'customer_name': invoice_tx.customer_name,
-        'customer_email': invoice_tx.customer_email,
-        'customer_phone': invoice_tx.customer_phone,
+        'success_url': invoice_tx.success_url,
         'created_at': invoice_tx.created_at,
         'is_paid': invoice_tx.is_paid,
         'status': invoice_tx.status,
@@ -436,6 +437,7 @@ def get_transaction_details(request, tx_id):
                                         invoice_tx.crypto_network = 'TRON'
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                         invoice_tx.transaction_hash = transaction_details['hash']
+                                        invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                         invoice_tx.save()
                                     return JsonResponse(transaction_details)
 
@@ -447,6 +449,10 @@ def get_transaction_details(request, tx_id):
         return JsonResponse({'error': 'Target amount not found.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+def create_invoice_view(request):
+    return render(request, 'home/create_invoice.html')
 
 
 

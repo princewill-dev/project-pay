@@ -1,0 +1,75 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'dashboard' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>payment invoice</span></a>
+                </div>
+                <div class="space50"></div>
+                <form action="{% url 'save_payment_link' %}" method="post">
+                    {% csrf_token %}
+                    <div class="login-boxarea heading6">
+
+                        <p>Create a payment invoice.</p>
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <input type="number" name="amount" placeholder="Enter Amount">
+                        </div>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <input type="text" name="item" placeholder="Enter Item">
+                        </div>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <input type="text" name="item_quantity" placeholder="Enter Item Quantity">
+                        </div>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <select name="crypto" id="" class="form-control">
+                                <option value="Tron">Tron</option>
+                            </select>
+                        </div>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <input type="text" name="wallet" placeholder="wallet Address">
+                        </div>
+                        
+                        <div class="space32"></div>
+                        <div class="input-area">
+                            <button type="submit" class="header-btn2">Create link</button>
+                        </div>
+                        <div class="space32"></div>
+
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

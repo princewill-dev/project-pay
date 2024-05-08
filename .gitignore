@@ -1,4 +1,6 @@
 core/.env
+core/__pycache__/
+onboarding/__pycache__/
 myenv/
 .dockerignore
 Dockerfile

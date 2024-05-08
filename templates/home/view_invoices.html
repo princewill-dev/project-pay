@@ -24,7 +24,7 @@
                     <a href="{% url 'dashboard' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>Payment links</span></a>
                     <div class="space16"></div>
                     <div class="welcome-btnarea text-center">
-                        <a href="{% url 'create_payment_link' %}" class="header-btn">Create New link</a>
+                        <a href="{% url 'create_invoice' %}" class="header-btn">Create New invoice</a>
                       </div>
                 </div>
                 <div class="space50"></div>
@@ -46,34 +46,35 @@
                     {% endfor %}
                 {% endif %}
 
-                {% if payment_links %}
-                        
-                    {% for link in payment_links %}
+                {% if invoices %}
+                    {% for invoice in invoices %}
                         <div class="login-boxarea heading6">
                             <div>
-                                <p>Payment ID: {{ link.link_id }}</p>
+                                <p>Invoice ID: {{ invoice.invoice_id }}</p>
                                 <div class="space16"></div>
-                                <p>Business Name: {{ link.tag_name }}</p>
+                                <p>Recipient Email: {{ invoice.recipient_email }}</p>
                                 <div class="space16"></div>
-                                <p>Crypto: {{ link.crypto }}</p>
+                                <p>Amount: {{ invoice.amount }}</p>
                                 <div class="space16"></div>
-                                <p>Recieving Wallet: {{ link.wallet }}</p>
+                                <p>Item: {{ invoice.item }}</p>
                                 <div class="space16"></div>
+                                <p>Item Quantity: {{ invoice.item_quantity }}</p>
                                 <div class="space16"></div>
-                                <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share link</a>
-                                <!-- <a href="{% url 'delete_payment_link' link_id=link.link_id %}" class="header-btn2" onclick="return confirm('Are you sure you want to delete this link?');">Delete link</a> -->
+                                <p>Due Date: {{ invoice.due_date }}</p>
+                                <div class="space16"></div>
+                                <p>Status: {{ invoice.status }}</p>
+                                <div class="space16"></div>
+                                <a href="{{ invoice.invoice_url }}" target="_blank" class="header-btn">invoice link</a>
 
-                                <a href="{% url 'delete_payment_link' link_id=link.link_id %}" class="header-btn2" onclick="return confirm('Are you sure you want to delete this link?');">Delete link</a>
                             </div>
                         </div>
                         <div class="space16"></div>
                     {% endfor %}
-                    
                 {% else %}
                     <div class="text-center">
-                        <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
-                        <br>
-                        <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a>
+                        <p style="color: #fff; text-align: center;">You haven't created any invoices yet.</p>
+                        <!-- <br>
+                        <a href="{% url 'create_invoice' %}" target="_blank" class="header-btn1">Create Invoice</a> -->
                     </div>
                 {% endif %}
 

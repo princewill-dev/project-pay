@@ -24,11 +24,47 @@
                     <a href="{% url 'dashboard' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>payment invoice</span></a>
                 </div>
                 <div class="space50"></div>
-                <form action="{% url 'save_payment_link' %}" method="post">
+
+                {% if messages %}
+                    {% for message in messages %}
+
+                    <div id="notify" class="alert alert-info">{{ message }}</div>
+                    <script>
+                        // Get the element you want to disappear
+                        const element = document.getElementById('notify');
+
+                        // Set a timeout to hide the element after 3 seconds
+                        setTimeout(function() {
+                        element.style.display = 'none';
+                        }, 5000);
+                    </script>
+
+                    {% endfor %}
+                {% endif %}
+
+
+                <form action="{% url 'save_invoice' %}" method="post">
                     {% csrf_token %}
                     <div class="login-boxarea heading6">
 
                         <p>Create a payment invoice.</p>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <p style="font-size: 12px;">Select payment link to receive payment with:</p>
+                            <select name="payment_link" id="" class="form-control">
+                                
+                                {% for link in payment_links %}
+                                    <option value="{{ link.link_id }}">{{ link.tag_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <input type="email" name="recipient_email" placeholder="Enter Recipient email address">
+                        </div>
+
                         <div class="space16"></div>
                         <div class="input-area">
                             <input type="number" name="amount" placeholder="Enter Amount">
@@ -41,24 +77,17 @@
 
                         <div class="space16"></div>
                         <div class="input-area">
-                            <input type="text" name="item_quantity" placeholder="Enter Item Quantity">
+                            <input type="number" name="item_quantity" placeholder="Enter Item Quantity">
                         </div>
 
                         <div class="space16"></div>
                         <div class="input-area">
-                            <select name="crypto" id="" class="form-control">
-                                <option value="Tron">Tron</option>
-                            </select>
-                        </div>
-
-                        <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="text" name="wallet" placeholder="wallet Address">
+                            <input type="date" name="due_date" placeholder="Due Date">
                         </div>
                         
                         <div class="space32"></div>
                         <div class="input-area">
-                            <button type="submit" class="header-btn2">Create link</button>
+                            <button type="submit" class="header-btn2">Create Invoice</button>
                         </div>
                         <div class="space32"></div>
 

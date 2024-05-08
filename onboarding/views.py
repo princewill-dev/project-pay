@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User, PaymentLink, Payments
+from .models import User, PaymentLink, Payments, Invoice
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -85,13 +85,13 @@ def plans_view(request):
 
 def dashboard_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
-    print(payment_links.count())
     payments = Payments.objects.filter(user=request.user)
-    print(payments.count())
+    invoices = Invoice.objects.filter(user=request.user)  # Fetch the invoices
     account_id = request.user.account_id
     context = {
         'payments': payments,
         'payment_links': payment_links,
+        'invoices': invoices,  # Pass the invoices to the context
         'account_id': account_id,
     }
     return render(request, 'home/dashboard.html', context)
@@ -451,11 +451,70 @@ def get_transaction_details(request, tx_id):
         return JsonResponse({'error': str(e)}, status=500)
     
 
+# def create_invoice_view(request):
+#     return render(request, 'home/create_invoice.html')
+
+
 def create_invoice_view(request):
-    return render(request, 'home/create_invoice.html')
+    # Fetch the payment links for the current user
+    payment_links = PaymentLink.objects.filter(user=request.user)
+
+    # Pass the payment links to the template context
+    return render(request, 'home/create_invoice.html', {'payment_links': payment_links})
 
 
+@login_required
+def save_invoice_view(request):    
+    if request.method == 'POST':
+        # payment_link = request.POST.get('payment_link')
+        # payment_link_id = request.POST.get('payment_link')
+        # payment_link = PaymentLink.objects.get(id=payment_link_id)
+
+        payment_link_id = request.POST.get('payment_link')
+        try:
+            payment_link = PaymentLink.objects.get(link_id=payment_link_id)
+        except PaymentLink.DoesNotExist:
+            messages.error(request, 'The selected payment link does not exist.')
+            return redirect('create_invoice')
+        
+
+        recipient_email = request.POST.get('recipient_email')
+        invoice_id = generate_random_string()
+        amount = request.POST.get('amount')
+        item = request.POST.get('item')
+        item_quantity = request.POST.get('item_quantity')
+        due_date = request.POST.get('due_date')
+
+        save_invoice = Invoice.objects.create(
+            user=request.user,
+            payment_link=payment_link,
+            recipient_email=recipient_email,
+            invoice_id=invoice_id,
+            amount=amount,
+            item=item,
+            item_quantity=item_quantity,
+            due_date=due_date,
+            invoice_url=f"/invoice/{invoice_id}",
+        )
+        save_invoice.save()
+
+        payment = Payments.objects.create(
+            user=payment_link.user,
+            payment_link=payment_link,
+            transaction_id=invoice_id,
+            amount=amount,
+            success_url=f"/store/success/",
+        )
 
 
+    messages.success(request, 'Your invoice has been created.')
+    return redirect('show_all_invoices')
 
 
+@login_required
+def show_all_invoices_view(request):
+    invoices = Invoice.objects.filter(user=request.user)
+    context = {
+        'invoices': invoices
+    }
+    return render(request, 'home/view_invoices.html', context)

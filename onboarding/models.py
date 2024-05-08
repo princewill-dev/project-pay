@@ -106,3 +106,20 @@ class Payments(models.Model):
     def __str__(self):
         return self.transaction_id
     
+
+class Invoice(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_link = models.ForeignKey(PaymentLink, on_delete=models.CASCADE)
+    invoice_id = models.CharField(max_length=200, unique=True)
+    recipient_email = models.EmailField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    item = models.CharField(max_length=200)
+    item_quantity = models.IntegerField()
+    due_date = models.DateField()
+    invoice_url = models.URLField(null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=200, default='pending')
+    
+    def __str__(self):
+        return self.invoice_id

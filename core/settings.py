@@ -24,11 +24,13 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "bitwade.onrender.com",
     "127.0.0.1",
+    "project-pay.fly.dev",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",
     "https://bitwade.onrender.com",
+    "https://project-pay.fly.dev",
 ]
 
 AUTH_USER_MODEL = 'onboarding.User'

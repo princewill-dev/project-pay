@@ -123,7 +123,9 @@ def signup_view(request):
                 )
             except Exception as e:
                 # Handle the exception e.g. show an error message to the user
-                return render(request, 'home/signup.html', {'form': form, 'error': 'Could not send the OTP email.'})
+                # return render(request, 'home/signup.html', {'form': form, 'error': 'Could not send the OTP email.'})
+                messages.success(request, 'Could not send the OTP email.')
+                return redirect('signup_page')
 
             user.save()  # Now save the user object
 

@@ -16,6 +16,8 @@ environ.Env.read_env()
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

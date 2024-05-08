@@ -66,7 +66,6 @@ def generate_random_string():
     return random_string
 
 
-
 def homepage(request):
     return render(request, 'home/index.html')
 
@@ -117,13 +116,13 @@ def signup_view(request):
 
             login(request, user)
 
-            # send_mail(
-            #     'Welcome to bitwade.com', 
-            #     f'Here is your email verification code: {otp_code}',
-            #     'api@princewilldev.com',
-            #     [user.email],
-            #     fail_silently=False
-            # )
+            send_mail(
+                'Welcome to bitwade.com', 
+                f'Here is your email verification code: {otp_code}',
+                'support@bitwade.com',
+                [user.email],
+                fail_silently=False
+            )
 
             return redirect('email_verification')
     else:

@@ -86,7 +86,7 @@ class PaymentLink(models.Model):
         return self.link_id
     
 
-class Payments(models.Model):
+class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     payment_link = models.ForeignKey(PaymentLink, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=200)

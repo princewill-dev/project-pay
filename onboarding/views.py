@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User, PaymentLink, Payments, Invoice
+from .models import User, PaymentLink, Payment, Invoice
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -85,11 +85,11 @@ def plans_view(request):
 
 def dashboard_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
-    payments = Payments.objects.filter(user=request.user)
+    transactions = Payment.objects.filter(user=request.user)
     invoices = Invoice.objects.filter(user=request.user)  # Fetch the invoices
     account_id = request.user.account_id
     context = {
-        'payments': payments,
+        'transactions': transactions,
         'payment_links': payment_links,
         'invoices': invoices,  # Pass the invoices to the context
         'account_id': account_id,
@@ -249,10 +249,10 @@ def save_payment_link_view(request):
     return redirect('show_all_payment_links')
 
 
-# shows all payments made to the user
+# shows all Payment made to the user
 @login_required
 def show_transactions_view(request):
-    transactions = Payments.objects.filter(user=request.user)
+    transactions = Payment.objects.filter(user=request.user)
     context = {
         'transactions': transactions,
     }
@@ -302,7 +302,7 @@ def generate_transaction_view(request, link_id):
             return JsonResponse({"error": "Invalid payment link ID"}, status=400)
 
         try:
-            payment = Payments.objects.create(
+            payment = Payment.objects.create(
                 user=payment_link.user,
                 payment_link=payment_link,
                 transaction_id=generate_random_string(),
@@ -324,8 +324,8 @@ def generate_transaction_view(request, link_id):
 
 
 def get_transaction_view(request, tx_id):
-    # Get the Payments object with the given transaction ID
-    invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
+    # Get the Payment object with the given transaction ID
+    invoice_tx = get_object_or_404(Payment, transaction_id=tx_id)
 
     # Get the transaction details
     transaction_details = {
@@ -356,56 +356,11 @@ def get_transaction_view(request, tx_id):
 
     # Render the context to a template
     return render(request, 'home/get_transaction.html', context)
-
-
-# def get_transaction_details(request, tx_id):
-
-#     invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
-
-#     target_amount = invoice_tx.amount
-
-#     target_wallet = invoice_tx.payment_link.wallet
-
-#     # Get the API endpoint URL from your Django settings
-#     api_url = f'https://apilist.tronscanapi.com/api/transfer/trx?address={target_wallet}&start=0&limit=20&direction=0&reverse=true&fee=true&db_version=1&start_timestamp=&end_timestamp='
-
-#     while True:
-#         try:
-#             # Make a GET request to the API endpoint
-#             response = requests.get(api_url)
-#             response.raise_for_status()
-
-#             # Parse the JSON response
-#             data = response.json()
-
-#             # Check if the target amount is present in the response data
-#             for transaction in data['data']:
-#                 if int(transaction['amount']) == target_amount:
-#                     # If the target amount is found, return the transaction details
-#                     transaction_details = {
-#                         'hash': transaction['hash'],
-#                         'amount': transaction['amount'],
-#                         'confirmed': transaction['confirmed'],
-#                     }
-#                     json_data = json.dumps(transaction_details)
-#                     return HttpResponse(json_data, content_type='application/json')
-
-#             # If the target amount is not found, sleep for a few seconds before checking again
-#             time.sleep(5)
-
-#         except requests.exceptions.RequestException as e:
-#             # Handle any exceptions that occur during the API request
-#             error_response = {'error': str(e)}
-#             json_data = json.dumps(error_response)
-#             return HttpResponse(json_data, content_type='application/json', status=500)
-
-
-
-    
+  
 
 def get_transaction_details(request, tx_id):
     try:
-        invoice_tx = get_object_or_404(Payments, transaction_id=tx_id)
+        invoice_tx = get_object_or_404(Payment, transaction_id=tx_id)
         target_amount = invoice_tx.amount * 1000000
         target_wallet = invoice_tx.payment_link.wallet
 
@@ -432,6 +387,17 @@ def get_transaction_details(request, tx_id):
                                         'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
                                     }
                                     if transaction_details['confirmed']:
+                                        try:
+                                            # Check if the transaction exists in the Invoice model
+                                            invoice = Invoice.objects.get(invoice_id=invoice_tx)
+                                            # If it exists, mark it as successful
+                                            invoice.status = 'successful'
+                                            invoice.is_paid = True
+                                            # send email to the recipient and the sender
+                                            invoice.save()
+                                        except ObjectDoesNotExist:
+                                            pass
+
                                         invoice_tx.status = 'successful'
                                         invoice_tx.is_paid = True
                                         invoice_tx.crypto_network = 'TRON'
@@ -439,6 +405,9 @@ def get_transaction_details(request, tx_id):
                                         invoice_tx.transaction_hash = transaction_details['hash']
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                         invoice_tx.save()
+
+                                        # send email to the recipient and the sender
+
                                     return JsonResponse(transaction_details)
 
                 attempts += 1
@@ -498,7 +467,7 @@ def save_invoice_view(request):
         )
         save_invoice.save()
 
-        payment = Payments.objects.create(
+        payment = Payment.objects.create(
             user=payment_link.user,
             payment_link=payment_link,
             transaction_id=invoice_id,

@@ -1,49 +1,69 @@
 {% extends 'home/main.html' %}
-{% load static %}
-{% block content %}
-{% include 'home/navbar.html' %}
-{% include 'home/mobile-nav.html' %}
-{% include 'home/mobile-sidebar.html' %}
-<!--===== WELCOME STARTS =======-->
-<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
 
+{% load static %}
+
+{% block content %}
+
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Transactions</span></a>
+                    <a href="{% url 'dashboard' %}">Actions <i class="fa-solid fa-angle-right"></i> <span>Transactions</span></a>
+                    <div class="space16"></div>
                 </div>
-                <!-- table -->
-                <table class="table table-striped" style="background: #fff;">
-                    <thead>
-                        <tr>
-                            <th>Transactions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Add table rows here -->
-                        <tbody>
-                            {% for transaction in transactions %}
-                            <tr>
-                                <td>
-                                    TxID: {{ transaction.transaction_id }}
-                                    <br>
-                                    Amount: {{ transaction.amount }}
-                                    <br>
-                                    Status: {{ transaction.status }}
-                                    <br>
-                                    Date: {{ transaction.created_at }}
-                                    <br>
-                                </td>
-                            </tr>
-                            <br>
-                            {% endfor %}
-                        </tbody>
-                    </tbody>
-                </table>
+                <div class="space50"></div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div id="notify" class="alert alert-info">{{ message }}</div>
+                    <script>
+                        const element = document.getElementById('notify');
+                        setTimeout(function() {
+                        element.style.display = 'none';
+                        }, 5000);
+                    </script>
+                    {% endfor %}
+                {% endif %}
+
+                {% if transactions %}
+                    {% for transaction in transactions %}
+                        <div class="login-boxarea heading6">
+                            <div>
+                                <p>Date: {{ transaction.created_at }}</p>
+                                <div class="space16"></div>
+                                <p>Transaction ID: {{ transaction.transaction_id }}</p>
+                                <div class="space16"></div>
+                                <p>Via: {{ transaction.business_name }}</p>
+                                <div class="space16"></div>
+                                <p>Amount: {{ transaction.amount }}</p>
+                                <div class="space16"></div>
+                                <p>Crypto: {{ transaction.crypto_network }}</p>
+                                <div class="space16"></div>
+                                <p>Status: {{ transaction.status }}</p>
+                                <div class="space16"></div>
+                                <p>Transaction Hash: {{ transaction.transaction_hash }}</p>
+                            </div>
+                        </div>
+                        <div class="space16"></div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center">
+                        <p style="color: #fff; text-align: center;">You haven't made any transactions yet.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
-<!--===== WELCOME ENDS =======-->
+
 {% endblock %}

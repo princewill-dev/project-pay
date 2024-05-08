@@ -100,6 +100,7 @@ def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
 
 
+
 def signup_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
         return redirect('plans')  # Redirect to 'plans' page
@@ -107,22 +108,26 @@ def signup_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            email = form.cleaned_data.get('email')
+            user = form.save(commit=False)  # Don't save the user object yet
             otp_code = generate_otp()
             user.otp_code = otp_code
             user.otp_created_at = timezone.now()
-            user.save()
+
+            try:
+                send_mail(
+                    'Welcome to bitwade.com', 
+                    f'Here is your email verification code: {otp_code}',
+                    'support@bitwade.com',
+                    [user.email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                # Handle the exception e.g. show an error message to the user
+                return render(request, 'home/signup.html', {'form': form, 'error': 'Could not send the OTP email.'})
+
+            user.save()  # Now save the user object
 
             login(request, user)
-
-            send_mail(
-                'Welcome to bitwade.com', 
-                f'Here is your email verification code: {otp_code}',
-                'support@bitwade.com',
-                [user.email],
-                fail_silently=False
-            )
 
             return redirect('email_verification')
     else:

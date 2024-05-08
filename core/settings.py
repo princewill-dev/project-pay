@@ -33,6 +33,12 @@ CORS_ALLOWED_ORIGINS = [
     "https://project-pay.fly.dev",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1",
+    "https://bitwade.onrender.com",
+    "https://project-pay.fly.dev",
+]
+
 AUTH_USER_MODEL = 'onboarding.User'
 
 LOGIN_URL = 'login_page'
@@ -66,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'processor.apps.ProcessorConfig',
     'onboarding.apps.OnboardingConfig',
+    'corsheaders',
     # 'django.contrib.sites',
     # 'allauth',
     # 'allauth.account',
@@ -81,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

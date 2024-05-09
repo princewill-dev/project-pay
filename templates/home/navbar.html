@@ -2,7 +2,7 @@
 
 
 <header>
-    <div class="header-area homepage2 header header-sticky d-none d-lg-block " id="header">
+    <div class="header-area homepage1 header header-sticky d-none d-lg-block " id="header">
       <div class="container">
         <div class="row">
           <div class="col-lg-12">
@@ -16,15 +16,17 @@
               <div class="main-menu">
                 <ul>
                   
-                  {% if request.user.is_authenticated %}
-
                   <li><a href="{% url 'homepage' %}">Home </a></li>
 
-                  <li><a href="about.html">About</a></li>
+                  <li><a href="#">About</a></li>
 
-                  <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                  <li><a href="#">Support</a></li>
+
+                  {% if request.user.is_authenticated %}
 
                   <li><a href="{% url 'plans' %}">Pricing</a></li>
+
+                  <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
 
                   <li><a href="{% url 'show_transactions' %}">Transactions</a></li>
 
@@ -35,19 +37,15 @@
                   <a href="{% url 'logout' %}" class="header-btn3">Logout</a>
 
                   {% else %}
-                  <li><a href="{% url 'homepage' %}">Home </a></li>
-
-                  <li><a href="about.html">About</a></li>
 
                   <li><a href="{% url 'plans' %}">Pricing</a></li>
 
-                  <li><a href="contact.html">Support</a></li>
-
-                  <a href="{% url 'login_page' %}" class="header-btn2">Login</a>
+                  <li><a href="{% url 'login_page' %}">Login</a></li>
                   
-                  <a href="{% url 'signup_page' %}" class="header-btn3">Sign Up Free</a>
+                  <a href="{% url 'signup_page' %}" class="header-btn3">Get Started</a>
 
                   {% endif %}
+
                 </ul>
                 
               </div>

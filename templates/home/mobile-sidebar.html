@@ -14,13 +14,13 @@
     <div class="mobile-nav mobile-nav2">
       <ul class="mobile-nav-list nav-list2">
         
-        <li><a href="about.html">Home</a></li>
-        <li><a href="features.html">Features</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="{% url 'homepage' %}">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Support</a></li>
       </ul>
   
       <div class="allmobilesection">
-        <a href="contact.html"  class="header-btn5 mobile-get">Get Started</a>
+        <a href="{% url 'signup_page' %}"  class="header-btn5 mobile-get">Get Started</a>
         <div class="single-footer">
           <h3>Contact Info</h3>
           <div class="footer4-contact-info">
@@ -38,7 +38,7 @@
                 <i class="fa-solid fa-envelope"></i>
               </div>
               <div class="contact-info-text">
-                <a href="mailto:info@example.com"> support@bitwade.com</a>
+                <a href="mailto:support@bitwade.com"> support@bitwade.com</a>
               </div>
             </div>
   

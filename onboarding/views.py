@@ -403,12 +403,13 @@ def get_transaction_details(request, tx_id):
                                             invoice.save()
                                         except ObjectDoesNotExist:
                                             pass
-
+                                        
+                                        base_url = "https://tronscan.io/#/transaction/"
                                         invoice_tx.status = 'successful'
                                         invoice_tx.is_paid = True
                                         invoice_tx.crypto_network = 'TRON'
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                                        invoice_tx.transaction_hash = transaction_details['hash']
+                                        invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                         invoice_tx.save()
 

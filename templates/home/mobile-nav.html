@@ -5,7 +5,10 @@
       <div class="col-12">
         <div class="mobile-header-elements">
           <div class="mobile-logo">
-            <a href="index.html"><img src="{% static 'onboarding/assets/images/logo/logo1.png' %}" alt=""></a>
+            <a href="{% url 'homepage' %}">
+              <!-- <img src="{% static 'onboarding/assets/images/logo/logo1.png' %}" alt=""> -->
+              <span style="color: #fff;">Bitwade</span>
+            </a>
           </div>
           <div class="mobile-nav-icon dots-menu">
             <i class="fa-solid fa-bars"></i>

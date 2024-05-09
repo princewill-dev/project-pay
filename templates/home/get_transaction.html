@@ -47,7 +47,7 @@
                         <img id="pending_image" src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="30px">
                     </div>
 
-                    <p class="text-center" id="redirect_to_store" style="font-size: 12px; display: none;">redirecting to store <span id="redirect_counter"></span></p>
+                    <!-- <p class="text-center" id="redirect_to_store" style="font-size: 12px; display: none;">redirecting to store <span id="redirect_counter"></span></p> -->
 
                     <br>
                     <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
@@ -68,8 +68,8 @@
                     const txWallet = document.getElementById('wallet');
                     const txAmount = document.getElementById('amount');
 
-                    const redirectMessage = document.getElementById('redirect_to_store');
-                    const redirectCounterElement = document.getElementById('redirect_counter');
+                    // const redirectMessage = document.getElementById('redirect_to_store');
+                    // const redirectCounterElement = document.getElementById('redirect_counter');
                 
                     function getTransactionDetails() {
                         fetch('/find_invoice/{{transaction_details.transaction_id}}')
@@ -90,21 +90,21 @@
 
                                     successMessage.style.display = 'block';
 
-                                    redirectMessage.style.display = 'block';
-                                    let counter = 5;
-                                    redirectCounterElement.textContent = counter;
-                                    const intervalId = setInterval(() => {
-                                        counter--;
-                                        redirectCounterElement.textContent = counter;
-                                        if (counter === 0) {
-                                            clearInterval(intervalId);
-                                        }
-                                    }, 1000);
+                                    // redirectMessage.style.display = 'block';
+                                    // let counter = 5;
+                                    // redirectCounterElement.textContent = counter;
+                                    // const intervalId = setInterval(() => {
+                                    //     counter--;
+                                    //     redirectCounterElement.textContent = counter;
+                                    //     if (counter === 0) {
+                                    //         clearInterval(intervalId);
+                                    //     }
+                                    // }, 1000);
 
                                     // Redirect to the new URL after 5 seconds
-                                    setTimeout(() => {
-                                        window.location.href = '{{transaction_details.success_url}}';
-                                    }, 5000);
+                                    // setTimeout(() => {
+                                    //     window.location.href = '{{transaction_details.success_url}}';
+                                    // }, 5000);
                                 }
 
                                 // Call the function again after a delay of 5 seconds

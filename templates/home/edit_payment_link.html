@@ -1,0 +1,61 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'show_all_payment_links' %}">Payment Links <i class="fa-solid fa-angle-right"></i> <span>Edit wallet address</span></a>
+                    <div class="space16"></div>
+                    <h6 style="color: #fff; font-weight: 400;">Business: {{ tag_name }}</h6>
+                </div>
+                <div class="space50"></div>
+
+                <div class="login-boxarea heading6">
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="space16"></div>
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <button type="submit" class="header-btn2">Update</button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

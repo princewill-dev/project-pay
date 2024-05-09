@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import User
+from .models import PaymentLink
 
 class CustomEmailField(forms.EmailField):
     def __init__(self, *args, **kwargs):
@@ -34,3 +35,34 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'password1', 'password2')
+
+
+class PaymentLinkForm(forms.ModelForm):
+    class Meta:
+        model = PaymentLink
+        fields = ['wallet']
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentLinkForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+    
+# class PaymentLinkForm(forms.ModelForm):
+#     CRYPTO_CHOICES = [
+#         ('btc', 'Bitcoin'),
+#         ('eth', 'Ethereum'),
+#         # Add more choices as needed
+#     ]
+
+#     crypto = forms.ChoiceField(choices=CRYPTO_CHOICES)
+
+#     class Meta:
+#         model = PaymentLink
+#         fields = ['wallet', 'crypto', 'tag_name']
+
+#     def __init__(self, *args, **kwargs):
+#         super(PaymentLinkForm, self).__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             field.widget.attrs['class'] = 'form-control'
+

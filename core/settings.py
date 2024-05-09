@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "project-pay.fly.dev",
     "bitwade.com",
+    "localhost",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -41,6 +42,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://bitwade.onrender.com",
     "https://project-pay.fly.dev",
     "https://bitwade.com",
+    "http://localhost",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -48,6 +50,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://bitwade.onrender.com",
     "https://project-pay.fly.dev",
     "https://bitwade.com",
+    "http://localhost",
 ]
 
 AUTH_USER_MODEL = 'onboarding.User'

@@ -60,10 +60,13 @@
                                 <p>Recieving Wallet: {{ link.wallet }}</p>
                                 <div class="space16"></div>
                                 <div class="space16"></div>
-                                <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share link</a>
-                                <!-- <a href="{% url 'delete_payment_link' link_id=link.link_id %}" class="header-btn2" onclick="return confirm('Are you sure you want to delete this link?');">Delete link</a> -->
 
-                                <a href="{% url 'delete_payment_link' link_id=link.link_id %}" class="header-btn2" onclick="return confirm('Are you sure you want to delete this link?');">Delete link</a>
+                                <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share</a>
+
+                                <a href="{% url 'edit_payment_link_wallet' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
+
+                                <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">Delete</a>
+
                             </div>
                         </div>
                         <div class="space16"></div>

@@ -26,6 +26,8 @@ urlpatterns = [
 
     path('delete_payment_link/<str:link_id>', login_required(views.delete_payment_link_view), name='delete_payment_link'),
 
+    path('edit_payment_link/<str:link_id>', login_required(views.edit_payment_link_wallet_view), name='edit_payment_link_wallet'),
+
     path('save_payment_link/', login_required(views.save_payment_link_view), name='save_payment_link'),
 
     path('payment_links/', login_required(views.show_all_payment_links_view), name='show_all_payment_links'),

@@ -30,6 +30,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
 import time
+from .forms import PaymentLinkForm
 
 
 
@@ -253,6 +254,20 @@ def save_payment_link_view(request):
         payment_link.save()
     messages.success(request, 'Your payment link has been created.')
     return redirect('show_all_payment_links')
+
+
+@login_required
+def edit_payment_link_wallet_view(request, link_id):
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
+    if request.method == 'POST':
+        form = PaymentLinkForm(request.POST, instance=payment_link)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your payment link has been updated.')
+            return redirect('show_all_payment_links')
+    else:
+        form = PaymentLinkForm(instance=payment_link)
+    return render(request, 'home/edit_payment_link.html', {'form': form, 'tag_name': payment_link.tag_name})
 
 
 # shows all Payment made to the user

@@ -284,7 +284,7 @@ def save_payment_link_view(request):
                 wallet=wallets,  # Save the wallets object directly
                 crypto=",".join(wallets.keys()),  # Save the cryptocurrency names as a comma-separated string
                 tag_name=tag_name,
-                # qr_code_image=json.dumps(qr_codes),  # Save the QR code paths as a JSON string
+                #qr_code_image=json.dumps(qr_codes),  # Save the QR code paths as a JSON string
             )
             payment_link.save()
 

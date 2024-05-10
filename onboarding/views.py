@@ -271,20 +271,20 @@ def save_payment_link_view(request):
             print(f'wallets_json: {wallets_json}')
 
             # Generate a QR code for each wallet
-            # qr_codes = {}
-            # for crypto, wallet in wallets.items():
-            #     qr_code_image = generate_qr_code(wallet)
-            #     filename = f'qr_code_{wallet}.png'
-            #     path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-            #     qr_codes[crypto] = path
+            qr_codes = {}
+            for crypto, wallet in wallets.items():
+                qr_code_image = generate_qr_code(wallet)
+                filename = f'{wallet}.png'
+                path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+                qr_codes[crypto] = path
 
             payment_link = PaymentLink.objects.create(
                 user=request.user,
                 link_id=link_id,
-                wallet=wallets,  # Save the wallets object directly
-                crypto=",".join(wallets.keys()),  # Save the cryptocurrency names as a comma-separated string
+                wallet=wallets,
+                crypto=",".join(wallets.keys()),
                 tag_name=tag_name,
-                #qr_code_image=json.dumps(qr_codes),  # Save the QR code paths as a JSON string
+                qr_code_image=json.dumps(qr_codes),
             )
             payment_link.save()
 
@@ -294,7 +294,6 @@ def save_payment_link_view(request):
 
         return redirect('show_all_payment_links')
 
-    # If the request method is not POST, you might want to show a form or do something else
     return redirect('create_payment_link_form')
 
 

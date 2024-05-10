@@ -232,28 +232,70 @@ def create_payment_link_view(request):
     return render(request, 'home/create_payment_link.html')
 
 
+# @login_required
+# def save_payment_link_view(request):    
+#     if request.method == 'POST':
+#         crypto = request.POST.get('crypto')
+#         tag_name = request.POST.get('tag_name')
+#         link_id = generate_random_string()
+#         wallet = request.POST.get('wallet')
+#         qr_code_image = generate_qr_code(wallet)
+#         filename = f'qr_code_{wallet}.png'
+#         path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+
+#         payment_link = PaymentLink.objects.create(
+#             user=request.user,
+#             link_id=link_id,
+#             wallet=wallet,
+#             crypto=crypto,
+#             tag_name=tag_name,
+#             qr_code_image=path,
+#         )
+#         payment_link.save()
+#     messages.success(request, 'Your payment link has been created.')
+#     return redirect('show_all_payment_links')
+
+
 @login_required
 def save_payment_link_view(request):    
     if request.method == 'POST':
-        crypto = request.POST.get('crypto')
         tag_name = request.POST.get('tag_name')
         link_id = generate_random_string()
-        wallet = request.POST.get('wallet')
-        qr_code_image = generate_qr_code(wallet)
-        filename = f'qr_code_{wallet}.png'
-        path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+        wallets_json = request.POST.get('wallets')
 
-        payment_link = PaymentLink.objects.create(
-            user=request.user,
-            link_id=link_id,
-            wallet=wallet,
-            crypto=crypto,
-            tag_name=tag_name,
-            qr_code_image=path,
-        )
-        payment_link.save()
-    messages.success(request, 'Your payment link has been created.')
-    return redirect('show_all_payment_links')
+        # Check if wallets_json is not empty
+        if wallets_json:
+            # Decode the JSON string to get the object
+            wallets = json.loads(wallets_json)
+
+            print(f'wallets_json: {wallets_json}')
+
+            # Generate a QR code for each wallet
+            # qr_codes = {}
+            # for crypto, wallet in wallets.items():
+            #     qr_code_image = generate_qr_code(wallet)
+            #     filename = f'qr_code_{wallet}.png'
+            #     path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+            #     qr_codes[crypto] = path
+
+            payment_link = PaymentLink.objects.create(
+                user=request.user,
+                link_id=link_id,
+                wallet=wallets,  # Save the wallets object directly
+                crypto=",".join(wallets.keys()),  # Save the cryptocurrency names as a comma-separated string
+                tag_name=tag_name,
+                # qr_code_image=json.dumps(qr_codes),  # Save the QR code paths as a JSON string
+            )
+            payment_link.save()
+
+            messages.success(request, 'Your payment link has been created.')
+        else:
+            messages.error(request, 'No wallets provided.')
+
+        return redirect('show_all_payment_links')
+
+    # If the request method is not POST, you might want to show a form or do something else
+    return redirect('create_payment_link_form')
 
 
 @login_required
@@ -382,7 +424,11 @@ def get_transaction_view(request, tx_id):
 def get_transaction_details(request, tx_id):
     try:
         invoice_tx = get_object_or_404(Payment, transaction_id=tx_id)
-        target_amount = invoice_tx.amount * 1000000
+
+        tx_amount = invoice_tx.amount
+
+        target_amount = tx_amount * 1000000
+
         target_wallet = invoice_tx.payment_link.wallet
 
         api_url = f'https://api.trongrid.io/v1/accounts/{target_wallet}/transactions/'

@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 import string
 import random
 from django.utils import timezone
+from django.db.models import JSONField
+
+
+
 
 def generate_account_id():
     characters = string.ascii_letters + string.digits
@@ -76,7 +80,8 @@ class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
     qr_code_image = models.FileField(upload_to='qr_codes', blank=True, null=True)
-    wallet = models.CharField(max_length=200, null=True, blank=True)
+    # wallet = models.CharField(max_length=200, null=True, blank=True)
+    wallet = JSONField(blank=True, null=True, max_length=500)
     crypto = models.CharField(max_length=200, null=True, blank=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)

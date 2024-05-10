@@ -24,33 +24,40 @@
                     <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create Payment link</span></a>
                 </div>
                 <div class="space50"></div>
-                <form action="{% url 'save_payment_link' %}" method="post">
+                <form id="payment-form" action="{% url 'save_payment_link' %}" method="post">
                     {% csrf_token %}
                     <div class="login-boxarea heading6">
 
-                        <p>Create your own payment link.</p>
-                        <div class="space16"></div>
+                        <p style="font-size: 12px;">What name so you want your store to be called:</p>
                         <div class="input-area">
                             <input type="text" name="tag_name" placeholder="Enter Store Name">
                         </div>
 
+                        <input type="hidden" id="wallets" name="wallets">
+
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <select name="crypto" id="" class="form-control">
-                                <option value="Tron">Tron</option>
-                            </select>
+                        <p style="font-size: 12px;">Select the coins you which to accept:</p>
+                        <div class="form-control">
+                            <input type="checkbox" id="trx" name="crypto" value="trx" class="crypto-checkbox">
+                            <label for="trx">Tron (TRX)</label>
+                            <div id="wallet-input-trx" style="display: none;">
+                                <input type="text" name="trx" placeholder="enter wallet address" style="width: 100%;">
+                            </div>                    
                         </div>
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="text" name="wallet" placeholder="wallet Address">
+                        <div class="form-control">
+                            <input type="checkbox" id="trc20" name="crypto" value="trc20" class="crypto-checkbox">
+                            <label for="trc20">USDT (TRC20)</label>
+                            <div id="wallet-input-trc20" style="display: none;">
+                                <input type="text" name="trc20" placeholder="enter wallet address" style="width: 100%;">
+                            </div>
                         </div>
                         
-                        <div class="space32"></div>
+                        <div class="space16"></div>
                         <div class="input-area">
-                            <button type="submit" class="header-btn2">Create link</button>
+                            <button type="submit" class="header-btn2">next</button>
                         </div>
-                        <div class="space32"></div>
 
                     </div>
                 </form>
@@ -59,6 +66,63 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    // Get all checkboxes
+    var checkboxes = document.querySelectorAll('.crypto-checkbox');
+
+    // Listen for changes
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Get the corresponding wallet input field
+            var walletInput = document.getElementById('wallet-input-' + checkbox.id);
+
+            // If this checkbox is checked, show the wallet input field
+            if (checkbox.checked) {
+                walletInput.style.display = 'block';
+            } else {
+                // Otherwise, hide it
+                walletInput.style.display = 'none';
+            }
+        });
+    });
+
+
+    document.getElementById('payment-form').addEventListener('submit', function(e) {
+        // Prevent the form from being submitted
+        e.preventDefault();
+
+        // Create an object to hold the checkbox values and wallet addresses
+        var wallets = {};
+
+        // Get all checkboxes
+        var checkboxes = document.querySelectorAll('.crypto-checkbox');
+
+        // For each checkbox
+        checkboxes.forEach(function(checkbox) {
+            // If the checkbox is checked
+            if (checkbox.checked) {
+                // Get the corresponding wallet input field
+                var walletInputDiv = document.getElementById('wallet-input-' + checkbox.id);
+                var walletInput = walletInputDiv.querySelector('input');
+
+                // Add the checkbox value and wallet address to the object
+                wallets[checkbox.value] = walletInput.value;
+            }
+        });
+
+        // Set the value of the hidden input field to the JSON string
+        document.getElementById('wallets').value = JSON.stringify(wallets);
+
+        // Submit the form
+        e.currentTarget.submit();
+    });
+
+
+</script>
+
+
 <!--===== WELCOME ENDS =======-->
 
 

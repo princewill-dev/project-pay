@@ -46,41 +46,37 @@
                     {% endfor %}
                 {% endif %}
 
-                {% if payment_links %}
-                        
-                    {% for link in payment_links %}
-                        <div class="login-boxarea heading6">
-                            <div>
-                                <p>Payment ID: {{ link.link_id }}</p>
+                {% for link in payment_links %}
+                    <div class="login-boxarea heading6">
+                        <div>
+                            <p>Payment ID: {{ link.link_id }}</p>
+                            <div class="space16"></div>
+                            <p>Store Name: {{ link.tag_name }}</p>
+                            <div class="space16"></div>
+                            {% for wallet in link.wallet_set.all %}
+                                <p>Crypto: {{ wallet.crypto }}</p>
+                                <p>Address: {{ wallet.address }}</p>
                                 <div class="space16"></div>
-                                <p>Store Name: {{ link.tag_name }}</p>
-                                <div class="space16"></div>
-                                {% for wallet, address in link.wallet.items %}
-                                    <p>Crypto: {{ wallet }}</p>
-                                    <p>Address: {{ address }}</p>
-                                    <div class="space16"></div>
-                                {% endfor %}
-                                <div class="space16"></div>
-                                <div class="space16"></div>
+                            {% endfor %}
+                            <div class="space16"></div>
+                            <div class="space16"></div>
 
-                                <!-- <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share</a> -->
+                            <!-- <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share</a> -->
 
-                                <a href="{% url 'edit_payment_link_wallet' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
+                            <a href="{% url 'edit_payment_link_wallet' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
 
-                                <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">Delete</a>
+                            <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">Delete</a>
 
-                            </div>
                         </div>
-                        <div class="space16"></div>
-                    {% endfor %}
-                    
-                {% else %}
+                    </div>
+                    <div class="space16"></div>
+                {% empty %}
                     <div class="text-center">
                         <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
                         <!-- <br>
                         <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
                     </div>
-                {% endif %}
+                {% endfor %}
 
                 
             </div>

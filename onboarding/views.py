@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User, PaymentLink, Payment, Invoice
+from .models import User, PaymentLink, Payment, Invoice, Wallet
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -256,45 +256,91 @@ def create_payment_link_view(request):
 #     return redirect('show_all_payment_links')
 
 
+# @login_required
+# def save_payment_link_view(request):    
+#     if request.method == 'POST':
+#         tag_name = request.POST.get('tag_name')
+#         link_id = generate_random_string()
+#         wallets_json = request.POST.get('wallets')
+
+#         # Check if wallets_json is not empty
+#         if wallets_json:
+#             # Decode the JSON string to get the object
+#             wallets = json.loads(wallets_json)
+
+#             print(f'wallets_json: {wallets_json}')
+
+#             # Generate a QR code for each wallet
+#             qr_codes = {}
+#             for crypto, wallet in wallets.items():
+#                 qr_code_image = generate_qr_code(wallet)
+#                 filename = f'{wallet}.png'
+#                 path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+#                 qr_codes[crypto] = path
+
+#             payment_link = PaymentLink.objects.create(
+#                 user=request.user,
+#                 link_id=link_id,
+#                 wallet=wallets,
+#                 crypto=",".join(wallets.keys()),
+#                 tag_name=tag_name,
+#                 qr_code_image=json.dumps(qr_codes),
+#             )
+#             payment_link.save()
+
+#             messages.success(request, 'Your payment link has been created.')
+#         else:
+#             messages.error(request, 'No wallets provided.')
+
+#         return redirect('show_all_payment_links')
+
+#     return redirect('create_payment_link_form')
+
+
 @login_required
 def save_payment_link_view(request):    
     if request.method == 'POST':
         tag_name = request.POST.get('tag_name')
         link_id = generate_random_string()
-        wallets_json = request.POST.get('wallets')
 
-        # Check if wallets_json is not empty
-        if wallets_json:
-            # Decode the JSON string to get the object
-            wallets = json.loads(wallets_json)
+        # Create a PaymentLink instance
+        payment_link = PaymentLink.objects.create(
+            user=request.user,
+            link_id=link_id,
+            tag_name=tag_name,
+        )
 
-            print(f'wallets_json: {wallets_json}')
-
-            # Generate a QR code for each wallet
-            qr_codes = {}
-            for crypto, wallet in wallets.items():
-                qr_code_image = generate_qr_code(wallet)
-                filename = f'{wallet}.png'
+        # Create Wallet instances for each selected cryptocurrency
+        for crypto in ['trx', 'trc20']:
+            crypto_tag = request.POST.get(f'{crypto}_tag')
+            if crypto_tag:
+                wallet_address = request.POST.get(f'{crypto}_wallet')
+                qr_code_image = generate_qr_code(wallet_address)
+                filename = f'{wallet_address}.png'
                 path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-                qr_codes[crypto] = path
 
-            payment_link = PaymentLink.objects.create(
-                user=request.user,
-                link_id=link_id,
-                wallet=wallets,
-                crypto=",".join(wallets.keys()),
-                tag_name=tag_name,
-                qr_code_image=json.dumps(qr_codes),
-            )
-            payment_link.save()
+                Wallet.objects.create(
+                    user=request.user,
+                    payment_link=payment_link,
+                    crypto=crypto_tag,
+                    address=wallet_address,
+                    qr_code_image=path,
+                )
 
-            messages.success(request, 'Your payment link has been created.')
-        else:
-            messages.error(request, 'No wallets provided.')
-
+        messages.success(request, 'Your payment link has been created.')
         return redirect('show_all_payment_links')
 
     return redirect('create_payment_link_form')
+
+
+# Get all the payment links created by the current user
+@login_required
+def show_all_payment_links_view(request):
+    payment_links = PaymentLink.objects.filter(user=request.user)
+    context = {
+        'payment_links': payment_links
+    }
+    return render(request, 'home/payment_links.html', context)
 
 
 @login_required
@@ -328,16 +374,6 @@ def show_payment_link_view(request, link_id):
         'instance': instance,
     }
     return render(request, 'home/show_payment_link.html', context)
-
-
-# Get all the payment links created by the current user
-@login_required
-def show_all_payment_links_view(request):
-    payment_links = PaymentLink.objects.filter(user=request.user)
-    context = {
-        'payment_links': payment_links
-    }
-    return render(request, 'home/payment_links.html', context)
 
 
 @login_required
@@ -386,6 +422,7 @@ def generate_transaction_view(request, link_id):
 
 
 def get_transaction_view(request, tx_id):
+
     # Get the Payment object with the given transaction ID
     invoice_tx = get_object_or_404(Payment, transaction_id=tx_id)
 
@@ -406,17 +443,13 @@ def get_transaction_view(request, tx_id):
         'wallet': invoice_tx.payment_link.wallet,
         'crypto': invoice_tx.payment_link.crypto,
         'qr_code_image': invoice_tx.payment_link.qr_code_image.url if invoice_tx.payment_link.qr_code_image else '',
-        
-        # Add other user info here...
     }
 
-    # Combine the user info and transaction details into one context
     context = {
         'user_info': user_info,
         'transaction_details': transaction_details,
     }
 
-    # Render the context to a template
     return render(request, 'home/get_transaction.html', context)
   
 

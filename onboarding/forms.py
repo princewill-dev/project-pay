@@ -37,10 +37,24 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ('email', 'password1', 'password2')
 
 
+# class PaymentLinkForm(forms.ModelForm):
+#     class Meta:
+#         model = PaymentLink
+#         fields = ['wallet']
+
+#     def __init__(self, *args, **kwargs):
+#         super(PaymentLinkForm, self).__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             field.widget.attrs['class'] = 'form-control'
+
+
 class PaymentLinkForm(forms.ModelForm):
+    trx = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    trc20 = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = PaymentLink
-        fields = ['wallet']
+        fields = ['trx', 'trc20']
 
     def __init__(self, *args, **kwargs):
         super(PaymentLinkForm, self).__init__(*args, **kwargs)

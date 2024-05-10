@@ -79,16 +79,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
-    qr_code_image = models.FileField(upload_to='qr_codes', blank=True, null=True)
-    # wallet = models.CharField(max_length=200, null=True, blank=True)
-    wallet = JSONField(blank=True, null=True, max_length=500)
-    crypto = models.CharField(max_length=200, null=True, blank=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.link_id
+    
+
+class Wallet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_link = models.ForeignKey(PaymentLink, on_delete=models.CASCADE)
+    crypto = models.CharField(max_length=200, null=True, blank=True)
+    address = models.CharField(max_length=200)
+    qr_code_image = models.FileField(upload_to='qr_codes', blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"Wallet for {self.user.email}"
     
 
 class Payment(models.Model):

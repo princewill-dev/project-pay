@@ -10,7 +10,7 @@
 <div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 m-auto">
+            <div class="col-lg-4 m-auto">
                 <div class="about-welcome-header text-center heading3">
                     <span class="text-white">{{transaction_details.tag_name}}</span>
                 </div>
@@ -26,24 +26,27 @@
                         </p>
                     </div>
 
-                    <div class="space16"></div>
+                    <hr>
 
-                    <p class="text-center" id="amount">Please pay to the merchant's wallet addresses below</p>
+                    <!-- <p class="text-center" id="amount">Please pay to the merchant's wallet addresses below</p> -->
+
+                    <p class="text-center">Amount: ${{transaction_details.amount}}</p>
+
+                    <div class="space16"></div>
                     
                     <center>
-                        <img id="wallet_qrcode_image" src="{{ transaction_details.qr_code }}" alt="QR Code" width="135px">
+                        <img id="wallet_qrcode_image" src="{{ transaction_details.qr_code }}" alt="QR Code" width="150px" style="border-radius: 5px; border: 2px solid #000;">
                         <img id="success_image" src="/static/onboarding/assets/images/icons/success_icon.png" width="150px" alt="success" style="display: none;">
                     </center>
 
+                    <div class="space16"></div>
                     
-
                     <p class="text-center" id="success_message" style="font-size: 16px; display: none;">Yayy! Payment confirmed</p>
 
-                    <p class="text-center" id="network">Network: {{transaction_details.crypto_network}}</p>
-
-                    <p class="text-center" id="network">Amount: {{transaction_details.amount}} {{transaction_details.crypto_network}}</p>
-
-                    
+                    <p class="text-center" id="network">
+                        Crypto: {{transaction_details.crypto_network}} 
+                        <a href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change crypto?</a>
+                    </p>                 
 
                     <p class="text-center" id="wallet" style="font-size: 12px;">{{transaction_details.wallet}}</p>
 
@@ -62,6 +65,12 @@
                     <hr>
                     <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
 
+                </div>
+
+                <div class="space16"></div>
+
+                <div class="text-center">
+                    <a href="#" style="font-size: 12px; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">cancel transaction</a>
                 </div>
 
                 <script>

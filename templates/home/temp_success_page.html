@@ -10,20 +10,30 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
-                <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'homepage' %}"><b>bitwade.com</b></a>
-                    <div class="space16"></div>
-                    <a href="{% url 'homepage' %}">Home <i class="fa-solid fa-angle-right"></i> <span>Success</span></a>
-                </div>
+                
                 <div class="space50"></div>
                 <div class="login-boxarea heading6">
+
+                    <div class="space16"></div>
                     <div class="icons">
                         <img src="/static/onboarding/assets/images/icons/success_icon.png" alt="">
                     </div>
+
                     <div class="space32"></div>
-                    <h2 class="text-center">Your Payment Was Successful!</h2>
+                    <h2 class="text-center"> Invoice Paid! </h2>
                     <div class="space16"></div>                
                     
+                    <p class="text-center">Merchant: {{ transaction_details.tag_name }}</p>
+
+                    <p class="text-center">Amount: {{ transaction_details.amount }}</p>
+
+                    <p class="text-center">TxID: {{ transaction_details.transaction_id }}</p>
+
+                    <p class="text-center" id="success_message" style="font-size: 16px;"> <a href="{{ transaction_details.hash }}" target="_blank">view on blockchain</a></p>
+
+                    <hr>
+                    <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
+
                 </div>
             </div>
         </div>

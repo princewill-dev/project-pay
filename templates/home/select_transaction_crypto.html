@@ -1,0 +1,61 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<!--===== WELCOME STARTS =======-->
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <span class="text-white">Complete your purchase on <br> {{transaction_details.tag_name}}</span>
+                    
+                </div>
+                <br>
+                <div class="login-boxarea heading6">
+
+                    <div class="text-center">
+
+                        <p class="text-center" id="amount">Amount to pay: ${{transaction_details.amount}}</p>
+
+                        <div class="space16"></div>
+                        
+                        <form action="{% url 'save_crypto_selection' transaction_details.transaction_id %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-area">
+                                <p style="font-size: 12px;">Select your preferred crypto:</p>
+                                <select name="selected_crypto" id="" class="form-control">
+                                    {% for crypto in available_cryptos %}
+                                        <option value="{{ crypto }}">{{ crypto }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="space16"></div>
+                            <div class="space16"></div>
+
+                            <div class="input-area">
+                                <button type="submit" class="header-btn2">make payment</button>
+                            </div>
+    
+                        </form>
+                    </div>
+
+                    <div class="space50"></div>
+                    <hr>
+                    <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 urlpatterns = [
 
@@ -38,16 +39,24 @@ urlpatterns = [
 
     path('paylink/<str:link_id>', views.show_payment_link_view, name='show_payment_link'),
 
-    path('receive/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
+    path('generate/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
-    path('invoice/<str:tx_id>', views.get_transaction_view, name='get_transaction'),
+    path('invoice/<str:tx_id>', views.select_transaction_crypto_view, name='select_transaction_crypto'),
 
-    path('find_invoice/<str:tx_id>', views.get_transaction_details, name='get_transaction_details'),
+    path('invoice/<str:tx_id>', require_http_methods(['POST'])(views.save_invoice_view), name='save_invoice'),
+
+    path('crypto_selection/<str:tx_id>', views.save_crypto_selection_view, name='save_crypto_selection'),
+
+    path('blockchain_api/<str:tx_id>', views.blockchain_api_view, name='blockchain_api'),
 
     path('create_invoice/', login_required(views.create_invoice_view), name='create_invoice'),
 
     path('save_invoice/', login_required(views.save_invoice_view), name='save_invoice'),
 
     path('invoices/', login_required(views.show_all_invoices_view), name='show_all_invoices'),
+
+    path('pay/<str:tx_id>', views.make_payment_view, name='make_payment_page'),
+
+
 
 ]

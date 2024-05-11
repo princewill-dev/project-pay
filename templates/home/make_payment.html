@@ -12,39 +12,54 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <span class="text-white">Complete your purchase on <br> {{user_info.tag_name}}</span>
+                    <span class="text-white">{{transaction_details.tag_name}}</span>
                 </div>
+
+                <br>
 
                 <div class="login-boxarea heading6">
 
-                    <p class="text-center" id="amount">Amount: {{transaction_details.amount}} {{user_info.crypto}}</p>
+                    <div class="text-center">
+                        <p class="text-center">
+                            checking for transaction
+                            <img id="pending_image" src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="20px">
+                        </p>
+                    </div>
 
+                    <div class="space16"></div>
+
+                    <p class="text-center" id="amount">Please pay to the merchant's wallet addresses below</p>
+                    
                     <center>
-                        <img id="wallet_qrcode_image" src="{{ user_info.qr_code_image }}" alt="QR Code">
+                        <img id="wallet_qrcode_image" src="{{ transaction_details.qr_code }}" alt="QR Code" width="135px">
                         <img id="success_image" src="/static/onboarding/assets/images/icons/success_icon.png" width="150px" alt="success" style="display: none;">
                     </center>
 
+                    
+
                     <p class="text-center" id="success_message" style="font-size: 16px; display: none;">Yayy! Payment confirmed</p>
 
-                    <p class="text-center" id="network">Network: {{user_info.crypto}}</p>
+                    <p class="text-center" id="network">Network: {{transaction_details.crypto_network}}</p>
 
-                    <p class="text-center" id="wallet" style="font-size: 12px;">{{user_info.wallet}}</p>
+                    <p class="text-center" id="network">Amount: {{transaction_details.amount}} {{transaction_details.crypto_network}}</p>
+
+                    
+
+                    <p class="text-center" id="wallet" style="font-size: 12px;">{{transaction_details.wallet}}</p>
 
                     <p class="text-center" id="transaction_amount" style="font-size: 12px; display: none;"></p>
 
-                    <!-- <p class="text-center" id="transaction_hash" style="font-size: 12px; display: none;"></p> -->
-
-                    <!-- <a href="https://tronscan.org/#/transaction/"></a> -->
+                    <p class="text-center" id="transaction_hash" style="font-size: 12px; display: none;"></p>
 
                     <p class="text-center" id="transaction_confirmed" style="font-size: 12px; display: none;"></p>
 
-                    <div class="text-center">
-                        <img id="pending_image" src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="30px">
-                    </div>
+                    <div class="space16"></div>
+
+                    
 
                     <!-- <p class="text-center" id="redirect_to_store" style="font-size: 12px; display: none;">redirecting to store <span id="redirect_counter"></span></p> -->
 
-                    <br>
+                    <hr>
                     <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
 
                 </div>
@@ -53,7 +68,7 @@
                     const QrCodeImage = document.getElementById('wallet_qrcode_image');
                     const successImage = document.getElementById('success_image');
                     const transactionAmount = document.getElementById('transaction_amount');
-                    // const transactionHash = document.getElementById('transaction_hash');
+                    const transactionHash = document.getElementById('transaction_hash');
                     const transactionConfirmed = document.getElementById('transaction_confirmed');
                     const loadingImage = document.getElementById('pending_image');
 
@@ -67,7 +82,7 @@
                     // const redirectCounterElement = document.getElementById('redirect_counter');
                 
                     function getTransactionDetails() {
-                        fetch('/find_invoice/{{transaction_details.transaction_id}}')
+                        fetch('/blockchain_api/{{transaction_details.transaction_id}}')
                             .then(response => response.json())
                             .then(data => {
                                 if (data.status === 'successful') {
@@ -90,9 +105,11 @@
                                     // setTimeout(() => {
                                     //     window.location.href = '{{transaction_details.success_url}}';
                                     // }, 5000);
+
+
                                 } else {
                                     // If transaction is not successful, re-render the page
-                                    location.reload();
+                                    // location.reload();
                                 }
 
                                 // Call the function again after a delay of 5 seconds

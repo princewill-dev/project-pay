@@ -1,0 +1,38 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<!--===== WELCOME STARTS =======-->
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                
+                <div class="space50"></div>
+                <div class="login-boxarea heading6">
+
+                    <div class="space16"></div>
+                    <div class="icons">
+                        <img src="/static/onboarding/assets/images/icons/error-icon.png" alt="">
+                    </div>
+
+                    <div class="space32"></div>
+                    <h2 class="text-center"> Invoice not valid! </h2>
+                    <div class="space16"></div>                
+                    
+                    <p class="text-center">Sorry, the invoice you are looking for is invalid or does not exist</p>
+
+                    <hr>
+                    <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bitwade.com" target="_blank">bitwade.com</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+{% endblock %}

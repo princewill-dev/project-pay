@@ -451,11 +451,42 @@ def get_wallet_info(payment_link, crypto):
 
 def select_transaction_crypto_view(request, tx_id):
 
-    # Get the Payment object with the given transaction ID
-    invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
+    try:
+        # Get the Payment object with the given transaction ID
+        invoice_id = Payment.objects.get(transaction_id=tx_id)
 
-    if invoice_id.status == 'successful':
+        if invoice_id.status == 'successful':
 
+            transaction_details = {
+                'transaction_id': invoice_id.transaction_id,
+                'payment_link': invoice_id.payment_link.link_id,
+                'amount': invoice_id.amount,
+                'success_url': invoice_id.success_url,
+                'created_at': invoice_id.created_at,
+                'is_paid': invoice_id.is_paid,
+                'status': invoice_id.status,
+                'tag_name': invoice_id.payment_link.tag_name,
+                'hash': invoice_id.transaction_hash,
+            }
+
+            context = {
+                'transaction_details' : transaction_details,
+            }
+
+            return render(request, 'home/temp_success_page.html', context)
+
+        # Get the PaymentLink associated with the transaction
+        payment_link = invoice_id.payment_link
+
+        # Get the crypto and address connected to the transaction
+        crypto_networks = Wallet.objects.filter(payment_link=payment_link)
+        if crypto_networks.exists():
+            available_cryptos = list(crypto_networks.values_list('crypto', flat=True))
+        else:
+            # Handle the case when the wallet does not exist
+            available_cryptos = "Unknown"
+
+        # Get the transaction details
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,
             'payment_link': invoice_id.payment_link.link_id,
@@ -465,51 +496,62 @@ def select_transaction_crypto_view(request, tx_id):
             'is_paid': invoice_id.is_paid,
             'status': invoice_id.status,
             'tag_name': invoice_id.payment_link.tag_name,
-            'hash': invoice_id.transaction_hash,
         }
 
         context = {
-            'transaction_details' : transaction_details,
+            'transaction_details': transaction_details,
+            'available_cryptos': available_cryptos,
         }
 
-        return render(request, 'home/temp_success_page.html', context)
+        return render(request, 'home/select_transaction_crypto.html', context)
+    
+    except Payment.DoesNotExist:
+        # Render the error page if the Payment object does not exist
+        # messages.error(request, 'Transaction not found.')
+        return render(request, 'home/invalid_payment.html')
 
-    # Get the PaymentLink associated with the transaction
-    payment_link = invoice_id.payment_link
-
-    # Get the crypto and address connected to the transaction
-    crypto_networks = Wallet.objects.filter(payment_link=payment_link)
-    if crypto_networks.exists():
-        available_cryptos = list(crypto_networks.values_list('crypto', flat=True))
-    else:
-        # Handle the case when the wallet does not exist
-        available_cryptos = "Unknown"
-
-    # Get the transaction details
-    transaction_details = {
-        'transaction_id': invoice_id.transaction_id,
-        'payment_link': invoice_id.payment_link.link_id,
-        'amount': invoice_id.amount,
-        'success_url': invoice_id.success_url,
-        'created_at': invoice_id.created_at,
-        'is_paid': invoice_id.is_paid,
-        'status': invoice_id.status,
-        'tag_name': invoice_id.payment_link.tag_name,
-    }
-
-    context = {
-        'transaction_details': transaction_details,
-        'available_cryptos': available_cryptos,
-    }
-
-    return render(request, 'home/select_transaction_crypto.html', context)
+    
 
 
 def make_payment_view(request, tx_id):
 
-    invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
+    try:
 
-    if invoice_id.status == 'successful':
+        invoice_id = Payment.objects.get(transaction_id=tx_id)
+
+        if invoice_id.status == 'successful':
+
+            transaction_details = {
+                'transaction_id': invoice_id.transaction_id,
+                'payment_link': invoice_id.payment_link.link_id,
+                'amount': invoice_id.amount,
+                'success_url': invoice_id.success_url,
+                'created_at': invoice_id.created_at,
+                'is_paid': invoice_id.is_paid,
+                'status': invoice_id.status,
+                'tag_name': invoice_id.payment_link.tag_name,
+                'hash': invoice_id.transaction_hash,
+            }
+
+            context = {
+                'transaction_details' : transaction_details,
+            }
+
+            return render(request, 'home/temp_success_page.html', context)
+
+        selected_crypto = invoice_id.crypto_network
+
+        targeted_address = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().address
+
+        qr_code_image = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().qr_code_image.url
+
+        if selected_crypto == 'trx':
+            api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
+        elif selected_crypto == 'trc20':
+            api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/trc20_transactions/'
+        else:
+            messages.error(request, 'Unsupported cryptocurrency selected.')
+            return redirect('select_transaction_crypto')
 
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,
@@ -520,53 +562,27 @@ def make_payment_view(request, tx_id):
             'is_paid': invoice_id.is_paid,
             'status': invoice_id.status,
             'tag_name': invoice_id.payment_link.tag_name,
-            'hash': invoice_id.transaction_hash,
+            'api_url': api_url,
+            'wallet': targeted_address,
+            'crypto_network': selected_crypto,
+            'qr_code': qr_code_image,
         }
 
         context = {
-            'transaction_details' : transaction_details,
+            'transaction_details': transaction_details,
         }
-
-        return render(request, 'home/temp_success_page.html', context)
-
-    selected_crypto = invoice_id.crypto_network
-
-    targeted_address = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().address
-
-    qr_code_image = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().qr_code_image.url
-
-    if selected_crypto == 'trx':
-        api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
-    elif selected_crypto == 'trc20':
-        api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/trc20_transactions/'
-    else:
-        messages.error(request, 'Unsupported cryptocurrency selected.')
-        return redirect('select_transaction_crypto')
-
-    transaction_details = {
-        'transaction_id': invoice_id.transaction_id,
-        'payment_link': invoice_id.payment_link.link_id,
-        'amount': invoice_id.amount,
-        'success_url': invoice_id.success_url,
-        'created_at': invoice_id.created_at,
-        'is_paid': invoice_id.is_paid,
-        'status': invoice_id.status,
-        'tag_name': invoice_id.payment_link.tag_name,
-        'api_url': api_url,
-        'wallet': targeted_address,
-        'crypto_network': selected_crypto,
-        'qr_code': qr_code_image,
-    }
-
-    context = {
-        'transaction_details': transaction_details,
-    }
-    return render(request, 'home/make_payment.html', context)
+        return render(request, 'home/make_payment.html', context)
+    
+    except Payment.DoesNotExist:
+        # Render the error page if the Payment object does not exist
+        # messages.error(request, 'Transaction not found.')
+        return render(request, 'home/invalid_payment.html')
   
 
 def blockchain_api_view(request, tx_id):
+
     try:
-        invoice_tx = get_object_or_404(Payment, transaction_id=tx_id)
+        invoice_tx = Payment.objects.get(transaction_id=tx_id)
 
         tx_amount = invoice_tx.amount
 

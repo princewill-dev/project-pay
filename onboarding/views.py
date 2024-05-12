@@ -420,22 +420,6 @@ def generate_transaction_view(request, link_id):
     else:
         return HttpResponse(status=405)
     
-def save_crypto_selection_view(request, tx_id):
-    invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
-
-    if request.method == 'POST':
-
-        selected_crypto = request.POST.get('selected_crypto')
-
-        # Update the database where this transaction exists
-        invoice_id.crypto_network = selected_crypto
-        invoice_id.save()
-
-        return redirect('make_payment_page', tx_id=invoice_id.transaction_id)
-
-    # Handle GET requests
-    return redirect('select_transaction_crypto', tx_id=invoice_id.transaction_id)
-
 
 def get_wallet_info(payment_link, crypto):
     wallets = payment_link.wallet_set.filter(crypto=crypto)
@@ -447,6 +431,40 @@ def get_wallet_info(payment_link, crypto):
             'qr_code_image': wallet.qr_code_image.url if wallet.qr_code_image else '',
         })
     return wallet_info
+
+
+    
+def save_crypto_selection_view(request, tx_id):
+
+    invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
+
+    if request.method == 'POST':
+
+        
+        selected_crypto = request.POST.get('selected_crypto')
+
+        wallet = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first()
+
+        targeted_address = wallet.address
+
+        if selected_crypto == 'trx':
+
+            api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
+
+        elif selected_crypto == 'trc20':
+
+            api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/trc20_transactions/'
+
+        # Update the database where this transaction exists
+        invoice_id.crypto_network = selected_crypto
+        invoice_id.wallet_address = wallet.address
+        invoice_id.api_url = api_link
+        invoice_id.save()
+
+        return redirect('make_payment_page', tx_id=invoice_id.transaction_id)
+
+    # Handle GET requests
+    return redirect('select_transaction_crypto', tx_id=invoice_id.transaction_id)
 
 
 def select_transaction_crypto_view(request, tx_id):
@@ -512,46 +530,21 @@ def select_transaction_crypto_view(request, tx_id):
 
     
 
-
 def make_payment_view(request, tx_id):
 
     try:
 
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
-        if invoice_id.status == 'successful':
-
-            transaction_details = {
-                'transaction_id': invoice_id.transaction_id,
-                'payment_link': invoice_id.payment_link.link_id,
-                'amount': invoice_id.amount,
-                'success_url': invoice_id.success_url,
-                'created_at': invoice_id.created_at,
-                'is_paid': invoice_id.is_paid,
-                'status': invoice_id.status,
-                'tag_name': invoice_id.payment_link.tag_name,
-                'hash': invoice_id.transaction_hash,
-            }
-
-            context = {
-                'transaction_details' : transaction_details,
-            }
-
-            return render(request, 'home/temp_success_page.html', context)
-
         selected_crypto = invoice_id.crypto_network
 
-        targeted_address = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().address
+        print(selected_crypto)
 
-        qr_code_image = invoice_id.payment_link.wallet_set.filter(crypto=selected_crypto).first().qr_code_image.url
+        targeted_address = invoice_id.wallet_address
 
-        if selected_crypto == 'trx':
-            api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
-        elif selected_crypto == 'trc20':
-            api_url = f'https://api.trongrid.io/v1/accounts/{targeted_address}/trc20_transactions/'
-        else:
-            messages.error(request, 'Unsupported cryptocurrency selected.')
-            return redirect('select_transaction_crypto')
+        find_qrcode_image = Wallet.objects.filter(address=targeted_address).first()
+
+        qr_code = find_qrcode_image.qr_code_image
 
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,
@@ -562,10 +555,9 @@ def make_payment_view(request, tx_id):
             'is_paid': invoice_id.is_paid,
             'status': invoice_id.status,
             'tag_name': invoice_id.payment_link.tag_name,
-            'api_url': api_url,
             'wallet': targeted_address,
             'crypto_network': selected_crypto,
-            'qr_code': qr_code_image,
+            'qr_code': qr_code,
         }
 
         context = {
@@ -582,24 +574,33 @@ def make_payment_view(request, tx_id):
 def blockchain_api_view(request, tx_id):
 
     try:
-        invoice_tx = Payment.objects.get(transaction_id=tx_id)
 
+        invoice_tx = Payment.objects.get(transaction_id=tx_id)
+        
         tx_amount = invoice_tx.amount
 
         target_amount = tx_amount * 1000000
 
-        selected_crypto = invoice_tx.crypto_network
-
-        target_wallet = invoice_tx.payment_link.wallet_set.filter(crypto=selected_crypto).first().address
-
-        api_url = f'https://api.trongrid.io/v1/accounts/{target_wallet}/transactions/'
+        api_url = invoice_tx.api_url        
 
         max_attempts = 5
         attempts = 0
 
         while attempts < max_attempts:
             try:
-                response = requests.get(api_url)
+
+                import os
+                import environ
+                env = environ.Env()
+                environ.Env.read_env()
+
+                authorization = os.environ.get('AUTHORIZATION')
+
+                headers = {
+                    'Authorization': authorization,
+                }
+
+                response = requests.get(api_url, headers=headers)
                 response.raise_for_status()
 
                 data = response.json()
@@ -629,7 +630,6 @@ def blockchain_api_view(request, tx_id):
                                         base_url = "https://tronscan.io/#/transaction/"
                                         invoice_tx.status = 'successful'
                                         invoice_tx.is_paid = True
-                                        invoice_tx.crypto_network = 'TRON'
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                         invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
                                         invoice_tx.business_name = invoice_tx.payment_link.tag_name

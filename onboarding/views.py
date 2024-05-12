@@ -594,24 +594,15 @@ def blockchain_api_view(request, tx_id):
                 env = environ.Env()
                 environ.Env.read_env()
 
-                authorization = os.environ.get('AUTHORIZATION')
-
                 url = api_url
 
                 headers = {
-                    'TRON-PRO-API-KEY': authorization,
-                }
-
-                headers = {
                     'Content-Type': "application/json",
-                    'TRON-PRO-API-KEY': authorization
-                    }
+                    'TRON-PRO-API-KEY': os.environ.get('AUTHORIZATION')
+                }
                 
-                # response = requests.request("POST", url, headers=headers)
-
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
-
                 data = response.json()
 
                 for transaction in data['data']:

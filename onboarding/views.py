@@ -596,11 +596,20 @@ def blockchain_api_view(request, tx_id):
 
                 authorization = os.environ.get('AUTHORIZATION')
 
+                url = api_url
+
                 headers = {
-                    'Authorization': authorization,
+                    'TRON-PRO-API-KEY': authorization,
                 }
 
-                response = requests.get(api_url, headers=headers)
+                headers = {
+                    'Content-Type': "application/json",
+                    'TRON-PRO-API-KEY': authorization
+                    }
+                
+                # response = requests.request("POST", url, headers=headers)
+
+                response = requests.get(url, headers=headers)
                 response.raise_for_status()
 
                 data = response.json()

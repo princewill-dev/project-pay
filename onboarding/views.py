@@ -31,6 +31,7 @@ from django.http import JsonResponse
 from django.conf import settings
 import time
 from .forms import PaymentLinkForm
+from decimal import Decimal, ROUND_DOWN
 
 
 
@@ -460,6 +461,12 @@ def get_wallet_info(payment_link, crypto):
     return wallet_info
 
 
+def convert_usd_to_trx(amount_in_usd):
+    response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd')
+    data = response.json()
+    trx_per_usd = Decimal(1) / Decimal(data['tron']['usd']).quantize(Decimal('0.000001'), rounding=ROUND_DOWN)
+    return (amount_in_usd * trx_per_usd).quantize(Decimal('0.000001'), rounding=ROUND_DOWN)
+
     
 def save_crypto_selection_view(request, tx_id):
 
@@ -477,7 +484,11 @@ def save_crypto_selection_view(request, tx_id):
 
             api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
 
-            targeted_amount = invoice_id.amount * 1000000
+            amount_in_usd = invoice_id.amount
+
+            amount_in_trx = convert_usd_to_trx(amount_in_usd)
+
+            # print(amount_in_trx)
 
         elif selected_crypto == 'trc20':
 
@@ -486,6 +497,7 @@ def save_crypto_selection_view(request, tx_id):
         # Update the database where this transaction exists
         invoice_id.crypto_network = selected_crypto
         invoice_id.wallet_address = wallet.address
+        invoice_id.converted_amount = amount_in_trx
         invoice_id.api_url = api_link
         invoice_id.save()
 
@@ -578,6 +590,7 @@ def make_payment_view(request, tx_id):
             'transaction_id': invoice_id.transaction_id,
             'payment_link': invoice_id.payment_link.link_id,
             'amount': invoice_id.amount,
+            'converted_amount': invoice_id.converted_amount,
             'success_url': invoice_id.success_url,
             'created_at': invoice_id.created_at,
             'is_paid': invoice_id.is_paid,
@@ -605,7 +618,7 @@ def blockchain_api_view(request, tx_id):
 
         invoice_tx = Payment.objects.get(transaction_id=tx_id)
         
-        tx_amount = invoice_tx.amount
+        tx_amount = invoice_tx.converted_amount
 
         target_amount = tx_amount * 1000000
 

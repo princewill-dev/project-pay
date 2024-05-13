@@ -21,35 +21,39 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create store link</span></a>
+                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create Payment link</span></a>
                 </div>
                 <div class="space50"></div>
-                <form id="payment-form" action="{% url 'save_payment_link' %}" method="post">
-
+                <form id="payment-form" action="{% url 'save_selected_coins' %}" method="post">
                     {% csrf_token %}
-
                     <div class="login-boxarea heading6">
 
-                        <p style="font-size: 12px;">What name so you want your store to be called:</p>
-                        <div class="input-area">
-                            <input type="text" name="tag_name" placeholder="store name">
+                        <div class="space16"></div>
+                        <p style="font-size: 12px;">Select the coins you which to accept:</p>
+                        <div class="form-control">
+
+                            <input type="checkbox" id="trx" name="trx_tag" value="trx" class="crypto-checkbox">
+
+                            <label for="trx">Tron (TRX)</label>
+                            <div id="wallet-input-trx" style="display: none;">
+                                <input type="text" name="trx_wallet" placeholder="enter wallet address" style="width: 100%;">
+                            </div>
                         </div>
 
                         <div class="space16"></div>
-                        <p style="font-size: 12px;">Enter your website url ( e.g: expample.com ):</p>
-                        <div class="input-area">
-                            <input type="text" name="link_url" placeholder="website link">
-                        </div>
+                        <div class="form-control">
 
-                        <div class="space16"></div>
-                        <p style="font-size: 12px;">What type of service do you offer:</p>
-                        <div class="input-area">
-                            <textarea style="padding: 5px;" type="text" name="store_description" cols="50"></textarea>
+                            <input type="checkbox" id="trc20" name="trc20_tag" value="trc20" class="crypto-checkbox">
+
+                            <label for="trc20">USDT (TRC20)</label>
+                            <div id="wallet-input-trc20" style="display: none;">
+                                <input type="text" name="trc20_wallet" placeholder="enter wallet address" style="width: 100%;">
+                            </div>
                         </div>
                         
                         <div class="space16"></div>
                         <div class="input-area">
-                            <button type="submit" class="header-btn2"> next >> </button>
+                            <button type="submit" class="header-btn2">Create</button>
                         </div>
 
                     </div>

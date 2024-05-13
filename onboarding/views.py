@@ -227,80 +227,23 @@ def generate_qr_code(text):
     buffer.seek(0)
     return buffer
 
-
+@login_required
 def create_payment_link_view(request):
     return render(request, 'home/create_payment_link.html')
 
 
-# @login_required
-# def save_payment_link_view(request):    
-#     if request.method == 'POST':
-#         crypto = request.POST.get('crypto')
-#         tag_name = request.POST.get('tag_name')
-#         link_id = generate_random_string()
-#         wallet = request.POST.get('wallet')
-#         qr_code_image = generate_qr_code(wallet)
-#         filename = f'qr_code_{wallet}.png'
-#         path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-
-#         payment_link = PaymentLink.objects.create(
-#             user=request.user,
-#             link_id=link_id,
-#             wallet=wallet,
-#             crypto=crypto,
-#             tag_name=tag_name,
-#             qr_code_image=path,
-#         )
-#         payment_link.save()
-#     messages.success(request, 'Your payment link has been created.')
-#     return redirect('show_all_payment_links')
-
-
-# @login_required
-# def save_payment_link_view(request):    
-#     if request.method == 'POST':
-#         tag_name = request.POST.get('tag_name')
-#         link_id = generate_random_string()
-#         wallets_json = request.POST.get('wallets')
-
-#         # Check if wallets_json is not empty
-#         if wallets_json:
-#             # Decode the JSON string to get the object
-#             wallets = json.loads(wallets_json)
-
-#             print(f'wallets_json: {wallets_json}')
-
-#             # Generate a QR code for each wallet
-#             qr_codes = {}
-#             for crypto, wallet in wallets.items():
-#                 qr_code_image = generate_qr_code(wallet)
-#                 filename = f'{wallet}.png'
-#                 path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-#                 qr_codes[crypto] = path
-
-#             payment_link = PaymentLink.objects.create(
-#                 user=request.user,
-#                 link_id=link_id,
-#                 wallet=wallets,
-#                 crypto=",".join(wallets.keys()),
-#                 tag_name=tag_name,
-#                 qr_code_image=json.dumps(qr_codes),
-#             )
-#             payment_link.save()
-
-#             messages.success(request, 'Your payment link has been created.')
-#         else:
-#             messages.error(request, 'No wallets provided.')
-
-#         return redirect('show_all_payment_links')
-
-#     return redirect('create_payment_link_form')
+@login_required
+def select_coins_view(request):
+    return render(request, 'home/select_coins.html')
 
 
 @login_required
 def save_payment_link_view(request):    
     if request.method == 'POST':
+
         tag_name = request.POST.get('tag_name')
+        link_url = request.POST.get('link_url')
+        store_description = request.POST.get('store_description')
         link_id = generate_random_string()
 
         # Create a PaymentLink instance
@@ -308,7 +251,28 @@ def save_payment_link_view(request):
             user=request.user,
             link_id=link_id,
             tag_name=tag_name,
+            link_url=link_url,
+            store_description=store_description,
         )
+
+        # Store the link_id in the session
+        request.session['link_id'] = link_id
+
+        # messages.success(request, 'Your payment link has been created.')
+        return redirect('select_coins')
+
+    return redirect('create_payment_link_form')
+
+
+@login_required
+def save_selected_coins_view(request):    
+    if request.method == 'POST':
+
+        # Retrieve the link_id from the session
+        link_id = request.session.get('link_id')
+
+        # Get the PaymentLink instance corresponding to the link_id
+        payment_link = PaymentLink.objects.get(link_id=link_id)
 
         # Create Wallet instances for each selected cryptocurrency
         for crypto in ['trx', 'trc20']:
@@ -327,7 +291,7 @@ def save_payment_link_view(request):
                     qr_code_image=path,
                 )
 
-        messages.success(request, 'Your payment link has been created.')
+        messages.success(request, 'Your store link has been created.')
         return redirect('show_all_payment_links')
 
     return redirect('create_payment_link_form')
@@ -344,17 +308,80 @@ def show_all_payment_links_view(request):
 
 
 @login_required
-def edit_payment_link_wallet_view(request, link_id):
+def edit_payment_link_view(request, link_id):
+
     payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
+
+    # Get the wallets associated with the payment_link
+    wallets = Wallet.objects.filter(payment_link=payment_link)
+
+    context = {
+        'payment_link': payment_link,
+        'wallets': wallets,
+    }
+
+    return render(request, 'home/edit_payment_link.html', context)
+
+
+@login_required
+def update_payment_link_view(request, link_id):
     if request.method == 'POST':
-        form = PaymentLinkForm(request.POST, instance=payment_link)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your payment link has been updated.')
-            return redirect('show_all_payment_links')
-    else:
-        form = PaymentLinkForm(instance=payment_link)
-    return render(request, 'home/edit_payment_link.html', {'form': form, 'tag_name': payment_link.tag_name})
+
+        payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
+
+        # Update the PaymentLink instance
+        payment_link.tag_name = request.POST.get('tag_name')
+        payment_link.link_url = request.POST.get('link_url')
+        payment_link.store_description = request.POST.get('store_description')
+        payment_link.save()
+
+        # Get the Wallet instances associated with the PaymentLink
+        wallets = Wallet.objects.filter(payment_link=payment_link)
+
+        # Update each Wallet instance
+        for wallet in wallets:
+            wallet_address = request.POST.get(f'{wallet.crypto}wallet')
+            if wallet_address:
+                qr_code_image = generate_qr_code(wallet_address)
+                filename = f'{wallet_address}.png'
+                path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+                wallet.qr_code_image = path
+                wallet.address = wallet_address
+                wallet.save()
+
+        messages.success(request, 'Your payment link and wallets have been updated.')
+        return redirect('show_all_payment_links')
+
+    # If the request method is not POST, redirect to the edit page
+    return redirect('edit_payment_link', link_id=link_id)
+
+
+
+@login_required
+def edit_payment_link_wallet_view(request, link_id):
+
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
+
+    if request.method == 'POST':
+
+        tag_name = request.POST.get('tag_name')
+        link_url = request.POST.get('link_url')
+        store_description = request.POST.get('store_description')
+        link_id = generate_random_string()
+
+        # Create a PaymentLink instance
+        payment_link = PaymentLink.objects.create(
+            user=request.user,
+            link_id=link_id,
+            tag_name=tag_name,
+            link_url=link_url,
+            store_description=store_description,
+        )
+
+        messages.success(request, 'Your store information has been updated.')
+        return redirect('select_coins')
+
+    return render(request, 'home/edit_payment_link.html', {'payment_link': payment_link})
 
 
 # shows all Payment made to the user
@@ -594,11 +621,13 @@ def blockchain_api_view(request, tx_id):
                 env = environ.Env()
                 environ.Env.read_env()
 
+                authorization = os.environ.get('TRON_PRO_API_KEY')
+
                 url = api_url
 
                 headers = {
                     'Content-Type': "application/json",
-                    'TRON-PRO-API-KEY': os.environ.get('AUTHORIZATION')
+                    'TRON-PRO-API-KEY': authorization
                 }
                 
                 response = requests.get(url, headers=headers)

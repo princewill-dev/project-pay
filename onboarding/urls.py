@@ -25,9 +25,15 @@ urlpatterns = [
 
     path('create_payment_link/', login_required(views.create_payment_link_view), name='create_payment_link'),
 
+    path('select_coins/', login_required(views.select_coins_view), name='select_coins'),
+
+    path('save_coins/', login_required(views.save_selected_coins_view), name='save_selected_coins'),
+
     path('delete_payment_link/<str:link_id>', login_required(views.delete_payment_link_view), name='delete_payment_link'),
 
-    path('edit_payment_link/<str:link_id>', login_required(views.edit_payment_link_wallet_view), name='edit_payment_link_wallet'),
+    path('edit_payment_link/<str:link_id>', login_required(views.edit_payment_link_view), name='edit_payment_link'),
+
+    path('update_payment_link/<str:link_id>', login_required(views.update_payment_link_view), name='update_payment_link'),
 
     path('save_payment_link/', login_required(views.save_payment_link_view), name='save_payment_link'),
 

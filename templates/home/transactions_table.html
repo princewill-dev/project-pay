@@ -14,18 +14,6 @@
     <div class="space16"></div>
     <div class="container">
 
-        {% if messages %}
-            {% for message in messages %}
-            <div id="notify" class="alert alert-info">{{ message }}</div>
-            <script>
-                const element = document.getElementById('notify');
-                setTimeout(function() {
-                element.style.display = 'none';
-                }, 5000);
-            </script>
-            {% endfor %}
-        {% endif %}
-
         <div class="about-welcome-header text-center heading3">
             <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Transactions</span></a>
             

@@ -19,12 +19,14 @@
     <div class="space16"></div>
     <div class="container">
         <div class="row">
+
+
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Payment links</span></a>
+                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
                     <div class="space16"></div>
                     <div class="welcome-btnarea text-center">
-                        <a href="{% url 'create_payment_link' %}" class="header-btn">Create New link</a>
+                        <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
                       </div>
                 </div>
                 <div class="space50"></div>
@@ -49,21 +51,26 @@
                 {% for link in payment_links %}
                     <div class="login-boxarea heading6">
                         <div>
-                            <p>Payment ID: {{ link.link_id }}</p>
+                            <p>Store ID: {{ link.link_id }}</p>
                             <div class="space16"></div>
                             <p>Store Name: {{ link.tag_name }}</p>
                             <div class="space16"></div>
+                            <p>Store URL: <a href="https://{{ link.link_url }}" target="_blank">{{ link.link_url }}</a></p>
+                            <div class="space16"></div>
                             {% for wallet in link.wallet_set.all %}
-                                <p>Crypto: {{ wallet.crypto }}</p>
-                                <p>Address: {{ wallet.address }}</p>
+                                <p>
+                                    Crypto: {{ wallet.crypto }}
+                                    <br>
+                                    {{ wallet.address }}
+                                </p>
                                 <div class="space16"></div>
                             {% endfor %}
-                            <div class="space16"></div>
-                            <div class="space16"></div>
 
                             <!-- <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share</a> -->
 
-                            <a href="{% url 'edit_payment_link_wallet' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
+                            <hr>
+
+                            <a href="{% url 'edit_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
 
                             <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">Delete</a>
 

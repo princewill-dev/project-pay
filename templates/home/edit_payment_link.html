@@ -21,29 +21,45 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'show_all_payment_links' %}">Payment Links <i class="fa-solid fa-angle-right"></i> <span>Edit wallet address</span></a>
+                    <a href="{% url 'show_all_payment_links' %}">Payment Links <i class="fa-solid fa-angle-right"></i> <span>Edit store</span></a>
                     <div class="space16"></div>
-                    <h6 style="color: #fff; font-weight: 400;">Business: {{ tag_name }}</h6>
+                    <!-- <h6 style="color: #fff; font-weight: 400;">Business: </h6> -->
                 </div>
                 <div class="space50"></div>
 
                 <div class="login-boxarea heading6">
                     
-                    <form method="POST">
+                    <form method="POST" action="{% url 'update_payment_link' payment_link.link_id %}">
+
                         {% csrf_token %}
-                        {% for field in form %}
+
+                        <p style="font-size: 12px;">Store name:</p>
+                        <div class="input-area">
+                            <input type="text" name="tag_name" placeholder="store name" value="{{ payment_link.tag_name }}">
+                        </div>
+
+                        <div class="space16"></div>
+                        <p style="font-size: 12px;">website url ( e.g: expample.com ):</p>
+                        <div class="input-area">
+                            <input type="text" name="link_url" placeholder="website link" value="{{ payment_link.link_url }}">
+                        </div>
+
+                        <div class="space16"></div>
+                        <p style="font-size: 12px;">service description:</p>
+                        <div class="input-area">
+                            <textarea style="padding: 5px;" type="text" name="store_description" cols="50">{{ payment_link.store_description }}</textarea>
+                        </div>
+
+                        {% for wallet in wallets %}
+
                             <div class="space16"></div>
-                            <div class="form-group">
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {% if field.help_text %}
-                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                                {% for error in field.errors %}
-                                <div class="alert alert-danger">{{ error }}</div>
-                                {% endfor %}
+                            <p style="font-size: 12px;">{{ wallet.crypto }} wallet:</p>
+                            <div class="input-area">
+                                <input type="text" name="{{ wallet.crypto }}wallet" placeholder="enter your {{ wallet.crypto }} wallet address" value="{{ wallet.address }}">
                             </div>
+
                         {% endfor %}
+                        
                         <div class="space16"></div>
                         <div class="input-area">
                             <button type="submit" class="header-btn2">Update</button>

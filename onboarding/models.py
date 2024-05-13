@@ -80,6 +80,8 @@ class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
+    link_url = models.URLField(null=True, blank=True)
+    store_description = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
 

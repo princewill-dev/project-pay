@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>payment invoice</span></a>
+                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>New invoice</span></a>
                 </div>
                 <div class="space50"></div>
 
@@ -53,9 +53,12 @@
                         <div class="input-area">
                             <p style="font-size: 12px;">Select payment link to receive payment with:</p>
                             <select name="payment_link" id="" class="form-control">
-                                
                                 {% for link in payment_links %}
-                                    <option value="{{ link.link_id }}">{{ link.tag_name }}</option>
+                                    {% if link.link_id == link_id %}
+                                        <option value="{{ link.link_id }}" selected>{{ link.tag_name }}</option>
+                                    {% else %}
+                                        <option value="{{ link.link_id }}">{{ link.tag_name }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>
                         </div>

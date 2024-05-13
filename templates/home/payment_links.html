@@ -18,37 +18,39 @@
     <div class="space16"></div>
     <div class="space16"></div>
     <div class="container">
+
+        <div class="about-welcome-header text-center heading3">
+            <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
+            <div class="space16"></div>
+            <div class="welcome-btnarea text-center">
+                <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
+              </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+
+            <div id="notify" class="alert alert-info">{{ message }}</div>
+            <script>
+                // Get the element you want to disappear
+                const element = document.getElementById('notify');
+
+                // Set a timeout to hide the element after 3 seconds
+                setTimeout(function() {
+                element.style.display = 'none';
+                }, 5000);
+            </script>
+
+            {% endfor %}
+        {% endif %}
+
+        <div class="space50"></div>
+
         <div class="row">
 
+            {% for link in payment_links %}
 
-            <div class="col-lg-6 m-auto">
-                <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
-                    <div class="space16"></div>
-                    <div class="welcome-btnarea text-center">
-                        <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
-                      </div>
-                </div>
-                <div class="space50"></div>
-
-                {% if messages %}
-                    {% for message in messages %}
-
-                    <div id="notify" class="alert alert-info">{{ message }}</div>
-                    <script>
-                        // Get the element you want to disappear
-                        const element = document.getElementById('notify');
-
-                        // Set a timeout to hide the element after 3 seconds
-                        setTimeout(function() {
-                        element.style.display = 'none';
-                        }, 5000);
-                    </script>
-
-                    {% endfor %}
-                {% endif %}
-
-                {% for link in payment_links %}
+                <div class="col-lg-4">
                     <div class="login-boxarea heading6">
                         <div>
                             <p>Store ID: {{ link.link_id }}</p>
@@ -61,32 +63,40 @@
                                 <p>
                                     Crypto: {{ wallet.crypto }}
                                     <br>
-                                    {{ wallet.address }}
+                                    <span class="walletTag">{{ wallet.address }}</span>
                                 </p>
                                 <div class="space16"></div>
+                                <script>
+                                    var walletTagElements = document.querySelectorAll('.walletTag');
+                                    walletTagElements.forEach(function(walletTagElement) {
+                                        var walletTagText = walletTagElement.textContent;
+                                        if (walletTagText.length > 10) {
+                                            walletTagElement.textContent = walletTagText.substring(0, 20) + '...';
+                                        }
+                                    });
+                                </script>
                             {% endfor %}
-
-                            <!-- <a href="{% url 'show_payment_link' link_id=link.link_id %}" target="_blank" style="font-size: 16p; background: #000; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Share</a> -->
 
                             <hr>
 
-                            <a href="{% url 'edit_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">Edit</a>
+                            <a href="{% url 'create_invoice_via_storelink' link_id=link.link_id %}" style="font-size: 16px; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">generate invoice</a>
 
-                            <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16p; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">Delete</a>
+                            <a href="{% url 'edit_payment_link' link_id=link.link_id %}" style="font-size: 16px; background: #1215df; color: #ffffff; padding: 10px; border-radius: 5px; margin: 5px;">edit</a>
+
+                            <a href="{% url 'delete_payment_link' link_id=link.link_id %}" style="font-size: 16px; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">delete</a>
 
                         </div>
                     </div>
                     <div class="space16"></div>
-                {% empty %}
-                    <div class="text-center">
-                        <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
-                        <!-- <br>
-                        <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
-                    </div>
-                {% endfor %}
+                </div>
 
-                
-            </div>
+            {% empty %}
+                <div class="text-center">
+                    <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
+                    <!-- <br>
+                    <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
+                </div>
+            {% endfor %}
         </div>
     </div>
 </div>

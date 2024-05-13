@@ -690,6 +690,22 @@ def create_invoice_view(request):
     return render(request, 'home/create_invoice.html', {'payment_links': payment_links})
 
 
+def create_invoice_via_storelink_view(request, link_id):
+
+    # Fetch the payment links for the current user
+    payment_links = PaymentLink.objects.filter(user=request.user)
+
+    link_id = link_id
+
+    context = {
+        'payment_links': payment_links,
+        'link_id': link_id,
+    }
+
+    # Pass the payment links to the template context
+    return render(request, 'home/create_invoice.html', context)
+
+
 @login_required
 def save_invoice_view(request):    
     if request.method == 'POST':

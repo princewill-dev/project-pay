@@ -57,6 +57,8 @@ urlpatterns = [
 
     path('create_invoice/', login_required(views.create_invoice_view), name='create_invoice'),
 
+    path('create_invoice/<str:link_id>', login_required(views.create_invoice_via_storelink_view), name='create_invoice_via_storelink'),
+
     path('save_invoice/', login_required(views.save_invoice_view), name='save_invoice'),
 
     path('invoices/', login_required(views.show_all_invoices_view), name='show_all_invoices'),

@@ -466,7 +466,6 @@ def save_crypto_selection_view(request, tx_id):
     invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
 
     if request.method == 'POST':
-
         
         selected_crypto = request.POST.get('selected_crypto')
 
@@ -477,6 +476,8 @@ def save_crypto_selection_view(request, tx_id):
         if selected_crypto == 'trx':
 
             api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
+
+            targeted_amount = invoice_id.amount * 1000000
 
         elif selected_crypto == 'trc20':
 

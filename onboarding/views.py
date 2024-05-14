@@ -69,7 +69,8 @@ def generate_random_string():
 
 
 def homepage(request):
-    return render(request, 'home/index.html')
+    # return render(request, 'home/index.html')
+    return render(request, 'landing/index.html')
 
 
 def success_page_view(request):

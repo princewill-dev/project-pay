@@ -2,6 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, PaymentLink, Payment, Invoice
 from .models import User, PaymentLink, Payment, Invoice, Wallet
+from .models import Token
+
+
+
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('account_id', 'email', 'email_verification', 'is_staff', 'is_active', 'date_joined')
@@ -38,14 +42,18 @@ class InvoiceAdmin(admin.ModelAdmin):
     list_filter = ('created_at', 'invoice_id')
 
 
-
 class WalletAdmin(admin.ModelAdmin):
     list_display = ('user', 'crypto', 'address', 'qr_code_image', 'created_at')
     search_fields = ('user__email',)
     list_filter = ('user',)
 
 
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ('token_id', 'token_name', 'token_tag', 'created_at', 'is_active')
+    search_fields = ('token_id', 'token_name', 'token_tag')
+    list_filter = ('is_active', 'created_at')
 
+admin.site.register(Token, TokenAdmin)
 
 
 

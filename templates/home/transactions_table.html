@@ -25,9 +25,15 @@
                 {% for transaction in transactions %}
 
                     <div class="col-md-3">
-                        <div class="space50"></div>
-                        <div class="login-boxarea heading6">
+                        <div class="space16"></div>
+                        <div class="login-boxarea heading5">
                             <div>
+                                {% if transaction.status == 'successful' %}
+                                    <p class="text-center" style="color: green;">{{ transaction.status }} ✅</p>
+                                {% else %}
+                                    <p class="text-center" style="color: red;">{{ transaction.status }} ⏳</p>
+                                {% endif %}
+                                <hr>
                                 <p>Date: {{ transaction.created_at }}</p>
                                 <div class="space16"></div>
                                 <p>Transaction ID: {{ transaction.transaction_id }}</p>
@@ -38,9 +44,13 @@
                                 <div class="space16"></div>
                                 <p>Crypto: {{ transaction.crypto_network }}</p>
                                 <div class="space16"></div>
-                                <p>Status: {{ transaction.status }}</p>
-                                <div class="space16"></div>
-                                <p style="font-size: 16px;"> <a href="{{ transaction.transaction_hash }}" target="_blank">view on blockchain</a></p>
+                                <hr>
+                                {% if transaction.transaction_hash == None %}
+                                    <p class="text-center" style="font-size: 16px;">link unavailable</p>
+                                {% else %}
+                                    <p class="text-center" style="font-size: 16px;"> <a href="{{ transaction.transaction_hash }}" target="_blank">view on blockchain</a></p>
+                                {% endif %}
+
                             </div>
                         </div>
                     </div>

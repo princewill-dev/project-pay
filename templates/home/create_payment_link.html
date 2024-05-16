@@ -24,11 +24,15 @@
                     <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create store link</span></a>
                 </div>
                 <div class="space50"></div>
-                <form id="payment-form" action="{% url 'save_payment_link' %}" method="post">
+                <form id="payment-form" action="{% url 'save_payment_link' %}" method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}
 
                     <div class="login-boxarea heading6">
+
+                        <p style="font-size: 12px;">Add your store logo:</p>
+                        <input class="input-area" type="file" name="image">
+                        <div class="space16"></div>
 
                         <p style="font-size: 12px;">What name so you want your store to be called:</p>
                         <div class="input-area">
@@ -46,7 +50,7 @@
                         <div class="input-area">
                             <textarea style="padding: 5px;" type="text" name="store_description" cols="50"></textarea>
                         </div>
-                        
+
                         <div class="space16"></div>
                         <div class="input-area">
                             <button type="submit" class="header-btn2"> next >> </button>

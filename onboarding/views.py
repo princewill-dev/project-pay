@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import User, PaymentLink, Payment, Invoice, Wallet
+from .models import User, PaymentLink, Payment, Invoice, Wallet, Token
 from .utils import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -236,12 +236,31 @@ def create_payment_link_view(request):
 
 @login_required
 def select_coins_view(request):
-    return render(request, 'home/select_coins.html')
+    tokens = Token.objects.filter(is_active=True)
+    return render(request, 'home/select_coins.html', {'tokens': tokens})
 
 
 @login_required
 def save_payment_link_view(request):    
     if request.method == 'POST':
+        content_file = None  # Initialize content_file
+
+        if 'image' in request.FILES:
+            image = request.FILES['image']
+            # Check if the file is a .png or .webp and its size is less than or equal to 5MB
+            if not (
+                image.name.endswith('.png')
+                or
+                image.name.endswith('.webp')
+                or
+                image.name.endswith('.jpg')
+                or
+                image.name.endswith('.jpeg')
+                ) or image.size > 5 * 1024 * 1024:
+                messages.error(request, 'Invalid image. Please upload a .png, .webp, .jpg, or .jpeg image that is less than 5MB.')
+                return redirect('create_payment_link_form')
+
+            content_file = image  # Assign the image directly to content_file
 
         tag_name = request.POST.get('tag_name')
         link_url = request.POST.get('link_url')
@@ -253,6 +272,7 @@ def save_payment_link_view(request):
             user=request.user,
             link_id=link_id,
             tag_name=tag_name,
+            link_logo=content_file,
             link_url=link_url,
             store_description=store_description,
         )
@@ -260,7 +280,6 @@ def save_payment_link_view(request):
         # Store the link_id in the session
         request.session['link_id'] = link_id
 
-        # messages.success(request, 'Your payment link has been created.')
         return redirect('select_coins')
 
     return redirect('create_payment_link_form')
@@ -280,17 +299,21 @@ def save_selected_coins_view(request):
         for crypto in ['trx', 'trc20']:
             crypto_tag = request.POST.get(f'{crypto}_tag')
             if crypto_tag:
+
                 wallet_address = request.POST.get(f'{crypto}_wallet')
+
                 qr_code_image = generate_qr_code(wallet_address)
-                filename = f'{wallet_address}.png'
-                path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+
+                filename = f'{wallet_address}_{payment_link.link_id}.png'
+
+                qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
 
                 Wallet.objects.create(
                     user=request.user,
                     payment_link=payment_link,
                     crypto=crypto_tag,
                     address=wallet_address,
-                    qr_code_image=path,
+                    qr_code_image=qr_code_image_file,
                 )
 
         messages.success(request, 'Your store link has been created.')

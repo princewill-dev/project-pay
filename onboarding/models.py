@@ -11,8 +11,7 @@ from django.db.models import JSONField
 
 
 def generate_account_id():
-    characters = string.ascii_letters + string.digits
-    account_id = ''.join(random.choice(characters) for _ in range(12))
+    account_id = ''.join(random.choice(string.digits) for _ in range(12))
     return account_id
 
 class CustomUserManager(BaseUserManager):
@@ -79,6 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class PaymentLink(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
+    link_logo = models.FileField(upload_to='link_logos', blank=True, null=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
     link_url = models.URLField(null=True, blank=True)
     store_description = models.CharField(max_length=200, null=True, blank=True)
@@ -87,6 +87,18 @@ class PaymentLink(models.Model):
 
     def __str__(self):
         return self.link_id
+    
+
+class Token(models.Model):
+    token_id = models.CharField(max_length=200, null=True, blank=True, unique=True)
+    token_logo = models.FileField(upload_to='token_logos', blank=True, null=True)
+    token_name = models.CharField(max_length=200, null=True, blank=True)
+    token_tag = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.token_id
     
 
 class Wallet(models.Model):

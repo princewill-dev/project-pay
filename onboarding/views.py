@@ -285,6 +285,42 @@ def save_payment_link_view(request):
     return redirect('create_payment_link_form')
 
 
+# @login_required
+# def save_selected_coins_view(request):    
+#     if request.method == 'POST':
+
+#         # Retrieve the link_id from the session
+#         link_id = request.session.get('link_id')
+
+#         # Get the PaymentLink instance corresponding to the link_id
+#         payment_link = PaymentLink.objects.get(link_id=link_id)
+
+#         # Create Wallet instances for each selected cryptocurrency
+#         for crypto in ['trx', 'trc20']:
+#             crypto_tag = request.POST.get(f'{crypto}_tag')
+#             if crypto_tag:
+
+#                 wallet_address = request.POST.get(f'{crypto}_wallet')
+
+#                 qr_code_image = generate_qr_code(wallet_address)
+
+#                 filename = f'{wallet_address}_{payment_link.link_id}.png'
+
+#                 qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
+
+#                 Wallet.objects.create(
+#                     user=request.user,
+#                     payment_link=payment_link,
+#                     crypto=crypto_tag,
+#                     address=wallet_address,
+#                     qr_code_image=qr_code_image_file,
+#                 )
+
+#         messages.success(request, 'Your store link has been created.')
+#         return redirect('show_all_payment_links')
+
+#     return redirect('create_payment_link_form')
+
 @login_required
 def save_selected_coins_view(request):    
     if request.method == 'POST':
@@ -296,11 +332,9 @@ def save_selected_coins_view(request):
         payment_link = PaymentLink.objects.get(link_id=link_id)
 
         # Create Wallet instances for each selected cryptocurrency
-        for crypto in ['trx', 'trc20']:
-            crypto_tag = request.POST.get(f'{crypto}_tag')
-            if crypto_tag:
-
-                wallet_address = request.POST.get(f'{crypto}_wallet')
+        for token in Token.objects.all():
+            wallet_address = request.POST.get(f'{token.token_tag}_wallet')
+            if wallet_address:  # Only save if a wallet address is provided
 
                 qr_code_image = generate_qr_code(wallet_address)
 
@@ -311,7 +345,7 @@ def save_selected_coins_view(request):
                 Wallet.objects.create(
                     user=request.user,
                     payment_link=payment_link,
-                    crypto=crypto_tag,
+                    crypto=token.token_tag,
                     address=wallet_address,
                     qr_code_image=qr_code_image_file,
                 )

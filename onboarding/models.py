@@ -6,6 +6,7 @@ import string
 import random
 from django.utils import timezone
 from django.db.models import JSONField
+import secrets
 
 
 
@@ -96,9 +97,16 @@ class PaymentLink(models.Model):
     link_description = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
+    api_key = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.link_id
+
+    def save(self, *args, **kwargs):
+        # If the PaymentLink instance doesn't have an API key, generate one
+        if not self.api_key:
+            self.api_key = secrets.token_urlsafe(24)  # Generate a 24-character secure random string
+        super().save(*args, **kwargs)
     
 
 class Wallet(models.Model):

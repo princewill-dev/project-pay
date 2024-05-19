@@ -361,11 +361,26 @@ def save_selected_coins_view(request):
 @login_required
 def show_all_payment_links_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
+    transactions = Payment.objects.filter(user=request.user)
+    successful_transactions = Payment.objects.filter(user=request.user, status='successful')
+    total_successful_transactions = successful_transactions.aggregate(Sum('amount'))['amount__sum'] or 0
+    invoices = Invoice.objects.filter(user=request.user)  # Fetch the invoices
+    account_id = request.user.account_id
+    account_email = request.user.email
+
+    # Calculate total successful transactions for each PaymentLink
+    for link in payment_links:
+        link.total_successful_transactions = Payment.objects.filter(payment_link=link, status='successful').aggregate(Sum('amount'))['amount__sum'] or 0
+
     context = {
-        'payment_links': payment_links
+        'transactions': transactions,
+        'payment_links': payment_links,
+        'invoices': invoices,  # Pass the invoices to the context
+        'account_id': account_id,
+        'account_email': account_email,
+        'total_successful_transactions': total_successful_transactions,
     }
     return render(request, 'home/payment_links.html', context)
-
 
 @login_required
 def edit_payment_link_view(request, link_id):

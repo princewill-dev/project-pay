@@ -31,7 +31,7 @@ class PaymentLinkAdmin(admin.ModelAdmin):
 
 
 class PaymentsAdmin(admin.ModelAdmin):
-    list_display = ('transaction_id', 'user', 'payment_link', 'amount', 'created_at', 'is_paid', 'status')
+    list_display = ('transaction_id', 'user', 'payment_link', 'amount', 'crypto_network', 'created_at', 'is_paid', 'status')
     search_fields = ('user__email', 'payment_link__link_id')
     list_filter = ('created_at', 'transaction_id')
 

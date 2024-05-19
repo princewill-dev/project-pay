@@ -19,18 +19,13 @@
     <div class="space16"></div>
     <div class="container">
 
-        <div class="about-welcome-header text-center heading3">
-            <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
-            <div class="space16"></div>
-            <div class="welcome-btnarea text-center">
-                <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
-            </div>
-        </div>
-
         {% if messages %}
             {% for message in messages %}
 
-            <div id="notify" class="alert alert-info">{{ message }}</div>
+            <center>
+                <p id="notify" class="alert alert-info" style="font-size: 12px;">{{ message }}</p>
+            </center>
+            
             <script>
                 // Get the element you want to disappear
                 const element = document.getElementById('notify');
@@ -43,6 +38,16 @@
 
             {% endfor %}
         {% endif %}
+
+        <div class="about-welcome-header text-center heading3">
+            <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
+            <div class="space16"></div>
+            <div class="welcome-btnarea text-center">
+                <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
+            </div>
+        </div>
+
+        
 
         <div class="space50"></div>
 

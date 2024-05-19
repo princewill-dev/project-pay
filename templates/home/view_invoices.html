@@ -19,35 +19,39 @@
     <div class="space16"></div>
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 m-auto">
-                <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Invoices</span></a>
-                    <div class="space16"></div>
-                    <div class="welcome-btnarea text-center">
-                        <a href="{% url 'create_invoice' %}" class="header-btn">Create New invoice</a>
-                      </div>
+
+            {% if messages %}
+                {% for message in messages %}
+
+                <div id="notify" class="alert alert-info">{{ message }}</div>
+                <script>
+                    // Get the element you want to disappear
+                    const element = document.getElementById('notify');
+
+                    // Set a timeout to hide the element after 3 seconds
+                    setTimeout(function() {
+                    element.style.display = 'none';
+                    }, 5000);
+                </script>
+
+                {% endfor %}
+            {% endif %}
+
+            <div class="about-welcome-header text-center heading3">
+                <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Invoices</span></a>
+                <div class="space16"></div>
+                <div class="welcome-btnarea text-center">
+                    <a href="{% url 'create_invoice' %}" class="header-btn">Create New invoice</a>
                 </div>
-                <div class="space50"></div>
+            </div>
+            <div class="space50"></div>
+            
+            {% if invoices %}
 
-                {% if messages %}
-                    {% for message in messages %}
+                {% for invoice in invoices %}
 
-                    <div id="notify" class="alert alert-info">{{ message }}</div>
-                    <script>
-                        // Get the element you want to disappear
-                        const element = document.getElementById('notify');
-
-                        // Set a timeout to hide the element after 3 seconds
-                        setTimeout(function() {
-                        element.style.display = 'none';
-                        }, 5000);
-                    </script>
-
-                    {% endfor %}
-                {% endif %}
-
-                {% if invoices %}
-                    {% for invoice in invoices %}
+                    <div class="col-lg-4">
+                        
                         <div class="login-boxarea heading6">
                             <div>
                                 <p>Invoice ID: {{ invoice.invoice_id }}</p>
@@ -68,18 +72,20 @@
 
                             </div>
                         </div>
-                        <div class="space16"></div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center">
-                        <p style="color: #fff; text-align: center;">You haven't created any invoices yet.</p>
-                        <!-- <br>
-                        <a href="{% url 'create_invoice' %}" target="_blank" class="header-btn1">Create Invoice</a> -->
-                    </div>
-                {% endif %}
 
-                
-            </div>
+                        <div class="space16"></div>
+                        
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="text-center">
+                    <p style="color: #fff; text-align: center;">You haven't created any invoices yet.</p>
+                    <!-- <br>
+                    <a href="{% url 'create_invoice' %}" target="_blank" class="header-btn1">Create Invoice</a> -->
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

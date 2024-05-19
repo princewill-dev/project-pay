@@ -33,6 +33,7 @@ import time
 from .forms import PaymentLinkForm
 from decimal import Decimal, ROUND_DOWN
 import math
+from django.db.models import Sum
 
 
 
@@ -61,15 +62,23 @@ def plans_view(request):
 def dashboard_view(request):
     payment_links = PaymentLink.objects.filter(user=request.user)
     transactions = Payment.objects.filter(user=request.user)
+    successful_transactions = Payment.objects.filter(user=request.user, status='successful')
+    total_successful_transactions = successful_transactions.aggregate(Sum('amount'))['amount__sum'] or 0
     invoices = Invoice.objects.filter(user=request.user)  # Fetch the invoices
     account_id = request.user.account_id
     account_email = request.user.email
+
+    # Calculate total successful transactions for each PaymentLink
+    for link in payment_links:
+        link.total_successful_transactions = Payment.objects.filter(payment_link=link, status='successful').aggregate(Sum('amount'))['amount__sum'] or 0
+
     context = {
         'transactions': transactions,
         'payment_links': payment_links,
         'invoices': invoices,  # Pass the invoices to the context
         'account_id': account_id,
         'account_email': account_email,
+        'total_successful_transactions': total_successful_transactions,
     }
     return render(request, 'home/dashboard.html', context)
 
@@ -348,8 +357,9 @@ def update_payment_link_view(request, link_id):
         # Update the PaymentLink instance
         payment_link.tag_name = request.POST.get('tag_name')
         payment_link.link_url = request.POST.get('link_url')
-        payment_link.link_logo = content_file
-        payment_link.store_description = request.POST.get('store_description')
+        if content_file is not None:  # Only assign content_file to link_logo if content_file is not None
+            payment_link.link_logo = content_file
+        payment_link.link_description = request.POST.get('link_description')
         payment_link.save()
 
         # Get the Wallet instances associated with the PaymentLink
@@ -537,6 +547,7 @@ def select_transaction_crypto_view(request, tx_id):
                 'status': invoice_id.status,
                 'tag_name': invoice_id.payment_link.tag_name,
                 'hash': invoice_id.transaction_hash,
+                'link_logo': invoice_id.payment_link.link_logo
             }
 
             context = {

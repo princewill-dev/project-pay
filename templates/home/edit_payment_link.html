@@ -33,11 +33,19 @@
 
                         {% csrf_token %}
 
-                        <p style="font-size: 12px;">Add your store logo:</p>
+                        <div class="text-center">
+                            {% if payment_link.link_logo %}
+                                <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
+                            {% endif %}
+                        </div>
+                        <div class="space16"></div>
+                        <div class="space16"></div>
+
+                        <p style="font-size: 12px;">change your store logo:</p>
                         <input class="input-area" type="file" name="image">
                         <div class="space16"></div>
 
-                        <p style="font-size: 12px;">Store name:</p>
+                        <p style="font-size: 12px;">store name:</p>
                         <div class="input-area">
                             <input type="text" name="tag_name" placeholder="store name" value="{{ payment_link.tag_name }}">
                         </div>
@@ -51,7 +59,7 @@
                         <div class="space16"></div>
                         <p style="font-size: 12px;">service description:</p>
                         <div class="input-area">
-                            <textarea style="padding: 5px;" type="text" name="store_description" cols="50">{{ payment_link.store_description }}</textarea>
+                            <textarea style="padding: 5px;" type="text" name="link_description" cols="50">{{ payment_link.link_description }}</textarea>
                         </div>
 
                         {% for wallet in wallets %}
@@ -64,6 +72,7 @@
 
                         {% endfor %}
                         
+                        <div class="space16"></div>
                         <div class="space16"></div>
                         <div class="input-area">
                             <button type="submit" class="header-btn2">Update</button>

@@ -85,7 +85,7 @@
             </div>
           </div>
           
-          <p class="text-center" style="color: #818080;">---- your stores ----</p>
+          <p class="text-center" style="color: #818080; font-size: 16px;">---- your stores ----</p>
           <div class="space16"></div>
 
           <div class="tab-content">
@@ -131,17 +131,23 @@
                 </div>
   
               {% empty %}
-                  <div class="text-center">
-                      <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
-                      <!-- <br>
-                      <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
-                      <div class="space16"></div>
-                  </div>
+                <div class="space16"></div>
+                <div class="space16"></div>
+
+                <div class="text-center">
+                    <p style="color: #fff; text-align: center; font-size: 16px;">You have no store yet.</p>
+                    <!-- <br>
+                    <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
+                    <div class="space16"></div>
+                </div>
+
               {% endfor %}
 
               <div class="text-center">
                 <a href="{% url 'create_payment_link' %}" class="header-btn">create new store</a>
               </div>
+              <div class="space16"></div>
+              <div class="space16"></div>
 
             </div>
 
@@ -195,7 +201,7 @@
                     </tbody>
                       {% else %}
                           <div class="text-center">
-                              <p style="color: #fff; text-align: center;">You haven't made any transactions yet.</p>
+                              <p style="color: #000; text-align: center; font-size: 16px;">You haven't made any transactions yet.</p>
                           </div>
                       {% endif %}
                   </table>

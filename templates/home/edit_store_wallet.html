@@ -1,0 +1,93 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+{% include 'home/navbar.html' %}
+  
+{% include 'home/mobile-nav.html' %}
+
+{% include 'home/mobile-sidebar.html' %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'show_payment_link' payment_link.link_id %}"> {{ payment_link.tag_name }} <i class="fa-solid fa-angle-right"></i> <span>Edit wallet</span></a>
+                </div>
+                <div class="space50"></div>
+                <form id="payment-form" action="{% url 'update_payment_wallets' payment_link.link_id %}" method="post">
+                    {% csrf_token %}
+                    <div class="login-boxarea heading6">
+
+                        <p style="font-size: 12px; text-align: center;">Select the coins you which to accept:</p>
+                        <div class="space16"></div>
+                        
+                        {% for token in tokens %}
+                            <div style="border: 3px dashed #000; padding: 10px; border-radius: 5px;">
+                                <button class="form-control crypto-button" type="button" id="{{ token.token_id }}" class="crypto-button">
+                                    <img src="{{ token.token_logo.url }}" alt="" width="30px">
+                                    {{ token.token_name }}
+                                </button>
+                                <input type="hidden" id="{{ token.token_id }}_tag" name="{{ token.token_tag }}" value="{{ token.token_tag }}">
+                                <div id="wallet-input-{{ token.token_id }}" style="display: none;">
+                                    <br>
+                                    <input class="form-control" type="text" name="{{ token.token_tag }}_wallet" placeholder="enter wallet address" style="width: 100%;">
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                        
+                        <div class="space16"></div>
+                        <div class="input-area">
+                            <button type="submit" class="header-btn2">save changes</button>
+                        </div>
+
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    
+    // Get all buttons
+    var buttons = document.querySelectorAll('.crypto-button');
+
+    // Listen for clicks
+    buttons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Get the corresponding wallet input field and hidden input
+            var walletInput = document.getElementById('wallet-input-' + button.id);
+            var hiddenInput = document.getElementById(button.id + '_tag');
+
+            // If this button is clicked, show the wallet input field and set the hidden input value
+            if (walletInput.style.display === 'none') {
+                walletInput.style.display = 'block';
+                hiddenInput.value = button.id;
+            } else {
+                // Otherwise, hide it and clear the hidden input value
+                walletInput.style.display = 'none';
+                hiddenInput.value = '';
+            }
+        });
+    });
+
+</script>
+
+
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

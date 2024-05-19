@@ -32,6 +32,10 @@ urlpatterns = [
 
     path('select_coins/', login_required(views.select_coins_view), name='select_coins'),
 
+    path('edit_payment_wallets/<str:link_id>', login_required(views.edit_payment_wallets_view), name='edit_payment_wallets'),
+
+    path('update_payment_wallets/<str:link_id>', login_required(views.update_payment_wallets_view), name='update_payment_wallets'),
+
     path('save_coins/', login_required(views.save_selected_coins_view), name='save_selected_coins'),
 
     path('delete_payment_link/<str:link_id>', login_required(views.delete_payment_link_view), name='delete_payment_link'),
@@ -46,7 +50,7 @@ urlpatterns = [
 
     path('transactions/', login_required(views.show_transactions_view), name='show_transactions'),
 
-    # path('payment_link/<str:link_id>', login_required(views.payment_link_view), name='payment_link'),
+    # path('show_payment_link/<str:link_id>', login_required(views.show_payment_link_view), name='show_payment_link'),
 
     path('paylink/<str:link_id>', views.show_payment_link_view, name='show_payment_link'),
 
@@ -69,8 +73,6 @@ urlpatterns = [
     path('invoices/', login_required(views.show_all_invoices_view), name='show_all_invoices'),
 
     path('pay/<str:tx_id>', views.make_payment_view, name='make_payment_page'),
-
-
 
 ]
 

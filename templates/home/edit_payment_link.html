@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-6 m-auto">
                 <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'show_all_payment_links' %}">Payment Links <i class="fa-solid fa-angle-right"></i> <span>Edit store</span></a>
+                    <a href="{% url 'show_payment_link' payment_link.link_id %}"> {{ payment_link.tag_name }} <i class="fa-solid fa-angle-right"></i> <span>Edit</span></a>
                     <div class="space16"></div>
                     <!-- <h6 style="color: #fff; font-weight: 400;">Business: </h6> -->
                 </div>
@@ -62,7 +62,7 @@
                             <textarea style="padding: 5px;" type="text" name="link_description" cols="50">{{ payment_link.link_description }}</textarea>
                         </div>
 
-                        {% for wallet in wallets %}
+                        <!-- {% for wallet in wallets %}
 
                             <div class="space16"></div>
                             <p style="font-size: 12px;">{{ wallet.crypto }} wallet:</p>
@@ -70,12 +70,12 @@
                                 <input type="text" name="{{ wallet.crypto }}wallet" placeholder="enter your {{ wallet.crypto }} wallet address" value="{{ wallet.address }}">
                             </div>
 
-                        {% endfor %}
+                        {% endfor %} -->
                         
                         <div class="space16"></div>
                         <div class="space16"></div>
                         <div class="input-area">
-                            <button type="submit" class="header-btn2">Update</button>
+                            <button type="submit" class="header-btn2">save changes</button>
                         </div>
                     </form>
 

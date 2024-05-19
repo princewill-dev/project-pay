@@ -224,6 +224,60 @@ def select_coins_view(request):
 
 
 @login_required
+def edit_payment_wallets_view(request, link_id):
+    tokens = Token.objects.filter(is_active=True)
+
+    # Get the wallets associated with the payment_link
+    wallets = Wallet.objects.filter(wallet_id=link_id)
+
+    payment_link = PaymentLink.objects.get(link_id=link_id)
+
+    context = {
+        'payment_link': payment_link,
+        'tokens': tokens,
+        'wallets': wallets,
+    }
+
+    return render(request, 'home/edit_store_wallet.html', context)
+
+
+@login_required
+def update_payment_wallets_view(request, link_id):
+
+    if request.method == 'POST':
+
+        # Get the PaymentLink instance corresponding to the link_id
+        payment_link = PaymentLink.objects.get(link_id=link_id)
+
+        # Delete any existing Wallet instances associated with this PaymentLink
+        Wallet.objects.filter(wallet_id=payment_link).delete()
+
+        # Create Wallet instances for each selected cryptocurrency
+        for token in Token.objects.all():
+            wallet_address = request.POST.get(f'{token.token_tag}_wallet')
+            if wallet_address:  # Only save if a wallet address is provided
+
+                qr_code_image = generate_qr_code(wallet_address)
+
+                filename = f'{wallet_address}_{payment_link.link_id}.png'
+
+                qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
+
+                Wallet.objects.create(
+                    user=request.user,
+                    wallet_id=payment_link,
+                    crypto=token.token_tag,
+                    address=wallet_address,
+                    qr_code_image=qr_code_image_file,
+                )
+
+        messages.success(request, 'Your store wallets has been updated.')
+        return redirect('show_payment_link', link_id=link_id)
+
+    return redirect('create_payment_link_form')
+
+
+@login_required
 def save_payment_link_view(request):    
     if request.method == 'POST':
         content_file = None  # Initialize content_file
@@ -363,21 +417,21 @@ def update_payment_link_view(request, link_id):
         payment_link.save()
 
         # Get the Wallet instances associated with the PaymentLink
-        wallets = Wallet.objects.filter(wallet_id=payment_link)
+        # wallets = Wallet.objects.filter(wallet_id=payment_link)
 
-        # Update each Wallet instance
-        for wallet in wallets:
-            wallet_address = request.POST.get(f'{wallet.crypto}wallet')
-            if wallet_address:
-                qr_code_image = generate_qr_code(wallet_address)
-                filename = f'{wallet_address}.png'
-                path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-                wallet.qr_code_image = path
-                wallet.address = wallet_address
-                wallet.save()
+        # # Update each Wallet instance
+        # for wallet in wallets:
+        #     wallet_address = request.POST.get(f'{wallet.crypto}wallet')
+        #     if wallet_address:
+        #         qr_code_image = generate_qr_code(wallet_address)
+        #         filename = f'{wallet_address}.png'
+        #         path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
+        #         wallet.qr_code_image = path
+        #         wallet.address = wallet_address
+        #         wallet.save()
 
-        messages.success(request, 'Your payment link and wallets have been updated.')
-        return redirect('show_all_payment_links')
+        messages.success(request, 'store info updated successfully.')
+        return redirect('show_payment_link', link_id=link_id)
 
     # If the request method is not POST, redirect to the edit page
     return redirect('edit_payment_link', link_id=link_id)
@@ -421,11 +475,15 @@ def show_transactions_view(request):
     return render(request, 'home/transactions_table.html', context)
 
 
-# shows individual payment link created by a user
 def show_payment_link_view(request, link_id):
-    instance = get_object_or_404(PaymentLink, link_id=link_id)
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+    transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
+    successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
+    total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
     context = {
-        'instance': instance,
+        'payment_link': payment_link,
+        'total_successful_payments': total_successful_payments,
+        'transactions': transactions,  # Add transactions to the context
     }
     return render(request, 'home/show_payment_link.html', context)
 

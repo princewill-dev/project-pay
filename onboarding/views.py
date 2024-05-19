@@ -34,6 +34,7 @@ from .forms import PaymentLinkForm
 from decimal import Decimal, ROUND_DOWN
 import math
 from django.db.models import Sum
+from django.views.decorators.http import require_http_methods
 
 
 
@@ -536,6 +537,44 @@ def generate_transaction_view(request, link_id):
 
             }, status=201)
         
+        except IntegrityError as e:
+            return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
+    else:
+        return HttpResponse(status=405)
+    
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def transaction_checkout_view(request):
+
+    CUSTOM_API_KEY_HEADER = 'BITWADE-API-KEY'  # Replace with your desired custom header name
+    CUSTOM_API_KEY_HEADER = CUSTOM_API_KEY_HEADER.replace('-', '_').upper()  # Convert to Django's header format
+
+    if request.method == 'POST':
+        api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
+        if not api_key:
+            return JsonResponse({"error": "No API key provided in the headers"}, status=400)
+
+        try:
+            payment_link = PaymentLink.objects.get(api_key=api_key)
+        except PaymentLink.DoesNotExist:
+            return JsonResponse({"error": "Invalid API key"}, status=403)
+
+        data = json.loads(request.body)
+        try:
+            payment = Payment.objects.create(
+                user=payment_link.user,
+                payment_link=payment_link,
+                transaction_id=generate_random_string(),
+                amount=data['amount'],
+                success_url=data['success_url'],
+            )
+            return JsonResponse({
+                "message": "payment generated successfully",
+                "transaction_id": payment.transaction_id,
+                "transaction_url": f"{request.get_host()}/invoice/{payment.transaction_id}",
+            }, status=201)
         except IntegrityError as e:
             return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
     else:

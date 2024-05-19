@@ -568,10 +568,14 @@ def transaction_checkout_view(request):
                 payment_link=payment_link,
                 transaction_id=generate_random_string(),
                 amount=data['amount'],
+                customer_email=data['email'],
                 success_url=data['success_url'],
             )
             return JsonResponse({
+                "status": True,
+                "amount": data['amount'],
                 "message": "payment generated successfully",
+                "created_at": payment.created_at,
                 "transaction_id": payment.transaction_id,
                 "transaction_url": f"{request.get_host()}/invoice/{payment.transaction_id}",
             }, status=201)

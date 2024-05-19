@@ -56,7 +56,7 @@ urlpatterns = [
 
     path('generate/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
-    path('checkout/', views.transaction_checkout_view, name='transaction_checkout'),
+    path('api/checkout/', views.transaction_checkout_view, name='transaction_checkout'),
 
     path('invoice/<str:tx_id>', views.select_transaction_crypto_view, name='select_transaction_crypto'),
 

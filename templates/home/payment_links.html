@@ -53,6 +53,10 @@
                 <div class="col-lg-4">
                     <div class="login-boxarea heading6">
                         <div>
+                            {% if link.link_logo %}
+                                <img src="{{link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
+                            {% endif %}
+                            <div class="space16"></div>
                             <p>Store ID: {{ link.link_id }}</p>
                             <div class="space16"></div>
                             <p>Store Name: {{ link.tag_name }}</p>
@@ -66,7 +70,7 @@
                                     <span class="walletTag">{{ wallet.address }}</span>
                                 </p>
                                 <div class="space16"></div>
-                                <script>
+                                <!-- <script>
                                     var walletTagElements = document.querySelectorAll('.walletTag');
                                     walletTagElements.forEach(function(walletTagElement) {
                                         var walletTagText = walletTagElement.textContent;
@@ -74,7 +78,7 @@
                                             walletTagElement.textContent = walletTagText.substring(0, 20) + '...';
                                         }
                                     });
-                                </script>
+                                </script> -->
                             {% endfor %}
 
                             <hr>

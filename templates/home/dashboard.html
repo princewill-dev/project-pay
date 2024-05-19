@@ -62,7 +62,7 @@
             <div class="space16"></div>
             <!-- <h3 class="text-white">Welcome to your dashboard</h3>
             <div class="space16"></div> -->
-            <!-- <p class="text-white">Account ID: {{ account_id }}</p> -->
+            <p class="text-white"><span style="color: rgb(60, 147, 118);">user: {{ account_email }}</span></p>
             
           </div>
         </div>
@@ -99,14 +99,20 @@
                     <div class="hadding">
                       <div class="pricing-area">
                         
-                        <h3><img src="{{link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;"> {{ link.tag_name }}</h3>
+                        <h3>
+                          {% if link.link_logo %}
+                            <img src="{{link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
+                          {% endif %}
+                          {{ link.tag_name }}
+                          ID: {{ link.link_id }}
+                        </h3>
                         <div class="space16"></div>
                         <p>Total Earnings: $4,000</p>
                         
                         <p>
                           Accepting:
                           {% for wallet in link.wallet_set.all %}
-                              {{ wallet.crypto }},
+                            {{ wallet.crypto }},
                           {% endfor %}
                         </p>
                         <div class="space24"></div>

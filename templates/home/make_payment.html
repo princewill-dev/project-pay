@@ -38,7 +38,7 @@
                     <div class="space16"></div>
                     
                     <center>
-                        <img id="wallet_qrcode_image" src="/static/images/{{ transaction_details.qr_code }}" alt="QR Code" width="150px" style="border-radius: 5px; border: 2px solid #000;">
+                        <img id="wallet_qrcode_image" src="{{transaction_details.qr_code.url}}" alt="QR Code" width="150px" style="border-radius: 5px; border: 2px solid #000;">
                         <img id="success_image" src="/static/onboarding/assets/images/icons/success_icon.png" width="150px" alt="success" style="display: none;">
                     </center>
 
@@ -104,7 +104,7 @@
                                     transactionAmount.style.display = 'block';
                                     transactionConfirmed.style.display = 'block';
                                     loadingImage.style.display = 'none';
-                                    transactionAmount.textContent = 'Amount: ' + data.amount / 1000000 + ' TRX';
+                                    transactionAmount.textContent = 'Amount: ' + data.amount / 1000000 + ' {{transaction_details.crypto_network}}';
 
                                     txNetwork.style.display = 'none';
                                     txWallet.style.display = 'none';

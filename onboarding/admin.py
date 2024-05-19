@@ -43,7 +43,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ('user', 'crypto', 'address', 'qr_code_image', 'created_at')
+    list_display = ('wallet_id', 'user', 'crypto', 'address', 'created_at')
     search_fields = ('user__email',)
     list_filter = ('user',)
 

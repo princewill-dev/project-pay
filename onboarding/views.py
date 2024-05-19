@@ -32,35 +32,8 @@ from django.conf import settings
 import time
 from .forms import PaymentLinkForm
 from decimal import Decimal, ROUND_DOWN
+import math
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def generate_random_string(length=20):
-#     characters = string.ascii_lowercase + string.digits
-#     random_string = ''.join(random.choice(characters) for _ in range(length))
-#     return random_string
-
-# def generate_random_string():
-#     random_string = ''.join(random.choice(string.digits) for _ in range(12))
-#     formatted_string = '-'.join([random_string[i:i+4] for i in range(0, len(random_string), 4)])
-#     return formatted_string
 
 
 def generate_random_string():
@@ -90,18 +63,19 @@ def dashboard_view(request):
     transactions = Payment.objects.filter(user=request.user)
     invoices = Invoice.objects.filter(user=request.user)  # Fetch the invoices
     account_id = request.user.account_id
+    account_email = request.user.email
     context = {
         'transactions': transactions,
         'payment_links': payment_links,
         'invoices': invoices,  # Pass the invoices to the context
         'account_id': account_id,
+        'account_email': account_email,
     }
     return render(request, 'home/dashboard.html', context)
 
 
 def generate_otp():
     return ''.join(random.choice('0123456789') for _ in range(6))
-
 
 
 def signup_view(request):
@@ -264,7 +238,7 @@ def save_payment_link_view(request):
 
         tag_name = request.POST.get('tag_name')
         link_url = request.POST.get('link_url')
-        store_description = request.POST.get('store_description')
+        link_description = request.POST.get('link_description')
         link_id = generate_random_string()
 
         # Create a PaymentLink instance
@@ -274,7 +248,7 @@ def save_payment_link_view(request):
             tag_name=tag_name,
             link_logo=content_file,
             link_url=link_url,
-            store_description=store_description,
+            link_description=link_description,
         )
 
         # Store the link_id in the session
@@ -284,42 +258,6 @@ def save_payment_link_view(request):
 
     return redirect('create_payment_link_form')
 
-
-# @login_required
-# def save_selected_coins_view(request):    
-#     if request.method == 'POST':
-
-#         # Retrieve the link_id from the session
-#         link_id = request.session.get('link_id')
-
-#         # Get the PaymentLink instance corresponding to the link_id
-#         payment_link = PaymentLink.objects.get(link_id=link_id)
-
-#         # Create Wallet instances for each selected cryptocurrency
-#         for crypto in ['trx', 'trc20']:
-#             crypto_tag = request.POST.get(f'{crypto}_tag')
-#             if crypto_tag:
-
-#                 wallet_address = request.POST.get(f'{crypto}_wallet')
-
-#                 qr_code_image = generate_qr_code(wallet_address)
-
-#                 filename = f'{wallet_address}_{payment_link.link_id}.png'
-
-#                 qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
-
-#                 Wallet.objects.create(
-#                     user=request.user,
-#                     payment_link=payment_link,
-#                     crypto=crypto_tag,
-#                     address=wallet_address,
-#                     qr_code_image=qr_code_image_file,
-#                 )
-
-#         messages.success(request, 'Your store link has been created.')
-#         return redirect('show_all_payment_links')
-
-#     return redirect('create_payment_link_form')
 
 @login_required
 def save_selected_coins_view(request):    
@@ -344,7 +282,7 @@ def save_selected_coins_view(request):
 
                 Wallet.objects.create(
                     user=request.user,
-                    payment_link=payment_link,
+                    wallet_id=payment_link,
                     crypto=token.token_tag,
                     address=wallet_address,
                     qr_code_image=qr_code_image_file,
@@ -372,7 +310,7 @@ def edit_payment_link_view(request, link_id):
     payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
 
     # Get the wallets associated with the payment_link
-    wallets = Wallet.objects.filter(payment_link=payment_link)
+    wallets = Wallet.objects.filter(wallet_id=payment_link)
 
     context = {
         'payment_link': payment_link,
@@ -388,14 +326,34 @@ def update_payment_link_view(request, link_id):
 
         payment_link = get_object_or_404(PaymentLink, link_id=link_id, user=request.user)
 
+        content_file = None  # Initialize content_file
+
+        if 'image' in request.FILES:
+            image = request.FILES['image']
+            # Check if the file is a .png or .webp and its size is less than or equal to 5MB
+            if not (
+                image.name.endswith('.png')
+                or
+                image.name.endswith('.webp')
+                or
+                image.name.endswith('.jpg')
+                or
+                image.name.endswith('.jpeg')
+                ) or image.size > 5 * 1024 * 1024:
+                messages.error(request, 'Invalid image. Please upload a .png, .webp, .jpg, or .jpeg image that is less than 5MB.')
+                return redirect('create_payment_link_form')
+
+            content_file = image  # Assign the image directly to content_file
+
         # Update the PaymentLink instance
         payment_link.tag_name = request.POST.get('tag_name')
         payment_link.link_url = request.POST.get('link_url')
+        payment_link.link_logo = content_file
         payment_link.store_description = request.POST.get('store_description')
         payment_link.save()
 
         # Get the Wallet instances associated with the PaymentLink
-        wallets = Wallet.objects.filter(payment_link=payment_link)
+        wallets = Wallet.objects.filter(wallet_id=payment_link)
 
         # Update each Wallet instance
         for wallet in wallets:
@@ -470,12 +428,6 @@ def delete_payment_link_view(request, link_id):
     return redirect('show_all_payment_links')
 
 
-# @login_required
-# def payment_link_view(request, link_id):
-#     instance = get_object_or_404(PaymentLink, link_id=link_id)
-#     return render(request, 'home/payment_link.html', {'instance': instance})
-
-
 @csrf_exempt
 def generate_transaction_view(request, link_id):
     if request.method == 'POST':
@@ -538,24 +490,26 @@ def save_crypto_selection_view(request, tx_id):
 
         targeted_address = wallet.address
 
+        amount_in_usd = invoice_id.amount
+
+        amount_in_trx = convert_usd_to_trx(amount_in_usd)
+
         if selected_crypto == 'trx':
 
             api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
 
-            amount_in_usd = invoice_id.amount
-
-            amount_in_trx = convert_usd_to_trx(amount_in_usd)
-
-            # print(amount_in_trx)
+            converted_amt = amount_in_trx
 
         elif selected_crypto == 'trc20':
 
-            api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/trc20_transactions/'
+            api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/trc20?limit=100&contract_address=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
+
+            converted_amt = amount_in_usd
 
         # Update the database where this transaction exists
         invoice_id.crypto_network = selected_crypto
         invoice_id.wallet_address = wallet.address
-        invoice_id.converted_amount = amount_in_trx
+        invoice_id.converted_amount = converted_amt
         invoice_id.api_url = api_link
         invoice_id.save()
 
@@ -595,7 +549,7 @@ def select_transaction_crypto_view(request, tx_id):
         payment_link = invoice_id.payment_link
 
         # Get the crypto and address connected to the transaction
-        crypto_networks = Wallet.objects.filter(payment_link=payment_link)
+        crypto_networks = Wallet.objects.filter(wallet_id=payment_link)
         if crypto_networks.exists():
             available_cryptos = list(crypto_networks.values_list('crypto', flat=True))
         else:
@@ -672,10 +626,12 @@ def make_payment_view(request, tx_id):
 
 def blockchain_api_view(request, tx_id):
 
-    try:
+    invoice_tx = Payment.objects.get(transaction_id=tx_id)
 
-        invoice_tx = Payment.objects.get(transaction_id=tx_id)
-        
+    
+
+    if invoice_tx.crypto_network == 'trx':
+
         tx_amount = invoice_tx.converted_amount
 
         target_amount = tx_amount * 1000000
@@ -685,69 +641,119 @@ def blockchain_api_view(request, tx_id):
         max_attempts = 5
         attempts = 0
 
-        while attempts < max_attempts:
-            try:
+        try:
+            
+            while attempts < max_attempts:
+                try:
 
-                import os
-                import environ
-                env = environ.Env()
-                environ.Env.read_env()
+                    import os
+                    import environ
+                    env = environ.Env()
+                    environ.Env.read_env()
 
-                authorization = os.environ.get('TRON_PRO_API_KEY')
+                    authorization = os.environ.get('TRON_PRO_API_KEY')
 
-                url = api_url
+                    url = api_url
 
-                headers = {
-                    'Content-Type': "application/json",
-                    'TRON-PRO-API-KEY': authorization
-                }
-                
-                response = requests.get(url, headers=headers)
-                response.raise_for_status()
-                data = response.json()
+                    headers = {
+                        'Content-Type': "application/json",
+                        'TRON-PRO-API-KEY': authorization
+                    }
+                    
+                    response = requests.get(url, headers=headers)
+                    response.raise_for_status()
+                    data = response.json()
 
-                for transaction in data['data']:
-                    if 'contract' in transaction['raw_data']:
-                        for contract in transaction['raw_data']['contract']:
-                            if 'parameter' in contract and 'value' in contract['parameter']:
-                                if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
-                                    transaction_details = {
-                                        'hash': transaction['txID'],
-                                        'amount': contract['parameter']['value']['amount'],
-                                        'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
-                                    }
-                                    if transaction_details['confirmed']:
-                                        try:
-                                            # Check if the transaction exists in the Invoice model
-                                            invoice = Invoice.objects.get(invoice_id=invoice_tx)
-                                            # If it exists, mark it as successful
-                                            invoice.status = 'successful'
-                                            invoice.is_paid = True
+                    for transaction in data['data']:
+                        if 'contract' in transaction['raw_data']:
+                            for contract in transaction['raw_data']['contract']:
+                                if 'parameter' in contract and 'value' in contract['parameter']:
+                                    if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
+                                        transaction_details = {
+                                            'hash': transaction['txID'],
+                                            'amount': contract['parameter']['value']['amount'],
+                                            'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
+                                        }
+                                        if transaction_details['confirmed']:
+                                            try:
+                                                # Check if the transaction exists in the Invoice model
+                                                invoice = Invoice.objects.get(invoice_id=invoice_tx)
+                                                # If it exists, mark it as successful
+                                                invoice.status = 'successful'
+                                                invoice.is_paid = True
+                                                # send email to the recipient and the sender
+                                                invoice.save()
+                                            except ObjectDoesNotExist:
+                                                pass
+                                            
+                                            base_url = "https://tronscan.io/#/transaction/"
+                                            invoice_tx.status = 'successful'
+                                            invoice_tx.is_paid = True
+                                            invoice_tx.business_name = invoice_tx.payment_link.tag_name
+                                            invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
+                                            invoice_tx.business_name = invoice_tx.payment_link.tag_name
+                                            invoice_tx.save()
+
                                             # send email to the recipient and the sender
-                                            invoice.save()
-                                        except ObjectDoesNotExist:
-                                            pass
-                                        
-                                        base_url = "https://tronscan.io/#/transaction/"
-                                        invoice_tx.status = 'successful'
-                                        invoice_tx.is_paid = True
-                                        invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                                        invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
-                                        invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                                        invoice_tx.save()
 
-                                        # send email to the recipient and the sender
+                                        return JsonResponse(transaction_details)
 
-                                    return JsonResponse(transaction_details)
+                    attempts += 1
 
-                attempts += 1
+                except requests.exceptions.RequestException as e:
+                    return JsonResponse({'error': str(e)}, status=500)
 
-            except requests.exceptions.RequestException as e:
-                return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'error': 'Target amount not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+    elif invoice_tx.crypto_network == 'trc20':
 
-        return JsonResponse({'error': 'Target amount not found.'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        tx_amount = invoice_tx.converted_amount
+        target_amount = math.floor(tx_amount * 1000000)
+
+        print(target_amount)
+
+        api_url = invoice_tx.api_url
+        max_attempts = 5
+        attempts = 0
+
+        try:
+            response = requests.get(api_url)
+            response.raise_for_status()
+            data = response.json()
+
+            for transaction in data['data']:
+                if int(transaction['value']) == target_amount:
+
+                    try:
+                        # Check if the transaction exists in the Invoice model
+                        invoice = Invoice.objects.get(invoice_id=invoice_tx)
+                        # If it exists, mark it as successful
+                        invoice.status = 'successful'
+                        invoice.is_paid = True
+                        # send email to the recipient and the sender
+                        invoice.save()
+                    except ObjectDoesNotExist:
+                        pass
+
+                    base_url = "https://tronscan.io/#/transaction/"
+                    invoice_tx.status = 'successful'
+                    invoice_tx.is_paid = True
+                    invoice_tx.business_name = invoice_tx.payment_link.tag_name
+                    invoice_tx.transaction_hash = f"{base_url}{transaction['transaction_id']}"
+                    invoice_tx.business_name = invoice_tx.payment_link.tag_name
+                    invoice_tx.save()
+
+                    return JsonResponse({
+                        'hash': transaction['transaction_id'],
+                        'amount': target_amount,
+                        'confirmed': True
+                    })
+
+            return JsonResponse({'error': 'Transaction not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
 
 # def create_invoice_view(request):

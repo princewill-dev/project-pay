@@ -29,9 +29,13 @@
 
                 <div class="login-boxarea heading6">
                     
-                    <form method="POST" action="{% url 'update_payment_link' payment_link.link_id %}">
+                    <form method="POST" action="{% url 'update_payment_link' payment_link.link_id %}" enctype="multipart/form-data">
 
                         {% csrf_token %}
+
+                        <p style="font-size: 12px;">Add your store logo:</p>
+                        <input class="input-area" type="file" name="image">
+                        <div class="space16"></div>
 
                         <p style="font-size: 12px;">Store name:</p>
                         <div class="input-area">

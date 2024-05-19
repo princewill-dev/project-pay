@@ -20,16 +20,19 @@
                   <div class="space16"></div> -->
                   <a href="{% url 'homepage' %}">Home <i class="fa-solid fa-angle-right"></i> <span>Login</span></a>
               </div>
-              <div class="space50"></div>
+              <div class="space16"></div>
 
               <form method="post">
                 {% csrf_token %}
                 
                 <div class="login-boxarea heading6">
                     {{ form.non_field_errors }}
-                    <h2>Welcome back</h2>
+                    <h4>Welcome back</h4>
+
                     <div class="space16"></div>
-                    <p>Please enter your details.</p>
+                    <p>Please enter your details to login.</p>
+                    
+                    <hr>
                     <div class="space16"></div>
   
                     <div class="input-area">
@@ -54,7 +57,11 @@
   
   
                     <div class="sign-text">
-                      <p>Don't have account yet? </p><a href="{% url 'signup_page' %}">Signup</a>
+                        <p>forgot password? </p><a href="{% url 'reset_password' %}">reset</a>
+                    </div>
+                    <hr>
+                    <div class="sign-text">
+                        <p>Don't have account yet? </p><a href="{% url 'signup_page' %}">Signup</a>
                     </div>
                 </div>
               </form>

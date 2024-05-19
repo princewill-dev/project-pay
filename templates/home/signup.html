@@ -44,11 +44,14 @@
                 
                 <div class="login-boxarea heading6">
                     {{ form.non_field_errors }}
-                    <h2>Creat Your Account</h2>
+
+                    <h4>Welcome to Bitwade</h4>
+
                     <div class="space16"></div>
-                    <p>Create an account today and start using bitwade.com.</p>
+                    <p>Reliable crypto payment gateway.</p>
+                    
+                    <hr>
                     <div class="space16"></div>
-  
   
                     <div class="input-area">
                         {{ form.email }}
@@ -64,14 +67,14 @@
                     <div class="input-area">
                         {{ form.password2 }}
                         {{ form.password2.errors }}
-                    </div>  
+                    </div>
+
                     <div class="space32"></div>
                     <div class="input-area">
                         <button type="submit" class="header-btn2">Register</button>
-                        <!-- <a href="signup.html" class="header-btn2">Creat Your Account</a> -->
                     </div>
+
                     <div class="space32"></div>
-  
   
                     <div class="sign-text">
                         <p>Have account? </p><a href="{% url 'login_page' %}">Login</a>

@@ -24,6 +24,8 @@ urlpatterns = [
 
     path('login/', views.login_view, name='login_page'),
 
+    path('reset_password/', views.reset_password_view, name='reset_password'),
+
     path('dashboard/', login_required(views.dashboard_view), name='dashboard'),
 
     path('logout/', views.logout_view, name='logout'),

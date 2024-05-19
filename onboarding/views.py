@@ -35,6 +35,11 @@ from decimal import Decimal, ROUND_DOWN
 import math
 from django.db.models import Sum
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 
 
 
@@ -90,7 +95,7 @@ def generate_otp():
 
 def signup_view(request):
     if request.user.is_authenticated:  # Check if the user is already authenticated
-        return redirect('plans')  # Redirect to 'plans' page
+        return redirect('dashboard')  # Redirect to 'plans' page
     
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -187,6 +192,35 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login_page')
+
+
+def reset_password_view(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            current_site = get_current_site(request)
+            mail_subject = 'Password Reset Requested'
+            # Define the message directly instead of using a template
+            message = f"""
+            Hi,
+
+            You have requested a password reset. Please go to the following page and choose a new password:
+
+            http://{current_site.domain}/reset/{uid}/{token}
+
+            If you didn't request this, please ignore this email.
+
+            """
+            send_mail(mail_subject, message, 'support@bitwade.com', [user.email])
+            messages.success(request, 'Please check your email for the password reset link.')
+            return render(request, 'home/reset_password.html')
+        else:
+            messages.error(request, 'Invalid email address.')
+            return render(request, 'home/reset_password.html')
+    return render(request, 'home/reset_password.html')
 
 
 @login_required

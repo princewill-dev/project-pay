@@ -19,6 +19,14 @@ class CustomPasswordField(forms.CharField):
             'placeholder': 'Enter your password',
         })
 
+class CustomConfirmPasswordField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.widget = forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm your password',
+        })
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = CustomEmailField(label='Email')
     password = CustomPasswordField(label='Password')
@@ -30,7 +38,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CustomUserCreationForm(UserCreationForm):
     email = CustomEmailField(label='Email')
     password1 = CustomPasswordField(label='Password')
-    password2 = CustomPasswordField(label='Confirm Password')
+    password2 = CustomConfirmPasswordField(label='Confirm Password')
 
     class Meta:
         model = User

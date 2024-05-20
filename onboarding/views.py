@@ -41,6 +41,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str
+from django.urls import reverse
 
 
 
@@ -200,6 +201,7 @@ def password_reset_request(request):
         email = request.POST.get('email')
         user = User.objects.filter(email=email).first()
         if user:
+            
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             current_site = get_current_site(request)
@@ -224,9 +226,10 @@ def password_reset_request(request):
     return render(request, 'home/reset_password.html')
 
 
-User = get_user_model()
-
 def password_reset_confirm_view(request, uidb64, token):
+
+    User = get_user_model()
+    
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -244,7 +247,7 @@ def password_reset_confirm_view(request, uidb64, token):
                 return redirect('login_page')
             else:
                 messages.error(request, 'Passwords do not match.')
-        return render(request, 'password_reset_confirm.html')
+        return render(request, 'home/reset_pssword_new.html')
     else:
         messages.error(request, 'The reset password link is invalid.')
         return redirect('password_reset')

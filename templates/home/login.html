@@ -22,6 +22,26 @@
               </div>
               <div class="space16"></div>
 
+                {% if messages %}
+                    {% for message in messages %}
+
+                    <div id="notify" class="alert alert-info">{{ message }}</div>
+                    <script>
+                        // Get the element you want to disappear
+                        const element = document.getElementById('notify');
+
+                        // Set a timeout to hide the element after 3 seconds
+                        setTimeout(function() {
+                        element.style.display = 'none';
+                        }, 5000);
+                    </script>
+
+                    {% endfor %}
+                {% endif %}
+
+                <div class="space16"></div>
+                <div class="space16"></div>
+
               <form method="post">
                 {% csrf_token %}
                 

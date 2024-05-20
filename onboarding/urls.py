@@ -8,6 +8,9 @@ from django.conf import settings
 
 
 
+
+
+
 urlpatterns = [
 
     path('', views.homepage, name='homepage'),
@@ -26,7 +29,7 @@ urlpatterns = [
 
     path('password-reset/', views.password_reset_request, name='password_reset'),
     
-    path('password-reset-confirm/<uidb64>/<token>/', views.password_reset_confirm_view, name='password_reset_confirm'),
+    path('reset/<uidb64>/<token>/', views.password_reset_confirm_view, name='password_reset_confirm'),
 
     path('dashboard/', login_required(views.dashboard_view), name='dashboard'),
 

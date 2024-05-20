@@ -4,8 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import password_reset_request
-from .views import password_reset_confirm_view
 
 
 
@@ -26,9 +24,9 @@ urlpatterns = [
 
     path('login/', views.login_view, name='login_page'),
 
-    path('password-reset/', password_reset_request, name='password_reset'),
+    path('password-reset/', views.password_reset_request, name='password_reset'),
     
-    path('password-reset-confirm/<uidb64>/<token>/', password_reset_confirm_view, name='password_reset_confirm'),
+    path('password-reset-confirm/<uidb64>/<token>/', views.password_reset_confirm_view, name='password_reset_confirm'),
 
     path('dashboard/', login_required(views.dashboard_view), name='dashboard'),
 

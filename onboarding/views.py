@@ -40,6 +40,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.utils.encoding import force_str
 
 
 
@@ -194,7 +195,7 @@ def logout_view(request):
     return redirect('login_page')
 
 
-def reset_password_view(request):
+def password_reset_request(request):
     if request.method == "POST":
         email = request.POST.get('email')
         user = User.objects.filter(email=email).first()
@@ -221,6 +222,32 @@ def reset_password_view(request):
             messages.error(request, 'Invalid email address.')
             return render(request, 'home/reset_password.html')
     return render(request, 'home/reset_password.html')
+
+
+User = get_user_model()
+
+def password_reset_confirm_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Password reset was successful.')
+                return redirect('login_page')
+            else:
+                messages.error(request, 'Passwords do not match.')
+        return render(request, 'password_reset_confirm.html')
+    else:
+        messages.error(request, 'The reset password link is invalid.')
+        return redirect('password_reset')
 
 
 @login_required

@@ -32,15 +32,18 @@ EMAIL_TIMEOUT=10
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "bitwade.onrender.com",
+    "localhost",
     "127.0.0.1",
+    "127.0.0.1:5500",
+    "bitwade.onrender.com",
     "project-pay.fly.dev",
     "bitwade.com",
-    "localhost",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
     "https://bitwade.onrender.com",
     "https://project-pay.fly.dev",
     "https://bitwade.com",
@@ -48,12 +51,21 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
     "http://127.0.0.1",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
     "https://bitwade.onrender.com",
     "https://project-pay.fly.dev",
     "https://bitwade.com",
-    "http://localhost",
 ]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'BITWADE-API-KEY',
+    # other headers you want to allow
+]
+
 
 AUTH_USER_MODEL = 'onboarding.User'
 

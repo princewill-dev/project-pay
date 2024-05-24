@@ -632,8 +632,9 @@ def transaction_checkout_view(request):
                 payment_link=payment_link,
                 transaction_id=generate_random_string(),
                 amount=data['amount'],
-                customer_email=data['email'],
-                success_url=data['success_url'],
+                email=data['email'],
+                item=data['item'],
+                # success_url=data['success_url'],
             )
             return JsonResponse({
                 "status": True,

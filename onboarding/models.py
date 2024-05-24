@@ -128,16 +128,16 @@ class Wallet(models.Model):
 class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     payment_link = models.ForeignKey(PaymentLink, on_delete=models.CASCADE)
-    transaction_id = models.CharField(max_length=200)
+    transaction_id = models.CharField(max_length=200) # expected in API call
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     converted_amount = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
     item = models.CharField(max_length=200, null=True, blank=True)
-    customer_ip = models.GenericIPAddressField(null=True, blank=True)
-    customer_user_agent = models.CharField(max_length=200, null=True, blank=True)
-    customer_country = models.CharField(max_length=200, null=True, blank=True)
-    customer_name = models.CharField(max_length=200, null=True, blank=True)
-    customer_email = models.EmailField(null=True, blank=True)
-    customer_phone = models.CharField(max_length=200, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=200, null=True, blank=True)
+    country = models.CharField(max_length=200, null=True, blank=True)
+    # customer_name = models.CharField(max_length=200, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True) # expected in API call
+    # customer_phone = models.CharField(max_length=200, null=True, blank=True)
     crypto_network = models.CharField(max_length=200,null=True, blank=True)
     wallet_address = models.CharField(max_length=200,null=True, blank=True)
     transaction_hash = models.CharField(max_length=200, null=True, blank=True)

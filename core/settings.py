@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "bitwade.onrender.com",
     "project-pay.fly.dev",
     "bitwade.com",
+    "themestore.pages.dev",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -48,6 +49,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://project-pay.fly.dev",
     "https://bitwade.com",
     "http://localhost",
+    "https://themestore.pages.dev",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -58,6 +60,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://bitwade.onrender.com",
     "https://project-pay.fly.dev",
     "https://bitwade.com",
+    "https://themestore.pages.dev",
 ]
 
 CORS_ALLOW_HEADERS = [

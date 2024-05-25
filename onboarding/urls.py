@@ -69,6 +69,8 @@ urlpatterns = [
 
     path('invoice/<str:tx_id>', require_http_methods(['POST'])(views.save_invoice_view), name='save_invoice'),
 
+    path('invoice_receipt/<str:tx_id>', views.confirm_email_for_receipt_view, name='confirm_email_for_receipt'),
+
     path('crypto_selection/<str:tx_id>', views.save_crypto_selection_view, name='save_crypto_selection'),
 
     path('blockchain_api/<str:tx_id>', views.blockchain_api_view, name='blockchain_api'),

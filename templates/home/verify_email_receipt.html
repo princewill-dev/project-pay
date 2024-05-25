@@ -35,17 +35,9 @@
                             <p style="font-size: 16px;">Select your preferred crypto:</p>
                             <div class="space16"></div>
 
-                            {% for crypto in available_cryptos %}
-                                <label for="{{ crypto }}" style="border: 1px solid #000; border-radius: 5px; text-align: left; padding: 10px; width: 200px;">
-                                    <input type="checkbox" name="selected_crypto" value="{{ crypto }}" id="{{ crypto }}" class="crypto-checkbox" style="transform: scale(1);">
-                                    {{ crypto }}
-                                </label>
-                                <div class="space16"></div>
-                            {% endfor %}
-
-                            <div class="space16"></div>
 
                             <div class="input-area">
+                                <input type="text" class="form-control" value="" placeholder="confirm your email">
                                 <button type="submit" id="processing" class="header-btn2" style="visibility: hidden;">proceed</button>
                             </div>
 

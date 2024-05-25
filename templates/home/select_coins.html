@@ -24,6 +24,7 @@
                     <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Select Coins</span></a>
                 </div>
                 <div class="space50"></div>
+                
                 <form id="payment-form" action="{% url 'save_selected_coins' %}" method="post">
                     {% csrf_token %}
                     <div class="login-boxarea heading6">

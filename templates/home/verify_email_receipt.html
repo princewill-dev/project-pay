@@ -28,42 +28,29 @@
                         <h4 class="text-center" id="amount">${{transaction_details.amount}}</h4>
                         <hr>
                         
-                        <form action="{% url 'save_crypto_selection' transaction_details.transaction_id %}" method="post">
+                        <form action="{% url 'save_confirm_email_for_receipt' transaction_details.transaction_id %}" method="post">
 
                             {% csrf_token %}
 
-                            <p style="font-size: 16px;">Select your preferred crypto:</p>
+                            <p style="font-size: 16px;">Please confirm your email for receipt and refund processing.</p>
                             <div class="space16"></div>
 
-
                             <div class="input-area">
-                                <input type="text" class="form-control" value="" placeholder="confirm your email">
-                                <button type="submit" id="processing" class="header-btn2" style="visibility: hidden;">proceed</button>
+                                <input type="text" name="email" class="form-control" value="{{transaction_details.email}}" placeholder="confirm your email">
+
+                                <div class="space16"></div>
+
+                                <button type="submit" id="processing" class="header-btn2" >confirm</button>
                             </div>
 
                             <script>
-                                var checkboxes = document.querySelectorAll('.crypto-checkbox');
+
                                 var button = document.getElementById('processing');
 
-                                checkboxes.forEach(function(checkbox) {
-                                    checkbox.addEventListener('change', function() {
-                                        checkboxes.forEach(function(c) {
-                                            if (c !== checkbox) c.checked = false;
-                                        });
-
-                                        // Check if at least one checkbox is checked
-                                        var isChecked = Array.from(checkboxes).some(function(c) {
-                                            return c.checked;
-                                        });
-
-                                        // Show the button if a checkbox is checked, hide it otherwise
-                                        button.style.visibility = isChecked ? "visible" : "hidden";
-                                    });
-                                });
-
                                 button.addEventListener('click', function() {
-                                    this.textContent = "Processing...";
+                                    this.textContent = "confirming...";
                                 });
+
                             </script>
     
                         </form>

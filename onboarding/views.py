@@ -704,7 +704,7 @@ def save_crypto_selection_view(request, tx_id):
         invoice_id.api_url = api_link
         invoice_id.save()
 
-        return redirect('make_payment_page', tx_id=invoice_id.transaction_id)
+        return redirect('confirm_email_for_receipt', tx_id=invoice_id.transaction_id)
 
     # Handle GET requests
     return redirect('select_transaction_crypto', tx_id=invoice_id.transaction_id)
@@ -785,6 +785,7 @@ def confirm_email_for_receipt_view(request, tx_id):
                 'transaction_id': invoice_id.transaction_id,
                 'payment_link': invoice_id.payment_link.link_id,
                 'amount': invoice_id.amount,
+                'email': invoice_id.email,
                 'success_url': invoice_id.success_url,
                 'created_at': invoice_id.created_at,
                 'is_paid': invoice_id.is_paid,
@@ -803,19 +804,12 @@ def confirm_email_for_receipt_view(request, tx_id):
         # Get the PaymentLink associated with the transaction
         payment_link = invoice_id.payment_link
 
-        # Get the crypto and address connected to the transaction
-        crypto_networks = Wallet.objects.filter(wallet_id=payment_link)
-        if crypto_networks.exists():
-            available_cryptos = list(crypto_networks.values_list('crypto', flat=True))
-        else:
-            # Handle the case when the wallet does not exist
-            available_cryptos = "Unknown"
-
         # Get the transaction details
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,
             'payment_link': invoice_id.payment_link.link_id,
             'amount': invoice_id.amount,
+            'email': invoice_id.email,
             'success_url': invoice_id.success_url,
             'created_at': invoice_id.created_at,
             'is_paid': invoice_id.is_paid,
@@ -824,18 +818,34 @@ def confirm_email_for_receipt_view(request, tx_id):
         }
 
         context = {
-            'transaction_details': transaction_details,
-            'available_cryptos': available_cryptos,
+            'transaction_details': transaction_details
         }
 
         return render(request, 'home/verify_email_receipt.html', context)
     
     except Payment.DoesNotExist:
-        # Render the error page if the Payment object does not exist
-        # messages.error(request, 'Transaction not found.')
         return render(request, 'home/invalid_payment.html')
-
     
+
+def save_confirm_email_for_receipt_view(request, tx_id):
+
+    print('save_confirm_email_for_receipt_view called')  # Add this line
+
+    invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
+
+    if request.method == 'POST':
+        
+        confirmed_email = request.POST.get('email')
+
+        # Update the database where this transaction exists
+        invoice_id.email = confirmed_email
+        invoice_id.save()
+
+        return redirect('make_payment_page', tx_id=invoice_id.transaction_id)
+
+    # Handle GET requests
+    return redirect('select_transaction_crypto', tx_id=invoice_id.transaction_id)
+
 
 def make_payment_view(request, tx_id):
 
@@ -1042,9 +1052,6 @@ def create_invoice_via_storelink_view(request, link_id):
 @login_required
 def save_invoice_view(request):    
     if request.method == 'POST':
-        # payment_link = request.POST.get('payment_link')
-        # payment_link_id = request.POST.get('payment_link')
-        # payment_link = PaymentLink.objects.get(id=payment_link_id)
 
         payment_link_id = request.POST.get('payment_link')
         try:
@@ -1081,7 +1088,6 @@ def save_invoice_view(request):
             amount=amount,
             success_url=f"/store/success/",
         )
-
 
     messages.success(request, 'Your invoice has been created.')
     return redirect('show_all_invoices')

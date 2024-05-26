@@ -206,9 +206,11 @@ def password_reset_request(request):
             
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+            
             current_site = get_current_site(request)
             mail_subject = 'Password Reset Requested'
-            # Define the message directly instead of using a template
+
             message = f"""
             Hi,
 
@@ -760,8 +762,6 @@ def select_transaction_crypto_view(request, tx_id):
         # Get the user's user agent
         user_agent = request.META.get('HTTP_USER_AGENT')
 
-        print(f'IP Address: {ip_address}, User Agent: {user_agent}')
-
         # Update the database where this transaction exists
         invoice_id.ip_address = ip_address
         invoice_id.user_agent = user_agent
@@ -848,8 +848,6 @@ def confirm_email_for_receipt_view(request, tx_id):
 
 def save_confirm_email_for_receipt_view(request, tx_id):
 
-    print('save_confirm_email_for_receipt_view called')  # Add this line
-
     invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
 
     if request.method == 'POST':
@@ -873,8 +871,6 @@ def make_payment_view(request, tx_id):
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
         selected_crypto = invoice_id.crypto_network
-
-        print(selected_crypto)
 
         targeted_address = invoice_id.wallet_address
 
@@ -904,15 +900,32 @@ def make_payment_view(request, tx_id):
     
     except Payment.DoesNotExist:
         # Render the error page if the Payment object does not exist
-        # messages.error(request, 'Transaction not found.')
         return render(request, 'home/invalid_payment.html')
+    
+
+def send_email(invoice_tx, recipient, is_customer):
+    recipient_email = recipient
+    mail_subject = f'Receipt from {invoice_tx.payment_link.tag_name} [{invoice_tx.transaction_id}]'
+    if is_customer:
+        message = f"""
+            <h2>Thank you for purchase</h2>
+            <p>Amount: {invoice_tx.amount}</p>
+            <p>Transaction ID: {invoice_tx.transaction_id}</p>
+            <p>Business Name: {invoice_tx.payment_link.tag_name}</p>
+        """
+    else:
+        message = f"""
+            <h2>You have a new purchase</h2>
+            <p>Amount: {invoice_tx.amount}</p>
+            <p>Transaction ID: {invoice_tx.transaction_id}</p>
+            <p>Customer email: {recipient_email}</p>
+        """
+    send_mail(mail_subject, message, 'support@bitwade.com', [recipient_email])
   
 
 def blockchain_api_view(request, tx_id):
 
     invoice_tx = Payment.objects.get(transaction_id=tx_id)
-
-    
 
     if invoice_tx.crypto_network == 'trx':
 
@@ -965,7 +978,6 @@ def blockchain_api_view(request, tx_id):
                                                 # If it exists, mark it as successful
                                                 invoice.status = 'successful'
                                                 invoice.is_paid = True
-                                                # send email to the recipient and the sender
                                                 invoice.save()
                                             except ObjectDoesNotExist:
                                                 pass
@@ -978,7 +990,11 @@ def blockchain_api_view(request, tx_id):
                                             invoice_tx.business_name = invoice_tx.payment_link.tag_name
                                             invoice_tx.save()
 
-                                            # send email to the recipient and the sender
+                                            # send email to the customer
+                                            send_email(invoice_tx, invoice_tx.email, True)
+
+                                            # send email to the store owner
+                                            send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
 
                                         return JsonResponse(transaction_details)
 
@@ -995,8 +1011,6 @@ def blockchain_api_view(request, tx_id):
 
         tx_amount = invoice_tx.converted_amount
         target_amount = math.floor(tx_amount * 1000000)
-
-        print(target_amount)
 
         api_url = invoice_tx.api_url
         max_attempts = 5
@@ -1029,6 +1043,12 @@ def blockchain_api_view(request, tx_id):
                     invoice_tx.business_name = invoice_tx.payment_link.tag_name
                     invoice_tx.save()
 
+                    # send email to the customer
+                    send_email(invoice_tx, invoice_tx.email, True)
+
+                    # send email to the store owner
+                    send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
+
                     return JsonResponse({
                         'hash': transaction['transaction_id'],
                         'amount': target_amount,
@@ -1038,17 +1058,13 @@ def blockchain_api_view(request, tx_id):
             return JsonResponse({'error': 'Transaction not found.'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    
-
-# def create_invoice_view(request):
-#     return render(request, 'home/create_invoice.html')
 
 
 def create_invoice_view(request):
+
     # Fetch the payment links for the current user
     payment_links = PaymentLink.objects.filter(user=request.user)
 
-    # Pass the payment links to the template context
     return render(request, 'home/create_invoice.html', {'payment_links': payment_links})
 
 

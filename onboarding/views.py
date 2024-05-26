@@ -42,6 +42,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str
 from django.urls import reverse
+from django.http import HttpRequest
+
 
 
 
@@ -747,6 +749,23 @@ def select_transaction_crypto_view(request, tx_id):
         else:
             # Handle the case when the wallet does not exist
             available_cryptos = "Unknown"
+
+        # Get the user's IP address
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+
+        # Get the user's user agent
+        user_agent = request.META.get('HTTP_USER_AGENT')
+
+        print(f'IP Address: {ip_address}, User Agent: {user_agent}')
+
+        # Update the database where this transaction exists
+        invoice_id.ip_address = ip_address
+        invoice_id.user_agent = user_agent
+        invoice_id.save()
 
         # Get the transaction details
         transaction_details = {

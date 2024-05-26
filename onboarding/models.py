@@ -135,9 +135,7 @@ class Payment(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
-    # customer_name = models.CharField(max_length=200, null=True, blank=True)
     email = models.EmailField(null=True, blank=True) # expected in API call
-    # customer_phone = models.CharField(max_length=200, null=True, blank=True)
     crypto_network = models.CharField(max_length=200,null=True, blank=True)
     wallet_address = models.CharField(max_length=200,null=True, blank=True)
     transaction_hash = models.CharField(max_length=200, null=True, blank=True)

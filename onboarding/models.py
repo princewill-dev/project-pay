@@ -117,7 +117,7 @@ class Wallet(models.Model):
     wallet_id = models.ForeignKey(PaymentLink, null=True, on_delete=models.CASCADE)  # Change this line
     crypto = models.CharField(max_length=200, null=True, blank=True)
     address = models.CharField(max_length=200)
-    qr_code_image = models.FileField(upload_to='qr_codes', blank=True, null=True)
+    qr_code_image = models.FileField(upload_to='qr_codes/', null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     

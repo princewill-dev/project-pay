@@ -43,6 +43,7 @@ from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str
 from django.urls import reverse
 from django.http import HttpRequest
+import hashlib
 
 
 
@@ -262,7 +263,15 @@ def home_view(request):
     return render(request, 'home/index.html')
 
 
+from qrcode.image.svg import SvgImage
+
+from django.core.files import File
+
 def generate_qr_code(text):
+    # Check if text is a string
+    if not isinstance(text, str):
+        raise TypeError('The text argument must be a string')
+
     # Create a QR code instance
     qr = qrcode.QRCode(
         version=1,
@@ -274,12 +283,15 @@ def generate_qr_code(text):
     qr.add_data(text)
     qr.make(fit=True)
     # Generate the QR code image
-    img = qr.make_image(fill_color="black", back_color="white")
-    # Create a BytesIO object to store the image data
-    buffer = BytesIO()
-    img.save(buffer, format="PNG")
-    buffer.seek(0)
-    return buffer
+    img = qr.make_image(fill_color="black", back_color="white", image_factory=SvgImage)
+    # Generate a filename based on the text
+    filename = hashlib.md5(text.encode()).hexdigest() + ".svg"
+    # Save the image to a file in the mediafiles directory
+    img_path = os.path.join(settings.MEDIA_ROOT, 'qr_codes/', filename)
+    img.save(img_path)
+
+    return filename
+
 
 @login_required
 def create_payment_link_view(request):
@@ -328,16 +340,16 @@ def update_payment_wallets_view(request, link_id):
 
                 qr_code_image = generate_qr_code(wallet_address)
 
-                filename = f'{wallet_address}_{payment_link.link_id}.png'
+                # filename = f'{wallet_address}_{payment_link.link_id}.png'
 
-                qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
+                # qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
 
                 Wallet.objects.create(
                     user=request.user,
                     wallet_id=payment_link,
                     crypto=token.token_tag,
                     address=wallet_address,
-                    qr_code_image=qr_code_image_file,
+                    qr_code_image=qr_code_image,
                 )
 
         messages.success(request, 'Your store wallets has been updated.')
@@ -408,16 +420,16 @@ def save_selected_coins_view(request):
 
                 qr_code_image = generate_qr_code(wallet_address)
 
-                filename = f'{wallet_address}_{payment_link.link_id}.png'
+                # filename = f'{wallet_address}_{payment_link.link_id}.png'
 
-                qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
+                # qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
 
                 Wallet.objects.create(
                     user=request.user,
                     wallet_id=payment_link,
                     crypto=token.token_tag,
                     address=wallet_address,
-                    qr_code_image=qr_code_image_file,
+                    qr_code_image=qr_code_image,
                 )
 
         messages.success(request, 'Your store link has been created.')
@@ -500,26 +512,11 @@ def update_payment_link_view(request, link_id):
         payment_link.link_description = request.POST.get('link_description')
         payment_link.save()
 
-        # Get the Wallet instances associated with the PaymentLink
-        # wallets = Wallet.objects.filter(wallet_id=payment_link)
-
-        # # Update each Wallet instance
-        # for wallet in wallets:
-        #     wallet_address = request.POST.get(f'{wallet.crypto}wallet')
-        #     if wallet_address:
-        #         qr_code_image = generate_qr_code(wallet_address)
-        #         filename = f'{wallet_address}.png'
-        #         path = default_storage.save(filename, ContentFile(qr_code_image.getvalue()))
-        #         wallet.qr_code_image = path
-        #         wallet.address = wallet_address
-        #         wallet.save()
-
         messages.success(request, 'store info updated successfully.')
         return redirect('show_payment_link', link_id=link_id)
 
     # If the request method is not POST, redirect to the edit page
     return redirect('edit_payment_link', link_id=link_id)
-
 
 
 @login_required

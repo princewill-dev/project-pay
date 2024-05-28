@@ -901,21 +901,25 @@ def make_payment_view(request, tx_id):
     
 
 def send_email(invoice_tx, recipient, is_customer):
+
     recipient_email = recipient
-    mail_subject = f'Receipt from {invoice_tx.payment_link.tag_name} [{invoice_tx.transaction_id}]'
+    
     if is_customer:
+        mail_subject = f'{invoice_tx.payment_link.tag_name} Receipts'
         message = f"""
-            <h2>Thank you for purchase</h2>
-            <p>Amount: {invoice_tx.amount}</p>
-            <p>Transaction ID: {invoice_tx.transaction_id}</p>
-            <p>Business Name: {invoice_tx.payment_link.tag_name}</p>
+            Payment processed successfully
+            Amount: ${invoice_tx.amount}
+            Invoice: {invoice_tx.transaction_id}
+            Store: {invoice_tx.payment_link.tag_name}
         """
     else:
+        mail_subject = f'New Order on {invoice_tx.payment_link.tag_name} [{invoice_tx.transaction_id}]'
         message = f"""
-            <h2>You have a new purchase</h2>
-            <p>Amount: {invoice_tx.amount}</p>
-            <p>Transaction ID: {invoice_tx.transaction_id}</p>
-            <p>Customer email: {recipient_email}</p>
+            You have a new purchase
+            Amount: ${invoice_tx.amount} - {invoice_tx.converted_amount} {invoice_tx.crypto_network}
+            Invoice: {invoice_tx.transaction_id}
+            Item: {invoice_tx.item}
+            Customer email: {recipient_email}
         """
     send_mail(mail_subject, message, 'support@bitwade.com', [recipient_email])
   

@@ -63,7 +63,13 @@ urlpatterns = [
 
     path('generate/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),
 
-    path('api/checkout/', views.transaction_checkout_view, name='transaction_checkout'),
+    # API Links starts from here
+
+    path('api/v1/checkout/', views.transaction_checkout_view, name='transaction_checkout'),
+    path('api/v1/validate/', views.transaction_validate_json_view, name='transaction_validate_json'),
+    path('api/v1/validate/<str:tx_id>', views.transaction_validate_url_view, name='transaction_validate_url'),
+
+    # API Links starts from here
 
     path('invoice/<str:tx_id>', views.select_transaction_crypto_view, name='select_transaction_crypto'),
 

@@ -6,3 +6,4 @@ myenv/
 .dockerignore
 Dockerfile
 fly.toml
+old-bashfile.txt

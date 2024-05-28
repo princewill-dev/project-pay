@@ -44,6 +44,10 @@ from django.utils.encoding import force_str
 from django.urls import reverse
 from django.http import HttpRequest
 import hashlib
+from qrcode.image.svg import SvgImage
+from django.core.files import File
+import logging
+from django.db import IntegrityError
 
 
 
@@ -262,10 +266,6 @@ def password_reset_confirm_view(request, uidb64, token):
 def home_view(request):
     return render(request, 'home/index.html')
 
-
-from qrcode.image.svg import SvgImage
-
-from django.core.files import File
 
 def generate_qr_code(text):
     # Check if text is a string
@@ -613,42 +613,124 @@ def generate_transaction_view(request, link_id):
 @require_http_methods(['POST'])
 def transaction_checkout_view(request):
 
-    CUSTOM_API_KEY_HEADER = 'BITWADE-API-KEY'  # Replace with your desired custom header name
-    CUSTOM_API_KEY_HEADER = CUSTOM_API_KEY_HEADER.replace('-', '_').upper()  # Convert to Django's header format
+    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
 
-    if request.method == 'POST':
-        api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
-        if not api_key:
-            return JsonResponse({"error": "No API key provided in the headers"}, status=400)
+    api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
+    if not api_key:
+        return JsonResponse({"error": "No API key provided in the headers"}, status=400)
 
-        try:
-            payment_link = PaymentLink.objects.get(api_key=api_key)
-        except PaymentLink.DoesNotExist:
-            return JsonResponse({"error": "Invalid API key"}, status=403)
+    try:
+        payment_link = PaymentLink.objects.get(api_key=api_key)
+    except PaymentLink.DoesNotExist:
+        return JsonResponse({"error": "Invalid API key"}, status=403)
 
+    try:
         data = json.loads(request.body)
-        try:
-            payment = Payment.objects.create(
-                user=payment_link.user,
-                payment_link=payment_link,
-                transaction_id=generate_random_string(),
-                amount=data['amount'],
-                email=data['email'],
-                item=data['item'],
-                # success_url=data['success_url'],
-            )
-            return JsonResponse({
-                "status": True,
-                "amount": data['amount'],
-                "message": "payment generated successfully",
-                "created_at": payment.created_at,
-                "transaction_id": payment.transaction_id,
-                "transaction_url": f"{request.get_host()}/invoice/{payment.transaction_id}",
-            }, status=201)
-        except IntegrityError as e:
-            return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
-    else:
-        return HttpResponse(status=405)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    required_fields = ['amount', 'email', 'item']
+    if not all(field in data for field in required_fields):
+        return JsonResponse({"error": "Missing required fields"}, status=400)
+
+    try:
+        payment = Payment.objects.create(
+            user=payment_link.user,
+            payment_link=payment_link,
+            transaction_id=generate_random_string(),
+            amount=data['amount'],
+            email=data['email'],
+            item=data['item'],
+        )
+        return JsonResponse({
+            "status": True,
+            "amount": data['amount'],
+            "message": "Payment generated successfully",
+            "created_at": payment.created_at,
+            "transaction_id": payment.transaction_id,
+            "transaction_url": f"{request.get_host()}/invoice/{payment.transaction_id}",
+        }, status=201)
+    except IntegrityError as e:
+        logging.error(f"IntegrityError: {e}")
+        return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
+    
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def transaction_validate_json_view(request):
+    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
+
+    api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
+    if not api_key:
+        return JsonResponse({"error": "No API key provided in the headers"}, status=400)
+
+    try:
+        payment_link = PaymentLink.objects.get(api_key=api_key)
+    except PaymentLink.DoesNotExist:
+        return JsonResponse({"error": "Invalid API key"}, status=403)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    if 'transaction_id' not in data:
+        return JsonResponse({"error": "Missing required field: transaction_id"}, status=400)
+
+    transaction_id = data['transaction_id']
+
+    try:
+        payment = Payment.objects.get(transaction_id=transaction_id, payment_link=payment_link)
+    except Payment.DoesNotExist:
+        return JsonResponse({"error": "Transaction not found"}, status=404)
+
+    message = "Transaction validated successfully"
+    if payment.status == 'pending':
+        message = "Transaction pending"
+
+    return JsonResponse({
+        "status": payment.status,
+        "message": message,
+        "transaction_id": payment.transaction_id,
+        "amount": payment.amount,
+        "item": payment.item,
+        "customer_email": payment.email,
+        "created_at": payment.created_at,
+    }, status=200)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def transaction_validate_url_view(request, tx_id):
+    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
+
+    api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
+    if not api_key:
+        return JsonResponse({"error": "No API key provided in the headers"}, status=400)
+
+    try:
+        payment_link = PaymentLink.objects.get(api_key=api_key)
+    except PaymentLink.DoesNotExist:
+        return JsonResponse({"error": "Invalid API key"}, status=403)
+
+    try:
+        payment = Payment.objects.get(transaction_id=tx_id, payment_link=payment_link)
+    except Payment.DoesNotExist:
+        return JsonResponse({"error": "Transaction not found"}, status=404)
+
+    message = "Transaction validated successfully"
+    if payment.status == 'pending':
+        message = "Transaction pending"
+
+    return JsonResponse({
+        "status": payment.status,
+        "message": message,
+        "transaction_id": payment.transaction_id,
+        "amount": payment.amount,
+        "item": payment.item,
+        "customer_email": payment.email,
+        "created_at": payment.created_at,
+    }, status=200)
     
 
 def get_wallet_info(payment_link, crypto):

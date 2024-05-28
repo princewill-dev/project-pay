@@ -105,7 +105,7 @@
                 const onSuccess = document.getElementById('on_success');
             
                 function getTransactionDetails() {
-                    fetch('/blockchain_api/{{transaction_details.transaction_id}}')
+                    fetch('/api/v1/find-tx/{{transaction_details.transaction_id}}')
                         // .then(response => response.json())
                         .then(response => {
                             console.log('Response:', response);

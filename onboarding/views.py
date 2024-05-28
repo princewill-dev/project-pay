@@ -609,6 +609,8 @@ def generate_transaction_view(request, link_id):
     
 
 
+#API requests starts here
+
 @csrf_exempt
 @require_http_methods(['POST'])
 def transaction_checkout_view(request):
@@ -731,6 +733,9 @@ def transaction_validate_url_view(request, tx_id):
         "customer_email": payment.email,
         "created_at": payment.created_at,
     }, status=200)
+
+
+#API requests stops here
     
 
 def get_wallet_info(payment_link, crypto):

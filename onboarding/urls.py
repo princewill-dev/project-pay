@@ -68,8 +68,9 @@ urlpatterns = [
     path('api/v1/checkout/', views.transaction_checkout_view, name='transaction_checkout'),
     path('api/v1/validate/', views.transaction_validate_json_view, name='transaction_validate_json'),
     path('api/v1/validate/<str:tx_id>', views.transaction_validate_url_view, name='transaction_validate_url'),
+    path('api/v1/find-tx/<str:tx_id>', views.blockchain_api_view, name='blockchain_api'),
 
-    # API Links starts from here
+    # API Links stops from here
 
     path('invoice/<str:tx_id>', views.select_transaction_crypto_view, name='select_transaction_crypto'),
 
@@ -80,8 +81,6 @@ urlpatterns = [
     path('save_invoice_receipt/<str:tx_id>', require_http_methods(['POST'])(views.save_confirm_email_for_receipt_view), name='save_confirm_email_for_receipt'),
 
     path('crypto_selection/<str:tx_id>', views.save_crypto_selection_view, name='save_crypto_selection'),
-
-    path('blockchain_api/<str:tx_id>', views.blockchain_api_view, name='blockchain_api'),
 
     path('create_invoice/', login_required(views.create_invoice_view), name='create_invoice'),
 

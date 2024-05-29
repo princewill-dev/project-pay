@@ -131,6 +131,7 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=200) # expected in API call
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     converted_amount = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
+    random_added_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     item = models.CharField(max_length=200, null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.CharField(max_length=200, null=True, blank=True)

@@ -756,6 +756,11 @@ def convert_usd_to_trx(amount_in_usd):
     trx_per_usd = Decimal(1) / Decimal(data['tron']['usd']).quantize(Decimal('0.000001'), rounding=ROUND_DOWN)
     return (amount_in_usd * trx_per_usd).quantize(Decimal('0.000001'), rounding=ROUND_DOWN)
 
+
+def random_amount_generator():
+    amount = round(random.uniform(0.01, 0.50), 2)
+    return amount
+
     
 def save_crypto_selection_view(request, tx_id):
 
@@ -769,7 +774,10 @@ def save_crypto_selection_view(request, tx_id):
 
         targeted_address = wallet.address
 
-        amount_in_usd = invoice_id.amount
+        random_added_amount = random_amount_generator()
+        print(random_added_amount)
+
+        amount_in_usd = invoice_id.amount + Decimal(random_added_amount)
 
         amount_in_trx = convert_usd_to_trx(amount_in_usd)
 
@@ -789,6 +797,7 @@ def save_crypto_selection_view(request, tx_id):
         invoice_id.crypto_network = selected_crypto
         invoice_id.wallet_address = wallet.address
         invoice_id.converted_amount = converted_amt
+        invoice_id.random_added_amount = random_added_amount
         invoice_id.api_url = api_link
         invoice_id.save()
 

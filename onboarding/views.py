@@ -976,6 +976,7 @@ def make_payment_view(request, tx_id):
             'payment_link': invoice_id.payment_link.link_id,
             'amount': invoice_id.amount,
             'converted_amount': invoice_id.converted_amount,
+            'charges': invoice_id.random_added_amount,
             'success_url': invoice_id.success_url,
             'created_at': invoice_id.created_at,
             'is_paid': invoice_id.is_paid,

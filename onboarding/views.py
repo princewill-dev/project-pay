@@ -1021,141 +1021,257 @@ def send_email(invoice_tx, recipient, is_customer):
     send_mail(mail_subject, message, 'support@bitwade.com', [recipient_email])
   
 
-def blockchain_api_view(request, tx_id):
+# def blockchain_api_view(request, tx_id):
 
-    invoice_tx = Payment.objects.get(transaction_id=tx_id)
+#     invoice_tx = Payment.objects.get(transaction_id=tx_id)
+
+#     if invoice_tx.crypto_network == 'trx':
+
+#         tx_amount = invoice_tx.converted_amount
+
+#         target_amount = tx_amount * 1000000
+
+#         api_url = invoice_tx.api_url        
+
+#         max_attempts = 5
+#         attempts = 0
+
+#         try:
+            
+#             while attempts < max_attempts:
+#                 try:
+
+#                     import os
+#                     import environ
+#                     env = environ.Env()
+#                     environ.Env.read_env()
+
+#                     authorization = os.environ.get('TRON_PRO_API_KEY')
+
+#                     url = api_url
+
+#                     headers = {
+#                         'Content-Type': "application/json",
+#                         'TRON-PRO-API-KEY': authorization
+#                     }
+                    
+#                     response = requests.get(url, headers=headers)
+#                     response.raise_for_status()
+#                     data = response.json()
+
+#                     for transaction in data['data']:
+#                         if 'contract' in transaction['raw_data']:
+#                             for contract in transaction['raw_data']['contract']:
+#                                 if 'parameter' in contract and 'value' in contract['parameter']:
+#                                     if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
+#                                         transaction_details = {
+#                                             'hash': transaction['txID'],
+#                                             'amount': contract['parameter']['value']['amount'],
+#                                             'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
+#                                         }
+#                                         if transaction_details['confirmed']:
+#                                             try:
+#                                                 # Check if the transaction exists in the Invoice model
+#                                                 invoice = Invoice.objects.get(invoice_id=invoice_tx)
+#                                                 # If it exists, mark it as successful
+#                                                 invoice.status = 'successful'
+#                                                 invoice.is_paid = True
+#                                                 invoice.save()
+#                                             except ObjectDoesNotExist:
+#                                                 pass
+                                            
+#                                             base_url = "https://tronscan.io/#/transaction/"
+#                                             invoice_tx.status = 'successful'
+#                                             invoice_tx.is_paid = True
+#                                             invoice_tx.business_name = invoice_tx.payment_link.tag_name
+#                                             invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
+#                                             invoice_tx.business_name = invoice_tx.payment_link.tag_name
+#                                             invoice_tx.save()
+
+#                                             # send email to the customer
+#                                             send_email(invoice_tx, invoice_tx.email, True)
+
+#                                             # send email to the store owner
+#                                             send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
+
+#                                         return JsonResponse(transaction_details)
+
+#                     attempts += 1
+
+#                 except requests.exceptions.RequestException as e:
+#                     return JsonResponse({'error': str(e)}, status=500)
+
+#             return JsonResponse({'error': 'Target amount not found.'}, status=404)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+        
+#     elif invoice_tx.crypto_network == 'trc20':
+
+#         tx_amount = invoice_tx.converted_amount
+#         target_amount = math.floor(tx_amount * 1000000)
+
+#         api_url = invoice_tx.api_url
+#         max_attempts = 5
+#         attempts = 0
+
+#         try:
+#             response = requests.get(api_url)
+#             response.raise_for_status()
+#             data = response.json()
+
+#             for transaction in data['data']:
+#                 if int(transaction['value']) == target_amount:
+
+#                     try:
+#                         # Check if the transaction exists in the Invoice model
+#                         invoice = Invoice.objects.get(invoice_id=invoice_tx)
+#                         # If it exists, mark it as successful
+#                         invoice.status = 'successful'
+#                         invoice.is_paid = True
+#                         # send email to the recipient and the sender
+#                         invoice.save()
+#                     except ObjectDoesNotExist:
+#                         pass
+
+#                     base_url = "https://tronscan.io/#/transaction/"
+#                     invoice_tx.status = 'successful'
+#                     invoice_tx.is_paid = True
+#                     invoice_tx.business_name = invoice_tx.payment_link.tag_name
+#                     invoice_tx.transaction_hash = f"{base_url}{transaction['transaction_id']}"
+#                     invoice_tx.business_name = invoice_tx.payment_link.tag_name
+#                     invoice_tx.save()
+
+#                     # send email to the customer
+#                     send_email(invoice_tx, invoice_tx.email, True)
+
+#                     # send email to the store owner
+#                     send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
+
+#                     return JsonResponse({
+#                         'hash': transaction['transaction_id'],
+#                         'amount': target_amount,
+#                         'confirmed': True
+#                     })
+
+#             return JsonResponse({'error': 'Transaction not found.'}, status=404)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+
+
+def blockchain_api_view(request, tx_id):
+    try:
+        invoice_tx = Payment.objects.get(transaction_id=tx_id)
+    except Payment.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Payment not found"}, status=404)
+
+    if invoice_tx.status == 'successful':
+        return JsonResponse({
+            "transaction_status": "successful"
+        }, status=200)
+
+    # Increment the find_tx_counter
+    invoice_tx.find_tx_counter += 1
+    attempts = invoice_tx.find_tx_counter
+
+    if attempts > 150:
+        return JsonResponse({"status": "error", "message": "Invoice expired, please try again"}, status=400)
+    
+    print(f"Attempt {attempts}")
+
+    invoice_tx.save()
 
     if invoice_tx.crypto_network == 'trx':
-
-        tx_amount = invoice_tx.converted_amount
-
-        target_amount = tx_amount * 1000000
-
-        api_url = invoice_tx.api_url        
-
-        max_attempts = 5
-        attempts = 0
-
-        try:
-            
-            while attempts < max_attempts:
-                try:
-
-                    import os
-                    import environ
-                    env = environ.Env()
-                    environ.Env.read_env()
-
-                    authorization = os.environ.get('TRON_PRO_API_KEY')
-
-                    url = api_url
-
-                    headers = {
-                        'Content-Type': "application/json",
-                        'TRON-PRO-API-KEY': authorization
-                    }
-                    
-                    response = requests.get(url, headers=headers)
-                    response.raise_for_status()
-                    data = response.json()
-
-                    for transaction in data['data']:
-                        if 'contract' in transaction['raw_data']:
-                            for contract in transaction['raw_data']['contract']:
-                                if 'parameter' in contract and 'value' in contract['parameter']:
-                                    if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
-                                        transaction_details = {
-                                            'hash': transaction['txID'],
-                                            'amount': contract['parameter']['value']['amount'],
-                                            'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
-                                        }
-                                        if transaction_details['confirmed']:
-                                            try:
-                                                # Check if the transaction exists in the Invoice model
-                                                invoice = Invoice.objects.get(invoice_id=invoice_tx)
-                                                # If it exists, mark it as successful
-                                                invoice.status = 'successful'
-                                                invoice.is_paid = True
-                                                invoice.save()
-                                            except ObjectDoesNotExist:
-                                                pass
-                                            
-                                            base_url = "https://tronscan.io/#/transaction/"
-                                            invoice_tx.status = 'successful'
-                                            invoice_tx.is_paid = True
-                                            invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                                            invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
-                                            invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                                            invoice_tx.save()
-
-                                            # send email to the customer
-                                            send_email(invoice_tx, invoice_tx.email, True)
-
-                                            # send email to the store owner
-                                            send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
-
-                                        return JsonResponse(transaction_details)
-
-                    attempts += 1
-
-                except requests.exceptions.RequestException as e:
-                    return JsonResponse({'error': str(e)}, status=500)
-
-            return JsonResponse({'error': 'Target amount not found.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-        
+        return handle_trx_transaction(invoice_tx)
     elif invoice_tx.crypto_network == 'trc20':
+        return handle_trc20_transaction(invoice_tx)
+    else:
+        return JsonResponse({'error': 'Unsupported crypto network.'}, status=400)
 
-        tx_amount = invoice_tx.converted_amount
-        target_amount = math.floor(tx_amount * 1000000)
+def handle_trx_transaction(invoice_tx):
+    tx_amount = invoice_tx.converted_amount
+    target_amount = tx_amount * 1000000
+    api_url = invoice_tx.api_url
 
-        api_url = invoice_tx.api_url
-        max_attempts = 5
-        attempts = 0
+    try:
+        authorization = os.environ.get('TRON_PRO_API_KEY')
+        headers = {
+            'Content-Type': "application/json",
+            'TRON-PRO-API-KEY': authorization
+        }
+        
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
 
+        for transaction in data['data']:
+            if 'contract' in transaction['raw_data']:
+                for contract in transaction['raw_data']['contract']:
+                    if 'parameter' in contract and 'value' in contract['parameter']:
+                        if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
+                            transaction_details = {
+                                'hash': transaction['txID'],
+                                'amount': contract['parameter']['value']['amount'],
+                                'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
+                            }
+                            if transaction_details['confirmed']:
+                                return update_transaction_status(invoice_tx, transaction_details)
+
+        # return JsonResponse({'error': 'Transaction not found.'}, status=404)
+        return JsonResponse({'message': 'Transaction not found.'}, status=200)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def handle_trc20_transaction(invoice_tx):
+    tx_amount = invoice_tx.converted_amount
+    target_amount = math.floor(tx_amount * 1000000)
+    api_url = invoice_tx.api_url
+
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()
+        data = response.json()
+
+        for transaction in data['data']:
+            if int(transaction['value']) == target_amount:
+                transaction_details = {
+                    'hash': transaction['transaction_id'],
+                    'amount': target_amount,
+                    'confirmed': True,
+                }
+                return update_transaction_status(invoice_tx, transaction_details)
+
+        # return JsonResponse({'error': 'Transaction not found.'}, status=404)
+        return JsonResponse({'message': 'Transaction not found.'}, status=200)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def update_transaction_status(invoice_tx, transaction_details):
+    if transaction_details['confirmed']:
         try:
-            response = requests.get(api_url)
-            response.raise_for_status()
-            data = response.json()
+            invoice = Invoice.objects.get(invoice_id=invoice_tx)
+            invoice.status = 'successful'
+            invoice.is_paid = True
+            invoice.save()
+        except ObjectDoesNotExist:
+            pass
 
-            for transaction in data['data']:
-                if int(transaction['value']) == target_amount:
+        base_url = "https://tronscan.io/#/transaction/"
+        invoice_tx.status = 'successful'
+        invoice_tx.is_paid = True
+        invoice_tx.business_name = invoice_tx.payment_link.tag_name
+        invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
+        invoice_tx.save()
 
-                    try:
-                        # Check if the transaction exists in the Invoice model
-                        invoice = Invoice.objects.get(invoice_id=invoice_tx)
-                        # If it exists, mark it as successful
-                        invoice.status = 'successful'
-                        invoice.is_paid = True
-                        # send email to the recipient and the sender
-                        invoice.save()
-                    except ObjectDoesNotExist:
-                        pass
+        send_email(invoice_tx, invoice_tx.email, True)
+        send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
 
-                    base_url = "https://tronscan.io/#/transaction/"
-                    invoice_tx.status = 'successful'
-                    invoice_tx.is_paid = True
-                    invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                    invoice_tx.transaction_hash = f"{base_url}{transaction['transaction_id']}"
-                    invoice_tx.business_name = invoice_tx.payment_link.tag_name
-                    invoice_tx.save()
+    return JsonResponse(transaction_details, status=200)
 
-                    # send email to the customer
-                    send_email(invoice_tx, invoice_tx.email, True)
 
-                    # send email to the store owner
-                    send_email(invoice_tx, invoice_tx.payment_link.user.email, False)
-
-                    return JsonResponse({
-                        'hash': transaction['transaction_id'],
-                        'amount': target_amount,
-                        'confirmed': True
-                    })
-
-            return JsonResponse({'error': 'Transaction not found.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
 
 
 def create_invoice_view(request):

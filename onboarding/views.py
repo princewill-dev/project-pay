@@ -338,7 +338,7 @@ def update_payment_wallets_view(request, link_id):
             wallet_address = request.POST.get(f'{token.token_tag}_wallet')
             if wallet_address:  # Only save if a wallet address is provided
 
-                qr_code_image = generate_qr_code(wallet_address)
+                # qr_code_image = generate_qr_code(wallet_address)
 
                 # filename = f'{wallet_address}_{payment_link.link_id}.png'
 
@@ -349,7 +349,7 @@ def update_payment_wallets_view(request, link_id):
                     wallet_id=payment_link,
                     crypto=token.token_tag,
                     address=wallet_address,
-                    qr_code_image=qr_code_image,
+                    # qr_code_image=qr_code_image,
                 )
 
         messages.success(request, 'Your store wallets has been updated.')
@@ -966,10 +966,12 @@ def make_payment_view(request, tx_id):
         selected_crypto = invoice_id.crypto_network
 
         targeted_address = invoice_id.wallet_address
+        qr_code_image = generate_qr_code(targeted_address)
+        qr_code = qr_code_image
 
-        find_qrcode_image = Wallet.objects.filter(address=targeted_address).first()
-
-        qr_code = find_qrcode_image.qr_code_image
+        time_to_complete = timezone.now() + timezone.timedelta(minutes=10)
+        invoice_id.completion_time = time_to_complete
+        invoice_id.save()
 
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,

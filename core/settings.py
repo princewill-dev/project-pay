@@ -65,7 +65,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_HEADERS = [
     'content-type',
-    'bixmerchant-API-KEY',
+    'BIXMERCHANT-API-KEY',
 ]
 
 

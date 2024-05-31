@@ -615,7 +615,7 @@ def generate_transaction_view(request, link_id):
 @require_http_methods(['POST'])
 def transaction_checkout_view(request):
 
-    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'BIXMERCHANT_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -660,7 +660,7 @@ def transaction_checkout_view(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def transaction_validate_json_view(request):
-    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'BIXMERCHANT_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -704,7 +704,7 @@ def transaction_validate_json_view(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def transaction_validate_url_view(request, tx_id):
-    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'BIXMERCHANT_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:

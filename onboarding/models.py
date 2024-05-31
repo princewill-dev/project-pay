@@ -144,7 +144,7 @@ class Payment(models.Model):
     business_name = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     is_paid = models.BooleanField(default=False)
-    success_url = models.URLField(null=True)
+    success_url = models.URLField(null=True, blank=True)
     status = models.CharField(max_length=200, default='pending')
     find_tx_counter = models.IntegerField(default=0, null=True, blank=True)
     completion_time = models.DateTimeField(null=True, blank=True)

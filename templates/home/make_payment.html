@@ -139,41 +139,40 @@
             </div> 
 
             <script>
-
                 const onLoad = document.getElementById('on_load');
                 const onSuccess = document.getElementById('on_success');
                 const onError = document.getElementById('on_error');
                 const errorMessage = document.getElementById('error_message');
-            
+
                 function getTransactionDetails() {
                     fetch('/api/v1/find-tx/{{transaction_details.transaction_id}}')
                         .then(response => {
-                            console.log('Response:', response);
-                            return response.json().then(data => ({status: response.status, body: data}));
+                            console.log('Response:', response); // Todo: remove this line
+                            return response.json().then(data => ({ status: response.status, body: data }));
                         })
                         .then(result => {
                             console.log('Data:', result.body);
-                            if (result.status === 200 && result.body.confirmed === true) {
+                            if (result.body.transaction_status === "successful") {
                                 onLoad.style.display = 'none';
                                 onSuccess.style.display = 'block';
-                            } else if (result.status !== 200) {
+                            } else if (result.body.status === "expired") {
                                 onLoad.style.display = 'none';
                                 onError.style.display = 'block';
-                                errorMessage.textContent = result.body.message || 'An error occurred';
+                                errorMessage.textContent = result.body.message;
                             } else {
                                 setTimeout(getTransactionDetails, 5000);
                             }
                         })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            onLoad.style.display = 'none';
-                            onError.style.display = 'block';
-                            errorMessage.textContent = 'An error occurred';
-                        });
+                        // .catch(error => {
+                        //     console.error('Error:', error);
+                        //     onLoad.style.display = 'none';
+                        //     onError.style.display = 'block';
+                        //     errorMessage.textContent = 'An error occurred';
+                        // });
                 }
+
                 // Start checking for the transaction
                 getTransactionDetails();
-
             </script>
             
         </div>

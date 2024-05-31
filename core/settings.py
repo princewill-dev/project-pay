@@ -35,9 +35,9 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "127.0.0.1:5500",
-    "bitwade.onrender.com",
+    "bixmerchant.onrender.com",
     "project-pay.fly.dev",
-    "bitwade.com",
+    "bixmerchant.com",
     "themestore.pages.dev",
 ]
 
@@ -45,9 +45,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",
     "http://127.0.0.1:5500",
     "http://localhost:5500",
-    "https://bitwade.onrender.com",
+    "https://bixmerchant.onrender.com",
     "https://project-pay.fly.dev",
-    "https://bitwade.com",
+    "https://bixmerchant.com",
     "http://localhost",
     "https://themestore.pages.dev",
 ]
@@ -57,15 +57,15 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://127.0.0.1:5500",
     "http://localhost:5500",
-    "https://bitwade.onrender.com",
+    "https://bixmerchant.onrender.com",
     "https://project-pay.fly.dev",
-    "https://bitwade.com",
+    "https://bixmerchant.com",
     "https://themestore.pages.dev",
 ]
 
 CORS_ALLOW_HEADERS = [
     'content-type',
-    'BITWADE-API-KEY',
+    'bixmerchant-API-KEY',
 ]
 
 

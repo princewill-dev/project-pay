@@ -116,9 +116,9 @@ def signup_view(request):
 
             try:
                 send_mail(
-                    'Welcome to bitwade.com', 
+                    'Welcome to bixmerchant.com', 
                     f'Here is your email verification code: {otp_code}',
-                    'support@bitwade.com',
+                    'support@bixmerchant.com',
                     [user.email],
                     fail_silently=False
                 )
@@ -226,7 +226,7 @@ def password_reset_request(request):
             If you didn't request this, please ignore this email.
 
             """
-            send_mail(mail_subject, message, 'support@bitwade.com', [user.email])
+            send_mail(mail_subject, message, 'support@bixmerchant.com', [user.email])
             messages.success(request, 'Please check your email for the password reset link.')
             return render(request, 'home/reset_password.html')
         else:
@@ -615,7 +615,7 @@ def generate_transaction_view(request, link_id):
 @require_http_methods(['POST'])
 def transaction_checkout_view(request):
 
-    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -660,7 +660,7 @@ def transaction_checkout_view(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def transaction_validate_json_view(request):
-    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -704,7 +704,7 @@ def transaction_validate_json_view(request):
 @csrf_exempt
 @require_http_methods(['GET'])
 def transaction_validate_url_view(request, tx_id):
-    CUSTOM_API_KEY_HEADER = 'BITWADE_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'bixmerchant_API_KEY'  # Already converted to Django's header format
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -1020,7 +1020,7 @@ def send_email(invoice_tx, recipient, is_customer):
             Item: {invoice_tx.item}
             Customer email: {recipient_email}
         """
-    send_mail(mail_subject, message, 'support@bitwade.com', [recipient_email])
+    send_mail(mail_subject, message, 'support@bixmerchant.com', [recipient_email])
   
 
 # def blockchain_api_view(request, tx_id):

@@ -1,8 +1,7 @@
 core/.env
 core/__pycache__/
 onboarding/__pycache__/
-myenv/
-/samplex
+env/
 .dockerignore
 Dockerfile
 fly.toml

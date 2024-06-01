@@ -807,32 +807,58 @@ def save_crypto_selection_view(request, tx_id):
     return redirect('select_transaction_crypto', tx_id=invoice_id.transaction_id)
 
 
+def get_transaction_status(tx_id):
+
+    try:
+
+        invoice = Payment.objects.get(transaction_id=tx_id)
+        
+        transaction_details = {
+            'user': invoice.user,
+            'payment_link': invoice.payment_link.link_id,
+            'transaction_id': invoice.transaction_id,
+            'amount': invoice.amount,
+            'converted_amount': invoice.converted_amount,
+            'random_added_amount': invoice.random_added_amount,
+            'item': invoice.item,
+            'ip_address': invoice.ip_address,
+            'user_agent': invoice.user_agent,
+            'country': invoice.country,
+            'email': invoice.email,
+            'crypto_network': invoice.crypto_network,
+            'wallet_address': invoice.wallet_address,
+            'transaction_hash': invoice.transaction_hash,
+            'api_url': invoice.api_url,
+            'tag_name': invoice.business_name,
+            'created_at': invoice.created_at,
+            'is_paid': invoice.is_paid,
+            'success_url': invoice.success_url,
+            'status': invoice.status,
+            'find_tx_counter': invoice.find_tx_counter,
+            'completion_time': invoice.completion_time,
+        }
+
+        if invoice.status in ['successful', 'cancelled', 'expired', 'suspended']:
+           
+            return {
+                'status': 'ok',
+                'transaction_details': transaction_details
+            }
+        
+    except Payment.DoesNotExist:
+        return {
+            'status': 'error',
+            'action_page': 'home/error_page.html',
+        }
+
+
 def select_transaction_crypto_view(request, tx_id):
 
     try:
         # Get the Payment object with the given transaction ID
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
-        if invoice_id.status == 'successful':
-
-            transaction_details = {
-                'transaction_id': invoice_id.transaction_id,
-                'payment_link': invoice_id.payment_link.link_id,
-                'amount': invoice_id.amount,
-                'success_url': invoice_id.success_url,
-                'created_at': invoice_id.created_at,
-                'is_paid': invoice_id.is_paid,
-                'status': invoice_id.status,
-                'tag_name': invoice_id.payment_link.tag_name,
-                'hash': invoice_id.transaction_hash,
-                'link_logo': invoice_id.payment_link.link_logo
-            }
-
-            context = {
-                'transaction_details' : transaction_details,
-            }
-
-            return render(request, 'home/temp_success_page.html', context)
+        get_transaction_status(tx_id)
 
         # Get the PaymentLink associated with the transaction
         payment_link = invoice_id.payment_link

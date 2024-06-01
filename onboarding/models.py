@@ -139,6 +139,7 @@ class Payment(models.Model):
     email = models.EmailField(null=True, blank=True) # expected in API call
     crypto_network = models.CharField(max_length=200,null=True, blank=True)
     wallet_address = models.CharField(max_length=200,null=True, blank=True)
+    qr_code = models.FileField(upload_to='qr_codes/', null=True, blank=True)
     transaction_hash = models.CharField(max_length=200, null=True, blank=True)
     api_url = models.CharField(max_length=200, null=True, blank=True)
     business_name = models.CharField(max_length=200, null=True, blank=True)

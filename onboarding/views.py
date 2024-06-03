@@ -974,6 +974,9 @@ def save_confirm_email_for_receipt_view(request, tx_id):
         confirmed_email = request.POST.get('email')
 
         # Update the database where this transaction exists
+
+        time_to_complete = timezone.now() + timezone.timedelta(minutes=10)
+        invoice_id.completion_time = time_to_complete
         invoice_id.email = confirmed_email
         invoice_id.save()
 
@@ -984,20 +987,21 @@ def save_confirm_email_for_receipt_view(request, tx_id):
 
 
 def make_payment_view(request, tx_id):
-
     try:
-
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
         selected_crypto = invoice_id.crypto_network
-
+        converted_amount = invoice_id.converted_amount
         targeted_address = invoice_id.wallet_address
-        qr_code_image = generate_qr_code(targeted_address)
+        qr_result = targeted_address + "?amount=" + str(converted_amount)
+        qr_code_image = generate_qr_code(qr_result)
         qr_code = qr_code_image
 
-        time_to_complete = timezone.now() + timezone.timedelta(minutes=10)
-        invoice_id.completion_time = time_to_complete
-        invoice_id.save()
+        created_at = invoice_id.created_at
+        time_to_complete =invoice_id.completion_time
+
+        # Calculate the difference in seconds
+        time_difference = int((time_to_complete - timezone.now()).total_seconds())
 
         transaction_details = {
             'transaction_id': invoice_id.transaction_id,
@@ -1014,6 +1018,7 @@ def make_payment_view(request, tx_id):
             'crypto_network': selected_crypto,
             'qr_code': qr_code,
             'completion_time': invoice_id.completion_time,
+            'time_difference': time_difference,
         }
 
         context = {

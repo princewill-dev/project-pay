@@ -23,7 +23,15 @@
                     <h2 class="text-center"> Invoice not valid! </h2>
                     <div class="space16"></div>                
                     
-                    <p class="text-center">Sorry, the invoice you are looking for is invalid or does not exist</p>
+                    {% if messages %}
+                        {% for message in messages %}
+
+                            <p class="text-center">{{ message }}</p>
+
+                        {% endfor %}
+                    {% endif %}
+
+                    
 
                     <hr>
                     <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>

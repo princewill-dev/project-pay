@@ -766,6 +766,10 @@ def save_crypto_selection_view(request, tx_id):
 
     invoice_id = get_object_or_404(Payment, transaction_id=tx_id)
 
+    status_check_response = check_invoice_status(request, invoice_id)
+    if status_check_response:
+        return status_check_response
+
     if request.method == 'POST':
         
         selected_crypto = request.POST.get('selected_crypto')
@@ -852,13 +856,32 @@ def get_transaction_status(tx_id):
         }
 
 
+def check_invoice_status(request, invoice_id):
+    # Check if the invoice is already successful
+    if invoice_id.status == 'successful':
+        messages.success(request, 'This invoice has already been paid.')
+        return render(request, 'home/invalid_payment.html')
+
+    # Check if the current time has exceeded the completion time
+    if timezone.now() > invoice_id.completion_time:
+        invoice_id.status = 'expired'
+        invoice_id.save()
+        messages.success(request, 'This invoice has expired. Please try again.')
+        return render(request, 'home/invalid_payment.html')
+
+    return None  # Return None if the invoice is neither successful nor expired
+
+
 def select_transaction_crypto_view(request, tx_id):
 
     try:
+        
         # Get the Payment object with the given transaction ID
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
-        get_transaction_status(tx_id)
+        status_check_response = check_invoice_status(request, invoice_id)
+        if status_check_response:
+            return status_check_response
 
         # Get the PaymentLink associated with the transaction
         payment_link = invoice_id.payment_link
@@ -916,6 +939,10 @@ def confirm_email_for_receipt_view(request, tx_id):
     try:
         # Get the Payment object with the given transaction ID
         invoice_id = Payment.objects.get(transaction_id=tx_id)
+
+        status_check_response = check_invoice_status(request, invoice_id)
+        if status_check_response:
+            return status_check_response
 
         if invoice_id.status == 'successful':
 
@@ -990,6 +1017,10 @@ def make_payment_view(request, tx_id):
     try:
         invoice_id = Payment.objects.get(transaction_id=tx_id)
 
+        status_check_response = check_invoice_status(request, invoice_id)
+        if status_check_response:
+            return status_check_response
+
         selected_crypto = invoice_id.crypto_network
         converted_amount = invoice_id.converted_amount
         targeted_address = invoice_id.wallet_address
@@ -998,7 +1029,7 @@ def make_payment_view(request, tx_id):
         qr_code = qr_code_image
 
         created_at = invoice_id.created_at
-        time_to_complete =invoice_id.completion_time
+        time_to_complete = invoice_id.completion_time
 
         # Calculate the difference in seconds
         time_difference = int((time_to_complete - timezone.now()).total_seconds())

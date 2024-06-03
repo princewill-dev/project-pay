@@ -14,25 +14,25 @@
                 <div id="on_load">
 
                     <div class="login-boxarea heading6">
-                        <!-- <h3 style="display: none;">
-                            {% if transaction_details.link_logo %}
-                                <img src="{{ transaction_details.link_logo.url }}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
-                            {% else %}
-                                <img src="/static/onboarding/assets/images/elements/store-checkout.png" alt="store-logo" width="50px">
-                            {% endif %}
-                            {{transaction_details.tag_name}}
-                        </h3> -->
     
                         <div class="text-center" id="items_to_remove">
                             
                             <h3 class="text-center addamount"></h3>
                             <script type="text/javascript">
-                                var amount = parseFloat('{{ transaction_details.amount }}');
-                                var charges = parseFloat('{{ transaction_details.charges }}');
-                                var total = amount + charges;
-                            
                                 window.onload = function() {
+                                    var amount = parseFloat('{{ transaction_details.amount }}');
+                                    var charges = parseFloat('{{ transaction_details.charges }}');
+                                    var total = amount + charges;
                                     document.querySelector('.addamount').textContent = '$' + total.toFixed(2);
+
+                                    var convertedAmount = parseFloat('{{ transaction_details.converted_amount }}');
+                                    var cryptoNetwork = '{{ transaction_details.crypto_network }}';
+
+                                    if (cryptoNetwork === 'trc20') {
+                                        convertedAmount = convertedAmount.toFixed(2);
+                                    }
+
+                                    document.getElementById('amount_check').textContent = convertedAmount;
                                 }
                             </script>
 
@@ -41,9 +41,10 @@
                             <p class="text-center">
                                 Please send exactly
                                 <br>
-                                <span style="color: #000; font-size: 20px; font-weight: bold;">{{transaction_details.converted_amount}}</span>
-                                {{transaction_details.crypto_network}}</p>
-
+                                <span id="amount_check" style="color: #000; font-size: 20px; font-weight: bold;">{{ transaction_details.converted_amount }}</span>
+                                <br>
+                                {{transaction_details.crypto_network}}
+                            </p>
                         </div>                    
     
                         <div class="space16"></div>
@@ -55,17 +56,10 @@
                         <div class="space16"></div>
 
                         <p class="text-center" style="font-size: 12px;">{{transaction_details.wallet}}</p>
-    
-                        <!-- <p class="text-center" id="network">
-                            Crypto: {{transaction_details.crypto_network}} 
-                            <a href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change crypto?</a>
-                        </p> -->
 
                         <div class="text-center">
                             <a style="font-size: 12px;" href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change payment method ?</a>
                         </div>
-
-                        
 
                         <hr>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -73,9 +67,8 @@
 
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
-                                // Get the time difference from the template context
-                                var timeDifference = '{{ transaction_details.time_difference }}';
-                    
+                                var timeDifference = parseInt('{{ transaction_details.time_difference }}');
+
                                 function updateCountdown() {
                                     if (timeDifference <= 0) {
                                         document.getElementById('countdown').innerHTML = "Time's up!";
@@ -86,8 +79,7 @@
                                         timeDifference--;  // Decrease the time difference by one second
                                     }
                                 }
-                    
-                                // Update the countdown every second
+
                                 setInterval(updateCountdown, 1000);
                                 updateCountdown(); // Initial call to display the countdown immediately
                             });

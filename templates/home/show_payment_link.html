@@ -61,18 +61,18 @@
                       </h3>
                       <div class="space16"></div>
 
-                      <p style="font-size: 16px;">Earnings: ${{ total_successful_payments }}</p>
+                      <p style="font-size: 12px;">Earnings: ${{ total_successful_payments }}</p>
                       
-                      <p style="font-size: 16px;">
+                      <p style="font-size: 12px;">
                         This store accepts:
                         <br>
                         {% for wallet in payment_link.wallet_set.all %}
                           {{ wallet.crypto }}: {{ wallet.address }} <br>
                         {% endfor %}
                       </p>
-                      <p  style="font-size: 16px;">API key: {{ payment_link.api_key }}</p>
+                      <p  style="font-size: 12px;">API key: {{ payment_link.api_key }}</p>
                       <hr>
-                      <div>
+                      <div style="font-size: 12px;">
                         <a href="{% url 'create_invoice_via_storelink' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">create invoice</a>
                         |
                         <a href="{% url 'edit_payment_link' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">edit info</a>

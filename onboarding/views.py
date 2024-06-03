@@ -863,7 +863,7 @@ def check_invoice_status(request, invoice_id):
         return render(request, 'home/invalid_payment.html')
 
     # Check if the current time has exceeded the completion time
-    if timezone.now() > invoice_id.completion_time:
+    if invoice_id.completion_time and timezone.now() > invoice_id.completion_time:
         invoice_id.status = 'expired'
         invoice_id.save()
         messages.success(request, 'This invoice has expired. Please try again.')
@@ -1166,6 +1166,8 @@ def handle_trc20_transaction(invoice_tx):
     tx_amount = invoice_tx.converted_amount
     target_amount = math.floor(tx_amount * 1000000)
     api_url = invoice_tx.api_url
+    created_at = invoice_tx.created_at.timestamp() * 1000  # Convert to milliseconds
+    time_to_complete = invoice_tx.completion_time.timestamp() * 1000  # Convert to milliseconds
 
     try:
         response = requests.get(api_url)
@@ -1173,7 +1175,7 @@ def handle_trc20_transaction(invoice_tx):
         data = response.json()
 
         for transaction in data['data']:
-            if int(transaction['value']) == target_amount:
+            if int(transaction['value']) == target_amount and transaction['block_timestamp'] > created_at:
                 transaction_details = {
                     'hash': transaction['transaction_id'],
                     'amount': target_amount,
@@ -1181,7 +1183,6 @@ def handle_trc20_transaction(invoice_tx):
                 }
                 return update_transaction_status(invoice_tx, transaction_details)
 
-        # return JsonResponse({'error': 'Transaction not found.'}, status=404)
         return JsonResponse({'message': 'Transaction not found.'}, status=200)
     except requests.exceptions.RequestException as e:
         return JsonResponse({'error': str(e)}, status=500)

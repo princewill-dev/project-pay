@@ -1066,11 +1066,19 @@ def blockchain_api_view(request, tx_id):
             "transaction_status": "successful"
         }, status=200)
 
+    # Check if the current time has exceeded the completion time
+    if timezone.now() > invoice_tx.completion_time:
+        invoice_tx.status = 'expired'
+        invoice_tx.save()
+        return JsonResponse({"status": "expired", "message": "Invoice expired, please try again"}, status=400)
+    
     # Increment the find_tx_counter
     invoice_tx.find_tx_counter += 1
     attempts = invoice_tx.find_tx_counter
 
-    if attempts > 150:
+    if attempts > 120:
+        invoice_tx.status = 'expired'
+        invoice_tx.save()
         return JsonResponse({"status": "expired", "message": "Invoice expired, please try again"}, status=400)
     
     print(f"Attempt {attempts}")
@@ -1084,43 +1092,6 @@ def blockchain_api_view(request, tx_id):
     else:
         return JsonResponse({'error': 'Unsupported crypto network.'}, status=400)
 
-# def handle_trx_transaction(invoice_tx):
-#     tx_amount = invoice_tx.converted_amount
-#     target_amount = tx_amount * 1000000
-#     api_url = invoice_tx.api_url
-#     created_at = invoice_tx.created_at
-#     time_to_complete = invoice_tx.completion_time
-
-#     try:
-#         authorization = os.environ.get('TRON_PRO_API_KEY')
-#         headers = {
-#             'Content-Type': "application/json",
-#             'TRON-PRO-API-KEY': authorization
-#         }
-        
-#         response = requests.get(api_url, headers=headers)
-#         response.raise_for_status()
-#         data = response.json()
-
-#         for transaction in data['data']:
-#             if 'contract' in transaction['raw_data']:
-#                 for contract in transaction['raw_data']['contract']:
-#                     if 'parameter' in contract and 'value' in contract['parameter']:
-#                         if 'amount' in contract['parameter']['value'] and int(contract['parameter']['value']['amount']) == target_amount:
-#                             transaction_details = {
-#                                 'hash': transaction['txID'],
-#                                 'amount': contract['parameter']['value']['amount'],
-#                                 'confirmed': transaction['ret'][0]['contractRet'] == 'SUCCESS',
-#                             }
-#                             if transaction_details['confirmed']:
-#                                 return update_transaction_status(invoice_tx, transaction_details)
-
-#         # return JsonResponse({'error': 'Transaction not found.'}, status=404)
-#         return JsonResponse({'message': 'Transaction not found.'}, status=200)
-#     except requests.exceptions.RequestException as e:
-#         return JsonResponse({'error': str(e)}, status=500)
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
 
 def handle_trx_transaction(invoice_tx):
     tx_amount = invoice_tx.converted_amount

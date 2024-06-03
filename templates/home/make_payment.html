@@ -38,7 +38,11 @@
 
                             <p class="text-center" style="font-size: 10px;">Amount: ${{transaction_details.amount}} | Processing fee: ${{transaction_details.charges}}</p>
                             <hr>
-                            <p class="text-center">Please send exactly <span style="color: blue;">{{transaction_details.converted_amount}}</span> {{transaction_details.crypto_network}}</p>
+                            <p class="text-center">
+                                Please send exactly
+                                <br>
+                                <span style="color: #000; font-size: 20px; font-weight: bold;">{{transaction_details.converted_amount}}</span>
+                                {{transaction_details.crypto_network}}</p>
 
                         </div>                    
     
@@ -51,14 +55,17 @@
                         <div class="space16"></div>
 
                         <p class="text-center" style="font-size: 12px;">{{transaction_details.wallet}}</p>
-
-                        <div class="space16"></div>
     
-                        <p class="text-center" id="network">
+                        <!-- <p class="text-center" id="network">
                             Crypto: {{transaction_details.crypto_network}} 
                             <a href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change crypto?</a>
-                        </p>
+                        </p> -->
 
+                        <div class="text-center">
+                            <a style="font-size: 12px;" href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change payment method ?</a>
+                        </div>
+
+                        
 
                         <hr>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -67,7 +74,7 @@
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 // Get the time difference from the template context
-                                var timeDifference = {{ transaction_details.time_difference }};
+                                var timeDifference = '{{ transaction_details.time_difference }}';
                     
                                 function updateCountdown() {
                                     if (timeDifference <= 0) {
@@ -85,7 +92,7 @@
                                 updateCountdown(); // Initial call to display the countdown immediately
                             });
                         </script>
-
+                        <hr>
                         <p class="text-center">
                             checking for transaction
                             <img src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="20px">

@@ -859,8 +859,20 @@ def get_transaction_status(tx_id):
 def check_invoice_status(request, invoice_id):
     # Check if the invoice is already successful
     if invoice_id.status == 'successful':
+
+        transaction_details = {
+            'transaction_id': invoice_id.transaction_id,
+            'payment_link': invoice_id.payment_link.link_id,
+            'amount': invoice_id.amount,
+            'success_url': invoice_id.success_url,
+            'created_at': invoice_id.created_at,
+            'is_paid': invoice_id.is_paid,
+            'status': invoice_id.status,
+            'tag_name': invoice_id.payment_link.tag_name,
+        }
+
         messages.success(request, 'This invoice has already been paid.')
-        return render(request, 'home/invalid_payment.html')
+        return render(request, 'home/temp_success_page.html', {'transaction_details': transaction_details})
 
     # Check if the current time has exceeded the completion time
     if invoice_id.completion_time and timezone.now() > invoice_id.completion_time:

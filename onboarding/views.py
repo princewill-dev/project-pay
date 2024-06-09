@@ -785,13 +785,13 @@ def save_crypto_selection_view(request, tx_id):
 
         amount_in_trx = convert_usd_to_trx(amount_in_usd)
 
-        if selected_crypto == 'trx':
+        if selected_crypto == 'TRX':
 
             api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/'
 
             converted_amt = amount_in_trx
 
-        elif selected_crypto == 'trc20':
+        elif selected_crypto == 'TRC20':
 
             api_link = f'https://api.trongrid.io/v1/accounts/{targeted_address}/transactions/trc20?limit=100&contract_address=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
 
@@ -1129,9 +1129,9 @@ def blockchain_api_view(request, tx_id):
 
     invoice_tx.save()
 
-    if invoice_tx.crypto_network == 'trx':
+    if invoice_tx.crypto_network == 'TRX':
         return handle_trx_transaction(invoice_tx)
-    elif invoice_tx.crypto_network == 'trc20':
+    elif invoice_tx.crypto_network == 'TRC20':
         return handle_trc20_transaction(invoice_tx)
     else:
         return JsonResponse({'error': 'Unsupported crypto network.'}, status=400)

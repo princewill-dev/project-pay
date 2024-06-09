@@ -15,14 +15,12 @@
 
 <div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
     <div class="space16"></div>
-    <div class="space16"></div>
-    <div class="space16"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
-                <div class="about-welcome-header text-center heading3">
-                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create store link</span></a>
-                </div>
+                <!-- <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Create store</span></a>
+                </div> -->
                 <div class="space50"></div>
                 <form id="payment-form" action="{% url 'save_payment_link' %}" method="post" enctype="multipart/form-data">
 
@@ -30,31 +28,39 @@
 
                     <div class="login-boxarea heading6">
 
-                        <p style="font-size: 12px;">Add your store logo:</p>
-                        <input class="input-area" type="file" name="image">
-                        <div class="space16"></div>
+                        <h3 class="text-center" style="font-weight: 400; font-size: 18px;">Create your store</h3>
+                        <hr>
+                        <p style="font-size: 14px;">Add your store logo:</p>
+                        <input type="file" class="form-control" name="image">
 
-                        <p style="font-size: 12px;">What name so you want your store to be called:</p>
+                        <hr>
+
+                        <p style="font-size: 14px;">What name so you want your store to be called:</p>
+                        <input type="text" class="form-control" name="tag_name" placeholder="store name" required>
+
+                        <hr>
+
+                        <p style="font-size: 14px;">Enter your website url ( e.g: expample.com ):</p>
+                        <input type="text" class="form-control" name="link_url" placeholder="website link" required>
+
+                        <hr>
+
+                        <p style="font-size: 14px;">What type of service do you offer:</p>
+                        <textarea class="form-control" style="padding: 5px;" type="text" name="link_description" cols="50" required></textarea>
+
+                        <hr>
+
                         <div class="input-area">
-                            <input type="text" name="tag_name" placeholder="store name">
+                            <button type="submit" class="header-btn2" id="processing"> submit </button>
                         </div>
 
-                        <div class="space16"></div>
-                        <p style="font-size: 12px;">Enter your website url ( e.g: expample.com ):</p>
-                        <div class="input-area">
-                            <input type="text" name="link_url" placeholder="website link">
-                        </div>
+                        <!-- <script>
+                            var button = document.getElementById('processing');
 
-                        <div class="space16"></div>
-                        <p style="font-size: 12px;">What type of service do you offer:</p>
-                        <div class="input-area">
-                            <textarea style="padding: 5px;" type="text" name="link_description" cols="50"></textarea>
-                        </div>
-
-                        <div class="space16"></div>
-                        <div class="input-area">
-                            <button type="submit" class="header-btn2"> next >> </button>
-                        </div>
+                            button.addEventListener('click', function() {
+                                this.textContent = "Processing...";
+                            });
+                        </script> -->
 
                     </div>
                 </form>

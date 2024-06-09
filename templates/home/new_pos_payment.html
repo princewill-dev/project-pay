@@ -1,0 +1,70 @@
+{% extends 'home/main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!--===== WELCOME STARTS =======-->
+
+
+<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="space16"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'store_pos_page' link_id=link_id %}">POS Home <i class="fa-solid fa-angle-right"></i> <span>New payment</span></a>
+                </div>
+                <div class="space50"></div>
+
+                {% if messages %}
+                    {% for message in messages %}
+
+                    <center>
+                        <p id="notify" class="alert alert-info" style="font-size: 12px;">{{ message }}</p>
+                    </center>
+                    
+                    <script>
+                        // Get the element you want to disappear
+                        const element = document.getElementById('notify');
+
+                        // Set a timeout to hide the element after 3 seconds
+                        setTimeout(function() {
+                        element.style.display = 'none';
+                        }, 5000);
+                    </script>
+
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'pos_save_payment' link_id=link_id %}" method="post">
+                    {% csrf_token %}
+                    <div class="login-boxarea heading6">
+                        <h5>Create payment</h5>
+                        <hr>
+                        
+                        <div class="space16"></div>
+                        <p style="font-size: 14px;">Enter amount in USD:</p>
+                        <input class="form-control" type="tel" name="amount" required>
+
+                        <div class="space16"></div>
+                        <p style="font-size: 14px;">Item:</p>
+                        <textarea class="form-control" style="padding: 5px;" type="text" name="item" cols="50" required></textarea>
+                        
+                        <div class="space32"></div>
+                        <div class="input-area">
+                            <button type="submit" class="header-btn2">Create</button>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!--===== WELCOME ENDS =======-->
+
+
+{% endblock %}

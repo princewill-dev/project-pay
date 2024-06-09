@@ -150,7 +150,7 @@ def email_verification_view(request):
                 user.otp_code = None
                 user.otp_verified_at = timezone.now()
                 user.save()
-                return redirect('dashboard')
+                return redirect('create_payment_link')
             else:
                 messages.error(request, 'OTP expired. Please request for another one.')
         else:
@@ -433,7 +433,7 @@ def save_selected_coins_view(request):
                 )
 
         messages.success(request, 'Your store link has been created.')
-        return redirect('show_all_payment_links')
+        return redirect('show_payment_link', link_id=link_id)
 
     return redirect('create_payment_link_form')
 
@@ -869,6 +869,7 @@ def check_invoice_status(request, invoice_id):
             'is_paid': invoice_id.is_paid,
             'status': invoice_id.status,
             'tag_name': invoice_id.payment_link.tag_name,
+            'return_url': invoice_id.success_url,
         }
 
         messages.success(request, 'This invoice has already been paid.')
@@ -1164,6 +1165,7 @@ def handle_trx_transaction(invoice_tx):
                                     'hash': transaction['txID'],
                                     'amount': contract['parameter']['value']['amount'],
                                     'confirmed': True,
+                                    'return_url': invoice_tx.success_url,
                                 }
                                 return update_transaction_status(invoice_tx, transaction_details)
 
@@ -1192,6 +1194,7 @@ def handle_trc20_transaction(invoice_tx):
                     'hash': transaction['transaction_id'],
                     'amount': target_amount,
                     'confirmed': True,
+                    'return_url': invoice_tx.success_url,
                 }
                 return update_transaction_status(invoice_tx, transaction_details)
 
@@ -1302,3 +1305,85 @@ def show_all_invoices_view(request):
         'invoices': invoices
     }
     return render(request, 'home/view_invoices.html', context)
+
+
+def store_pos_page_view(request, link_id):
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+    transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
+    successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
+    total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
+    context = {
+        'payment_link': payment_link,
+        'total_successful_payments': total_successful_payments,
+        'transactions': transactions,  # Add transactions to the context
+    }
+    return render(request, 'home/store_pos.html', context)
+
+
+def pos_new_payment_view(request, link_id):
+
+    # Fetch the payment links for the current user
+    payment_links = PaymentLink.objects.filter(user=request.user)
+
+    link_id = link_id
+
+    context = {
+        'payment_links': payment_links,
+        'link_id': link_id,
+    }
+
+    # Pass the payment links to the template context
+    return render(request, 'home/new_pos_payment.html', context)
+
+
+def pos_save_payment_view(request, link_id):    
+    if request.method == 'POST':
+
+        try:
+            payment_link = PaymentLink.objects.get(link_id=link_id)
+        except PaymentLink.DoesNotExist:
+            messages.error(request, 'The selected payment link does not exist.')
+            return redirect('pos_new_payment')
+        
+        tx_id = generate_random_string()
+        get_amount = request.POST.get('amount')
+        get_item = request.POST.get('item')
+
+        payment = Payment.objects.create(
+            user=payment_link.user,
+            payment_link=payment_link,
+            transaction_id=tx_id,
+            amount=get_amount,
+            item=get_item,
+            success_url = f"/pos/{payment_link}",
+        )
+
+        # Use the 'reverse' function to dynamically create the redirect URL
+        redirect_url = reverse('select_transaction_crypto', kwargs={'tx_id': tx_id})
+        return redirect(redirect_url)
+
+    return redirect('pos_new_payment_view')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -49,39 +49,55 @@
                 <div class="price-box" style="background-color: #fff;">
                   <div class="">
                     <div class="pricing-area" style="padding: 20px; border-radius: 5px;">
-                      <span style="font-size: 16px;">Store ID: {{ payment_link.link_id }}</span>
+                      <span style="font-size: 14px;">Store ID: {{ payment_link.link_id }}</span>
+                      <span style="float: right;">
+                        <a href="{% url 'edit_payment_link' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2; padding: 10px; border-radius: 5px; margin: 5px;">edit</a>
+                      </span>
                       <hr>
                       <h3 style="font-size: 20px;">
-                        {% if payment_link.link_logo %}
-                          <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
-                        {% endif %}
 
-                        {{ payment_link.tag_name }}
-                        
+                        {% if payment_link.link_logo %}
+                          <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px">
+                        {% endif %}
+                        {{ payment_link.tag_name }} | Total balance: ${{ total_successful_payments }}
+
                       </h3>
                       <div class="space16"></div>
+                      <div class="" style="border: 2px solid #000; padding: 10px;">
+                        <p style="font-size: 12px;">
+                            Wallets:
+                            <span style="float: right;">
+                                <a href="{% url 'edit_payment_wallets' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2; padding: 10px; border-radius: 5px; margin: 5px;">edit wallets</a>
+                            </span>
+                        </p>
+                        <hr>
+                        <p style="font-size: 12px;">
+                            
+                            {% for wallet in payment_link.wallet_set.all %}
+                              {{ wallet.crypto }}: {{ wallet.address }} <br>
+                            {% endfor %}
+                        </p>
+                      </div>
 
-                      <p style="font-size: 12px;">Earnings: ${{ total_successful_payments }}</p>
-                      
-                      <p style="font-size: 12px;">
-                        This store accepts:
-                        <br>
-                        {% for wallet in payment_link.wallet_set.all %}
-                          {{ wallet.crypto }}: {{ wallet.address }} <br>
-                        {% endfor %}
-                      </p>
+                      <div class="space16"></div>
+
                       <p  style="font-size: 12px;">API key: {{ payment_link.api_key }}</p>
                       <hr>
-                      <div style="font-size: 12px;">
-                        <a href="{% url 'create_invoice_via_storelink' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">create invoice</a>
-                        |
-                        <a href="{% url 'edit_payment_link' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">edit info</a>
-                        |
-                        <a href="{% url 'edit_payment_wallets' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">edit wallets</a>
-                        |
-                        <a href="#" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">API Docs</a>
-                        |
-                        <a href="{% url 'delete_payment_link' link_id=payment_link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this link?');">delete</a>
+
+                      <div class="row">
+                        
+                        <div class="col text-center">
+                            <a href="{% url 'store_pos_page' link_id=payment_link.link_id %}" target="_blank" style="font-size: 12px; color: #1f2ce2;">POS link</a>
+                        </div>
+
+                        <div class="col text-center">
+                            <a href="{% url 'create_invoice_via_storelink' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2;">send invoice</a>
+                        </div>
+
+                        <div class="col text-center">
+                            <a href="{% url 'delete_payment_link' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2;" onclick="return confirm('Are you sure you want to delete this link?');">delete</a>
+                        </div>
+                        
                       </div>
                     </div>
                   </div>
@@ -94,61 +110,6 @@
 <!--===== WELCOME ENDS =======-->
 
 
-<div class="container" style="background-color: #fff; border-radius: 3px; padding: 10px;">
-    <div class="space16"></div>
-
-    
-    <h5 class="text-center">Transactions</h5>
-    <div class="space16"></div>
-    <div class="table-responsive">
-
-    {% if transactions %}
-
-        <table class="table table-bordered table-striped" style="font-size: 16px;">
-        <thead>
-            <tr>
-            <th>Amount</th>
-            <th>Store</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-
-                <tr>
-                <td>${{ transaction.amount }}</td>
-
-                <td>{{ transaction.payment_link.tag_name }}</td>
-
-                {% if transaction.status == 'successful' %}
-                    <td style="color: green;">✅</td>
-                {% else %}
-                    <td style="color: red;">⏳</td>
-                {% endif %}
-                
-                <td>{{ transaction.created_at }}</td>
-                {% if transaction.transaction_hash == None %}
-                    <td>link unavailable</td>
-                {% else %}
-                    <td>
-                    <a href="{{ transaction.transaction_hash }}" target="_blank">view</a>
-                    </td>
-                {% endif %}
-                </tr>
-            
-            {% endfor %}
-        </tbody>
-            {% else %}
-                <div class="text-center">
-                    <p style="color: #000; text-align: center;">You have no transactions yet.</p>
-                </div>
-            {% endif %}
-        </table>
-
-    </div>
-</div>
 <div class="space16"></div>
 <div class="space16"></div>
 <div class="space16"></div>

@@ -92,6 +92,14 @@ urlpatterns = [
 
     path('pay/<str:tx_id>', views.make_payment_view, name='make_payment_page'),
 
+    # Store front starts here
+
+    path('pos/<str:link_id>/', views.store_pos_page_view, name='store_pos_page'),
+    path('pos/<str:link_id>/new/', views.pos_new_payment_view, name='pos_new_payment'),
+    path('pos/<str:link_id>/save_payment/', views.pos_save_payment_view, name='pos_save_payment'),
+
+    # Store front stops here
+
 ]
 
 

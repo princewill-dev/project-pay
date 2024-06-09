@@ -36,7 +36,7 @@
                                 }
                             </script>
 
-                            <p class="text-center" style="font-size: 10px;">Amount: ${{transaction_details.amount}} | Processing fee: ${{transaction_details.charges}}</p>
+                            <p class="text-center" style="font-size: 14px; color: #000; ">Amount: ${{transaction_details.amount}} | Processing fee: ${{transaction_details.charges}}</p>
                             <hr>
                             <p class="text-center">
                                 Please send exactly
@@ -158,7 +158,7 @@
                     <div class="space16"></div>
 
                     <div class="text-center" id="items_to_remove">
-                        <a href="#" id="items_to_remove" style="font-size: 16px; background: #134ecc; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Back to merchant</a>
+                        <a href="{{ transaction_details.return_url }}" id="items_to_remove" style="font-size: 16px; background: #134ecc; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Back to store</a>
                     </div>
 
                 </div>

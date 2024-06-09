@@ -169,31 +169,33 @@
                         <th>Store</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Details</th>
+                        <!-- <th>Details</th> -->
                       </tr>
                     </thead>
                     <tbody>
                       {% for transaction in transactions %}
                       
-                        <tr>
-                          <td>${{ transaction.amount }}</td>
+                        <tr style="font-size: 12px;">
+							<td>${{ transaction.amount }}</td>
 
-                          <td>{{ transaction.payment_link.tag_name }}</td>
+							<td>{{ transaction.payment_link.tag_name }}</td>
 
-                          {% if transaction.status == 'successful' %}
-                            <td style="color: green;">✅</td>
-                          {% else %}
-                            <td style="color: red;">⏳</td>
-                          {% endif %}
-                          
-                          <td>{{ transaction.created_at }}</td>
-                          {% if transaction.transaction_hash == None %}
-                            <td>link unavailable</td>
-                          {% else %}
-                            <td>
-                              <a href="{{ transaction.transaction_hash }}" target="_blank">view</a>
-                            </td>
-                          {% endif %}
+							{% if transaction.status == 'successful' %}
+								<td style="color: green;">✅</td>
+							{% else %}
+								<td style="color: red;">⏳</td>
+							{% endif %}
+							
+								<td>{{ transaction.created_at|date:"d-m-Y g:i a" }}</td>
+
+							<!-- {% if transaction.transaction_hash == None %}
+								<td>link unavailable</td>
+							{% else %}
+								<td>
+								<a href="{{ transaction.transaction_hash }}" target="_blank">view</a>
+								</td>
+							{% endif %} -->
+
                         </tr>
                         
                       {% endfor %}

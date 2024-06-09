@@ -94,6 +94,7 @@ class PaymentLink(models.Model):
     link_logo = models.FileField(upload_to='link_logos', blank=True, null=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
     link_url = models.URLField(null=True, blank=True)
+    callback_url = models.URLField(null=True, blank=True)
     link_description = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     link_ip_address = models.GenericIPAddressField(null=True, blank=True)

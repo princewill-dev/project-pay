@@ -382,6 +382,7 @@ def save_payment_link_view(request):
 
         tag_name = request.POST.get('tag_name')
         link_url = request.POST.get('link_url')
+        callback_url = request.POST.get('callback_url')
         link_description = request.POST.get('link_description')
         link_id = generate_random_string()
 
@@ -392,6 +393,7 @@ def save_payment_link_view(request):
             tag_name=tag_name,
             link_logo=content_file,
             link_url=link_url,
+            callback_url=callback_url,
             link_description=link_description,
         )
 

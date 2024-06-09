@@ -30,7 +30,7 @@
 
                         <h3 class="text-center" style="font-weight: 400; font-size: 18px;">Create your store</h3>
                         <hr>
-                        <p style="font-size: 14px;">Add your store logo:</p>
+                        <p style="font-size: 14px;">Add your store logo: (optional)</p>
                         <input type="file" class="form-control" name="image">
 
                         <hr>
@@ -40,15 +40,20 @@
 
                         <hr>
 
+                        <p style="font-size: 14px;">What type of service do you offer:</p>
+                        <textarea class="form-control" style="padding: 5px;" type="text" name="link_description" cols="50" required></textarea>
+
+                        <hr>
+
                         <p style="font-size: 14px;">Enter your website url ( e.g: expample.com ):</p>
                         <input type="text" class="form-control" name="link_url" placeholder="website link" required>
 
                         <hr>
 
-                        <p style="font-size: 14px;">What type of service do you offer:</p>
-                        <textarea class="form-control" style="padding: 5px;" type="text" name="link_description" cols="50" required></textarea>
+                        <p style="font-size: 14px;">Add web callback link (optional)</p>
+                        <input type="text" class="form-control" name="callback_url" placeholder="callback link">
 
-                        <hr>
+                        <div class="space16"></div>
 
                         <div class="input-area">
                             <button type="submit" class="header-btn2" id="processing"> submit </button>

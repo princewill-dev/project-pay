@@ -49,19 +49,21 @@
                 <div class="price-box" style="background-color: #fff;">
                   <div class="">
                     <div class="pricing-area" style="padding: 20px; border-radius: 5px;">
-                      <span style="font-size: 14px;">Store ID: {{ payment_link.link_id }}</span>
+                      <span style="font-size: 14px;">
+                        {% if payment_link.link_logo %}
+                          <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px">
+                        {% endif %}
+                        {{ payment_link.tag_name }}
+                      </span>
                       <span style="float: right;">
                         <a href="{% url 'edit_payment_link' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2; padding: 10px; border-radius: 5px; margin: 5px;">edit</a>
                       </span>
                       <hr>
+                      <div class="space16"></div>
                       <h3 style="font-size: 20px;">
-
-                        {% if payment_link.link_logo %}
-                          <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px">
-                        {% endif %}
-                        {{ payment_link.tag_name }} | Total balance: ${{ total_successful_payments }}
-
+                        <span style="font-weight: 400; font-size: 15px;">Amount Processed:</span> ${{ total_successful_payments }}
                       </h3>
+                      <div class="space16"></div>
                       <div class="space16"></div>
                       <div class="" style="border: 2px solid #000; padding: 10px;">
                         <p style="font-size: 12px;">
@@ -72,10 +74,9 @@
                         </p>
                         <hr>
                         <p style="font-size: 12px;">
-                            
-                            {% for wallet in payment_link.wallet_set.all %}
-                              {{ wallet.crypto }}: {{ wallet.address }} <br>
-                            {% endfor %}
+                          {% for wallet in payment_link.wallet_set.all %}
+                            {{ wallet.crypto }}: {{ wallet.address }} <br>
+                          {% endfor %}
                         </p>
                       </div>
 

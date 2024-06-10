@@ -48,6 +48,7 @@ from qrcode.image.svg import SvgImage
 from django.core.files import File
 import logging
 from django.db import IntegrityError
+from django.http import Http404
 
 
 
@@ -1310,24 +1311,26 @@ def show_all_invoices_view(request):
 
 
 def store_pos_page_view(request, link_id):
-    payment_link = get_object_or_404(PaymentLink, link_id=link_id)
-    transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
-    successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
-    total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
-    context = {
-        'payment_link': payment_link,
-        'total_successful_payments': total_successful_payments,
-        'transactions': transactions,  # Add transactions to the context
-    }
-    return render(request, 'home/store_pos.html', context)
+
+    try:
+        payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+        successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
+        total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        context = {
+            'payment_link': payment_link,
+            'total_successful_payments': total_successful_payments,
+        }
+        
+        return render(request, 'home/store_pos.html', context)
+    
+    except Http404:
+        return render(request, 'home/invalid_pos.html', {'error_message': 'Payment link not found.'})
 
 
 def pos_new_payment_view(request, link_id):
 
-    # Fetch the payment links for the current user
-    payment_links = PaymentLink.objects.filter(user=request.user)
-
-    link_id = link_id
+    payment_links = PaymentLink.objects.none()
 
     context = {
         'payment_links': payment_links,
@@ -1366,6 +1369,22 @@ def pos_save_payment_view(request, link_id):
 
     return redirect('pos_new_payment_view')
 
+
+def pos_transactions_view(request, link_id):
+    # Get the payment link or return a 404 error if not found
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+    
+    # Get the transactions related to the payment link
+    transactions = Payment.objects.filter(payment_link=payment_link)
+    
+    context = {
+        'payment_link': payment_link,
+        'transactions': transactions,
+        'link_id': link_id,
+    }
+
+    # Pass the payment link and transactions to the template context
+    return render(request, 'home/pos_transactions.html', context)
 
 
 

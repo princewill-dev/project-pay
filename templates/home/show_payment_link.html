@@ -53,7 +53,7 @@
                         {% if payment_link.link_logo %}
                           <img src="{{payment_link.link_logo.url}}" alt="" width="50px" height="50px">
                         {% endif %}
-                        {{ payment_link.tag_name }}
+                        {{ payment_link.tag_name }} | {{ payment_link.link_id }}
                       </span>
                       <span style="float: right;">
                         <a href="{% url 'edit_payment_link' link_id=payment_link.link_id %}" style="font-size: 12px; color: #1f2ce2; padding: 10px; border-radius: 5px; margin: 5px;">edit</a>

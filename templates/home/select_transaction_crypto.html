@@ -81,9 +81,15 @@
                     <div class="space16"></div>
 
                     <hr>
-                    <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+
+                    <div class="text-center" id="items_to_remove">
+                        <a href="{% url 'cancel_transaction' transaction_details.transaction_id %}" id="items_to_remove" style="font-size: 12px; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Cancel Transaction ?');">cancel transaction</a>
+                    </div>
 
                 </div>
+                
+                <div class="space16"></div>
+                <p class="text-center" id="success_message" style="font-size: 16px; color: #fff;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
                 
             </div>
         </div>

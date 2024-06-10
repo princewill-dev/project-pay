@@ -510,6 +510,7 @@ def update_payment_link_view(request, link_id):
         # Update the PaymentLink instance
         payment_link.tag_name = request.POST.get('tag_name')
         payment_link.link_url = request.POST.get('link_url')
+        payment_link.callback_url = request.POST.get('callback_url')
         if content_file is not None:  # Only assign content_file to link_logo if content_file is not None
             payment_link.link_logo = content_file
         payment_link.link_description = request.POST.get('link_description')
@@ -646,6 +647,7 @@ def transaction_checkout_view(request):
             amount=data['amount'],
             email=data['email'],
             item=data['item'],
+            success_url=payment_link.callback_url
         )
         return JsonResponse({
             "status": True,
@@ -859,33 +861,71 @@ def get_transaction_status(tx_id):
         }
 
 
+# def check_invoice_status(request, invoice_id):
+#     # Check if the invoice is already successful
+#     if invoice_id.status == 'successful':
+
+#         transaction_details = {
+#             'transaction_id': invoice_id.transaction_id,
+#             'payment_link': invoice_id.payment_link.link_id,
+#             'amount': invoice_id.amount,
+#             'success_url': invoice_id.success_url,
+#             'created_at': invoice_id.created_at,
+#             'is_paid': invoice_id.is_paid,
+#             'status': invoice_id.status,
+#             'tag_name': invoice_id.payment_link.tag_name,
+#             'return_url': invoice_id.success_url,
+#             'transaction_hash': invoice_id.transaction_hash,
+#         }
+
+#         messages.success(request, 'This invoice has already been paid.')
+#         return render(request, 'home/temp_success_page.html', {'transaction_details': transaction_details})
+
+#     # Check if the current time has exceeded the completion time
+#     if invoice_id.completion_time and timezone.now() > invoice_id.completion_time:
+#         invoice_id.status = 'expired'
+#         invoice_id.save()
+#         messages.success(request, 'This invoice has expired. Please try again.')
+#         return render(request, 'home/invalid_payment.html')
+
+#     return None  # Return None if the invoice is neither successful nor expired
+
+
 def check_invoice_status(request, invoice_id):
+    # Get the invoice
+    invoice = get_object_or_404(Payment, transaction_id=invoice_id)
+
+    transaction_details = {
+        'transaction_id': invoice.transaction_id,
+        'payment_link': invoice.payment_link.link_id,
+        'amount': invoice.amount,
+        'success_url': invoice.success_url,
+        'created_at': invoice.created_at,
+        'is_paid': invoice.is_paid,
+        'status': invoice.status,
+        'tag_name': invoice.payment_link.tag_name,
+        'return_url': invoice.success_url,
+        'transaction_hash': invoice.transaction_hash,
+    }
+
     # Check if the invoice is already successful
-    if invoice_id.status == 'successful':
-
-        transaction_details = {
-            'transaction_id': invoice_id.transaction_id,
-            'payment_link': invoice_id.payment_link.link_id,
-            'amount': invoice_id.amount,
-            'success_url': invoice_id.success_url,
-            'created_at': invoice_id.created_at,
-            'is_paid': invoice_id.is_paid,
-            'status': invoice_id.status,
-            'tag_name': invoice_id.payment_link.tag_name,
-            'return_url': invoice_id.success_url,
-        }
-
+    if invoice.status == 'successful':
         messages.success(request, 'This invoice has already been paid.')
         return render(request, 'home/temp_success_page.html', {'transaction_details': transaction_details})
 
-    # Check if the current time has exceeded the completion time
-    if invoice_id.completion_time and timezone.now() > invoice_id.completion_time:
-        invoice_id.status = 'expired'
-        invoice_id.save()
-        messages.success(request, 'This invoice has expired. Please try again.')
-        return render(request, 'home/invalid_payment.html')
+    # Check if the invoice status is cancelled
+    if invoice.status == 'cancelled':
+        messages.error(request, 'This invoice has been cancelled.')
+        return render(request, 'home/invalid_payment.html', {'transaction_details': transaction_details})
 
-    return None  # Return None if the invoice is neither successful nor expired
+    # Check if the current time has exceeded the completion time
+    if invoice.completion_time and timezone.now() > invoice.completion_time:
+        invoice.status = 'expired'
+        invoice.save()
+        messages.error(request, 'This invoice has expired. Please try again.')
+        return render(request, 'home/invalid_payment.html', {'transaction_details': transaction_details})
+
+    return None
 
 
 def select_transaction_crypto_view(request, tx_id):
@@ -946,7 +986,7 @@ def select_transaction_crypto_view(request, tx_id):
     
     except Payment.DoesNotExist:
         # Render the error page if the Payment object does not exist
-        # messages.error(request, 'Transaction not found.')
+        messages.error(request, 'Transaction not found.')
         return render(request, 'home/invalid_payment.html')
 
 
@@ -1005,6 +1045,7 @@ def confirm_email_for_receipt_view(request, tx_id):
         return render(request, 'home/verify_email_receipt.html', context)
     
     except Payment.DoesNotExist:
+        messages.error(request, 'Transaction not found.')
         return render(request, 'home/invalid_payment.html')
     
 
@@ -1075,7 +1116,21 @@ def make_payment_view(request, tx_id):
     
     except Payment.DoesNotExist:
         # Render the error page if the Payment object does not exist
+        messages.error(request, 'Transaction not found.')
         return render(request, 'home/invalid_payment.html')
+    
+
+def cancel_transaction_view(request, tx_id):
+    transaction = get_object_or_404(Payment, transaction_id=tx_id)
+
+    # Mark the transaction status as "cancelled"
+    transaction.status = 'cancelled'
+    transaction.save()
+
+    # You can redirect to a success page or render a template confirming the cancellation
+    # return render(request, 'home/invalid_payment.html', {'transaction': transaction})
+
+    return redirect('select_transaction_crypto', tx_id=transaction.transaction_id)
     
 
 def send_email(invoice_tx, recipient, is_customer):
@@ -1360,7 +1415,7 @@ def pos_save_payment_view(request, link_id):
             transaction_id=tx_id,
             amount=get_amount,
             item=get_item,
-            success_url = f"/pos/{payment_link}",
+            success_url = payment_link.callback_url,
         )
 
         # Use the 'reverse' function to dynamically create the redirect URL

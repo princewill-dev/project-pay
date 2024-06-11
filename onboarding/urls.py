@@ -57,8 +57,6 @@ urlpatterns = [
 
     path('transactions/', login_required(views.show_transactions_view), name='show_transactions'),
 
-    # path('show_payment_link/<str:link_id>', login_required(views.show_payment_link_view), name='show_payment_link'),
-
     path('paylink/<str:link_id>', views.show_payment_link_view, name='show_payment_link'),
 
     path('generate/<str:link_id>', views.generate_transaction_view, name='generate_transaction'),

@@ -1125,10 +1125,8 @@ def cancel_transaction_view(request, tx_id):
 
     # Mark the transaction status as "cancelled"
     transaction.status = 'cancelled'
+    transaction.success_url = f'{transaction.payment_link.callback_url}?status=cancelled&transaction_id={transaction.transaction_id}'
     transaction.save()
-
-    # You can redirect to a success page or render a template confirming the cancellation
-    # return render(request, 'home/invalid_payment.html', {'transaction': transaction})
 
     return redirect('select_transaction_crypto', tx_id=transaction.transaction_id)
     
@@ -1223,7 +1221,6 @@ def handle_trx_transaction(invoice_tx):
                                     'hash': transaction['txID'],
                                     'amount': contract['parameter']['value']['amount'],
                                     'confirmed': True,
-                                    'return_url': invoice_tx.success_url,
                                 }
                                 return update_transaction_status(invoice_tx, transaction_details)
 
@@ -1252,7 +1249,6 @@ def handle_trc20_transaction(invoice_tx):
                     'hash': transaction['transaction_id'],
                     'amount': target_amount,
                     'confirmed': True,
-                    'return_url': invoice_tx.success_url,
                 }
                 return update_transaction_status(invoice_tx, transaction_details)
 
@@ -1278,6 +1274,7 @@ def update_transaction_status(invoice_tx, transaction_details):
         invoice_tx.is_paid = True
         invoice_tx.business_name = invoice_tx.payment_link.tag_name
         invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
+        invoice_tx.success_url = f'{invoice_tx.payment_link.callback_url}?status=successful&transaction_id={invoice_tx.transaction_id}'
         invoice_tx.save()
 
         send_email(invoice_tx, invoice_tx.email, True)

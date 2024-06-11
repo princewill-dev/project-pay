@@ -124,17 +124,17 @@
     
                         <p class="text-center" id="success_message" style="font-size: 16px;"> <a href="{{ transaction_details.transaction_hash }}" target="_blank">view on blockchain</a></p>
 
-                        <hr>
-                        <p class="text-center" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                        <div class="space32"></div>
+                        <div class="text-center">
+                            <a class="header-btn" href="{{ transaction_details.success_url }}" target="_blank">Back to merchant</a>
+                        </div>
 
                     </div>
 
                     <div class="space16"></div>
 
-                    <!-- <div class="text-center" id="items_to_remove">
-                        <a href="{{ transaction_details.success_url }}" id="items_to_remove" style="font-size: 16px; background: #134ecc; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Back to merchant</a>
-                    </div> -->
-
+                    <p class="text-center text-white" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                    
                 </div>
 
                 <div id="on_error" style="display: none;">
@@ -149,17 +149,16 @@
                         <h6 class="text-center" id="error_message"></h6>
                         <div class="space16"></div>                
                         
-
-                        <hr>
-                        <p class="text-center" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                        <div class="space32"></div>
+                        <div class="text-center">
+                            <a class="header-btn" href="{{ transaction_details.success_url }}" target="_blank">Back to merchant</a>
+                        </div>
 
                     </div>
 
                     <div class="space16"></div>
 
-                    <!-- <div class="text-center" id="items_to_remove">
-                        <a href="{{ transaction_details.return_url }}" id="items_to_remove" style="font-size: 16px; background: #134ecc; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;">Back to store</a>
-                    </div> -->
+                    <p class="text-center text-white" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
 
                 </div>
 

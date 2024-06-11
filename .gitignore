@@ -7,3 +7,4 @@ Dockerfile
 fly.toml
 old-bashfile.txt
 debug.log
+/mediafiles/*

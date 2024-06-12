@@ -534,7 +534,7 @@ body[data-magic-cursor=hide] .mouse-cursor {
 
 .header {
   position: relative;
-  top: 0;
+  top: 10px;
   left: 0;
   width: 100%;
   z-index: 9999;
@@ -1833,7 +1833,7 @@ body[data-magic-cursor=hide] .mouse-cursor {
 }
 
 .services-2 {
-  padding: 100px 0;
+  padding: 10px;
 }
 .services-2 .services__content {
   padding-right: 115px;
@@ -2565,7 +2565,7 @@ body[data-magic-cursor=hide] .mouse-cursor {
 }
 
 .trading {
-  padding: 100px 0 84px;
+  padding: 100px 0;
 }
 .trading .trading__image {
   padding-top: 22px;

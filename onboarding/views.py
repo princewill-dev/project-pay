@@ -63,6 +63,14 @@ def homepage(request):
     return render(request, 'landing/index.html')
 
 
+# def service_page_view(request):
+#     return render(request, 'landing/index.html')
+
+
+def support_page_view(request):
+    return render(request, 'landing/support.html')
+
+
 def success_page_view(request):
     return render(request, 'home/temp_success_page.html')
 

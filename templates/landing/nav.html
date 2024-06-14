@@ -1,55 +1,79 @@
 <header id="header_main" class="header">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="header__body d-flex justify-content-between">
-            <div class="header__left">
-              <div class="logo">
-                <a class="light" href="{% url 'homepage' %}">
-                  <img id="site-logo" src="/static/onboarding/landing/assets/images/logo/logo.png" alt="" width="118" height="32"
-                    data-retina="/static/onboarding/landing/assets/images/logo/logo@2x.png" data-width="118" data-height="32" />
-                </a>
-                <a class="dark" href="{% url 'homepage' %}">
-                  <img src="/static/onboarding/landing/assets/images/logo/logo-dark.png" alt="" width="118" height="32"
-                    data-retina="assets/images/logo/logo-dark@2x.png" data-width="118" data-height="32" />
-                </a>
-              </div>
-              <div class="left__main">
-                <nav id="main-nav" class="main-nav">
-                  <ul id="menu-primary-menu" class="menu">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-12">
+				<div class="header__body d-flex justify-content-between">
+					<div class="header__left">
+						<div class="logo">
 
-                    <li class="menu-item">
-                        <a href="#services">Services </a>
-                    </li>
+							<a href="{% url 'homepage' %}">
+								<img class="desktop" width="200px" id="site-logo-lg"
+									src="/static/onboarding/landing/assets/images/bix-logo-lg.png" alt="logo"
+									style="display: none;" />
+								<img class="mobile" width="70px" id="site-logo-sm"
+									src="/static/onboarding/landing/assets/images/bix-logo-sm.png" alt="logo"
+									style="display: none;" />
+							</a>
 
-                    <li class="menu-item">
-                        <a href="{% url 'support_page' %}">Support </a>
-                    </li>
+							<script>
+								function updateLogo() {
+									const largeLogo = document.getElementById('site-logo-lg');
+									const smallLogo = document.getElementById('site-logo-sm');
 
-                    <li class="menu-item">
-                        <a href="#">API Docs </a>
-                    </li>
+									if (window.innerWidth >= 768) {
+										largeLogo.style.display = 'inline';
+										smallLogo.style.display = 'none';
+									} else {
+										largeLogo.style.display = 'none';
+										smallLogo.style.display = 'inline';
+									}
+								}
 
-                    <li class="menu-item">
-                        <a href="{% url 'signup_page' %}">Sign up </a>
-                    </li>
+								// Initial call to set the correct logo
+								updateLogo();
 
-                    <li class="menu-item">
-                        <a href="{% url 'login_page' %}">Login </a>
-                    </li>
+								// Add event listener for window resize
+								window.addEventListener('resize', updateLogo);
+							</script>
 
-                  </ul>
-                </nav>
-                <!-- /#main-nav -->
-              </div>
-            </div>
 
-            <div class="header__right">
-                <div class="mobile-button"><span></span></div>
-            </div>
+						</div>
+						<div class="left__main">
+							<nav id="main-nav" class="main-nav">
+								<ul id="menu-primary-menu" class="menu">
 
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+									<li class="menu-item">
+										<a href="#services">Services </a>
+									</li>
+
+									<li class="menu-item">
+										<a href="#">Support </a>
+									</li>
+
+									<li class="menu-item">
+										<a href="#">API Docs </a>
+									</li>
+
+									<li class="menu-item">
+										<a href="{% url 'signup_page' %}">Sign up </a>
+									</li>
+
+									<li class="menu-item">
+										<a href="{% url 'login_page' %}">Login </a>
+									</li>
+
+								</ul>
+							</nav>
+							<!-- /#main-nav -->
+						</div>
+					</div>
+
+					<div class="header__right">
+						<div class="mobile-button"><span></span></div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</header>

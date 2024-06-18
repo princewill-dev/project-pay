@@ -2,56 +2,53 @@
 
 
 <header>
-    <div class="header-area homepage1 header header-sticky d-none d-lg-block " id="header">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="header-elements">
-              <div class="site-logo">
-                <a href="{% url 'homepage' %}">
-                  <!-- <img src="/static/onboarding/assets/images/logo/logo1.png" alt=""> -->
-                  <span style="color: #fff;">bixmerchant</span>
-                </a>
-              </div>
-              <div class="main-menu">
-                <ul>
-                  
-                  <li><a href="{% url 'homepage' %}">Home </a></li>
+	<div class="header-area homepage1 header header-sticky d-none d-lg-block " id="header">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="header-elements">
+						<div class="site-logo">
 
-                  <li><a href="#">About</a></li>
+							<a href="{% url 'homepage' %}">
+								<img class="desktop" width="200px" src="https://bixmerchant.com/static/onboarding/landing/assets/images/bix-logo-lg.png" alt="logo" />
+							</a>
 
-                  <li><a href="#">Support</a></li>
+						</div>
+						<div class="main-menu">
+							<ul>
 
-                  {% if request.user.is_authenticated %}
+								{% if request.user.is_authenticated %}
 
-                  <li><a href="{% url 'plans' %}">Pricing</a></li>
+								<li><a href="{% url 'dashboard' %}">Dashboard</a></li>
 
-                  <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+								<li><a href="{% url 'show_all_payment_links' %}">My stores</a></li>
 
-                  <li><a href="{% url 'show_transactions' %}">Transactions</a></li>
+								<li><a href="{% url 'show_transactions' %}">Transactions</a></li>
 
-                  <li><a href="{% url 'show_all_payment_links' %}">My stores</a></li>
+								<li><a href="{% url 'show_all_invoices' %}">Invoices</a></li>
 
-                  <li><a href="{% url 'show_all_invoices' %}">Invoices</a></li>
+								<a href="{% url 'logout' %}" class="header-btn3">Logout</a>
 
-                  <a href="{% url 'logout' %}" class="header-btn3">Logout</a>
+								{% else %}
 
-                  {% else %}
+								<li><a href="{% url 'homepage' %}">Home </a></li>
 
-                  <li><a href="{% url 'plans' %}">Pricing</a></li>
+								<!-- <li><a href="#">About</a></li> -->
 
-                  <li><a href="{% url 'login_page' %}">Login</a></li>
-                  
-                  <a href="{% url 'signup_page' %}" class="header-btn3">Get Started</a>
+								<li><a href="#">Support</a></li>
 
-                  {% endif %}
+								<li><a href="{% url 'login_page' %}">Login</a></li>
 
-                </ul>
-                
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+								<a href="{% url 'signup_page' %}" class="header-btn3">Get Started</a>
+
+								{% endif %}
+
+							</ul>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>

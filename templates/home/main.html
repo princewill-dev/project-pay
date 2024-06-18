@@ -3,81 +3,71 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=`device-width`, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=`device-width`, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <!--=====TITLE=======-->
-  <title>bixmerchant.com || Crypto Payment Software</title>
+	<!--=====TITLE=======-->
+	<title>bixmerchant.com || Crypto Payment Software</title>
 
-  <!--=====FAV ICON=======-->
-  <link rel="shortcut icon" href="{% static 'onboarding/assets/images/logo/fav-logo.png' %}">
+	<!--=====FAV ICON=======-->
+	<link rel="shortcut icon" href="{% static 'onboarding/assets/images/logo/fav-logo.png' %}">
 
-  <!--=====CSS=======-->
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/swiper.bundle.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/fontawesome.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/mobile.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/magnific-popup.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/slick-slider.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/owlcarousel.min.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/aos.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/typography.css' %}">
-  <link rel="stylesheet" href="{% static 'onboarding/assets/css/master.css' %}">
+	<!--=====CSS=======-->
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/swiper.bundle.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/fontawesome.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/mobile.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/magnific-popup.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/slick-slider.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/owlcarousel.min.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/plugins/aos.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/typography.css' %}">
+	<link rel="stylesheet" href="{% static 'onboarding/assets/css/master.css' %}">
 
-  <!--=====JQUERY=======-->
+	<!--=====JQUERY=======-->
 
-  <script src="{% static 'onboarding/assets/js/plugins/jquery-3-6-0.min.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/jquery-3-6-0.min.js' %}"></script>
 </head>
 
 <body style="background: #000;">
-  <!--===== PRELOADER STARTS =======-->
-  <!-- <div id="preloader">
-    <div class="preloader">
-        <span></span>
-        <span></span>
-    </div>
-  </div> -->
- <!--===== PRELOADER ENDS =======-->
+	<!--===== PRELOADER STARTS =======-->
+	<!-- <div id="preloader">
+		<div class="preloader">
+			<span></span>
+			<span></span>
+		</div>
+	</div> -->
+	<!--===== PRELOADER ENDS =======-->
 
-  <!--===== PAGE PROGRESS START=======-->
-  <div class="paginacontainer">
-    <div class="progress-wrap">
-      <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
-      </svg>
-    </div>
-  </div>
-<!--===== PAGE PROGRESS END=======-->
+	<!--===== WELCOME STARTS =======-->
+	{% block content %}
 
-  <!--=====HEADER START=======-->
-  
+	{% endblock content %}
+	<!--===== WELCOME ENDS =======-->
+
+	
+	<!--===== FOOTER AREA STARTS =======-->
+	{% include 'home/footer.html' %}
+	<!--===== FOOTER ENDS =======-->
+
+	<!--=====JS=======-->
+	<script src="{% static 'onboarding/assets/js/plugins/bootstrap.min.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/swiper.bundle.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/mobilemenu.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/slick-slider.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/owlcarousel.min.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/counter.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/waypoints.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/aos.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/gsap.min.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/magnific-popup.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/plugins/ScrollTrigger.min.js' %}"></script>
+	<script src="{% static 'onboarding/assets/js/main.js' %}"></script>
+
+	<script src="//code.tidio.co/iobpjpef8wlou8fqs1awxt6q531n4bk2.js" async></script>
 
 
-<!--===== WELCOME STARTS =======-->
-{% block content %}
-    
-{% endblock content %}
-<!--===== WELCOME ENDS =======-->
-
-
-
-<!--===== FOOTER AREA STARTS =======-->
-{% include 'home/footer.html' %}
-<!--===== FOOTER ENDS =======-->
-
-  <!--=====JS=======-->
-  <script src="{% static 'onboarding/assets/js/plugins/bootstrap.min.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/swiper.bundle.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/mobilemenu.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/slick-slider.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/owlcarousel.min.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/counter.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/waypoints.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/aos.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/gsap.min.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/magnific-popup.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/plugins/ScrollTrigger.min.js' %}"></script>
-  <script src="{% static 'onboarding/assets/js/main.js' %}"></script>
 </body>
+
 </html>

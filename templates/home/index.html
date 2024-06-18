@@ -5,31 +5,34 @@
 {% block content %}
 
 {% include 'home/navbar.html' %}
-  
+
 {% include 'home/mobile-nav.html' %}
 
 {% include 'home/mobile-sidebar.html' %}
 
 
-<div class="welocme1-section-area" style="background-image: url(/static/onboarding/assets/images/background/header-bg1.png); background-position: center; background-repeat: no-repeat; background-size: cover;">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-10 m-auto">
-          <div class="welcome-content-header heading1">
-            <div class="elementors-img">
-              <img src="/static/onboarding/assets/images/elements/header-element1.png" alt="" class="keyframe4">
-            </div>
-            <h1 class="text-anime">Recive Crypto Payments <br> With Ease</h1>
-            <p data-aos="fade-up" data-aos-duration="1200">Expand your customer base and streamline transactions with our secure crypto payment gateway. </p>
-            <div class="welcome-btnarea text-center" data-aos="fade-up" data-aos-duration="1400">
-              <a href="{% url 'signup_page' %}" class="header-btn">Get Started</a>
-              <a href="{% url 'login_page' %}" class="header-btn1">Login</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="welocme1-section-area"
+	style="background-image: url(/static/onboarding/assets/images/background/header-bg1.png); background-position: center; background-repeat: no-repeat; background-size: cover;">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-10 m-auto">
+				<div class="welcome-content-header heading1">
+					<div class="elementors-img">
+						<img src="/static/onboarding/assets/images/elements/header-element1.png" alt=""
+							class="keyframe4">
+					</div>
+					<h1 class="text-anime">Recive Crypto Payments <br> With Ease</h1>
+					<p data-aos="fade-up" data-aos-duration="1200">Expand your customer base and streamline transactions
+						with our secure crypto payment gateway. </p>
+					<div class="welcome-btnarea text-center" data-aos="fade-up" data-aos-duration="1400">
+						<a href="{% url 'signup_page' %}" class="header-btn">Get Started</a>
+						<a href="{% url 'login_page' %}" class="header-btn1">Login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 <!--===== WELCOME ENDS =======-->

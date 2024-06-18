@@ -13,8 +13,8 @@
 <!--===== WELCOME STARTS =======-->
 
 
-<div class="about-welcome-section-area login" style="background-image: url(/static/onboarding/assets/images/background/emailbg.png); background-repeat: no-repeat; background-size: cover;">
-    <div class="space16"></div>
+<div class="about-welcome-section-area login"  >
+    <!-- <div class="space16"></div> -->
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
@@ -59,14 +59,6 @@
                             <button type="submit" class="header-btn2" id="processing"> submit </button>
                         </div>
 
-                        <!-- <script>
-                            var button = document.getElementById('processing');
-
-                            button.addEventListener('click', function() {
-                                this.textContent = "Processing...";
-                            });
-                        </script> -->
-
                     </div>
                 </form>
                 
@@ -95,38 +87,6 @@
             }
         });
     });
-
-
-    // document.getElementById('payment-form').addEventListener('submit', function(e) {
-    //     // Prevent the form from being submitted
-    //     e.preventDefault();
-
-    //     // Create an object to hold the checkbox values and wallet addresses
-    //     var wallets = {};
-
-    //     // Get all checkboxes
-    //     var checkboxes = document.querySelectorAll('.crypto-checkbox');
-
-    //     // For each checkbox
-    //     checkboxes.forEach(function(checkbox) {
-    //         // If the checkbox is checked
-    //         if (checkbox.checked) {
-    //             // Get the corresponding wallet input field
-    //             var walletInputDiv = document.getElementById('wallet-input-' + checkbox.id);
-    //             var walletInput = walletInputDiv.querySelector('input');
-
-    //             // Add the checkbox value and wallet address to the object
-    //             wallets[checkbox.value] = walletInput.value;
-    //         }
-    //     });
-
-    //     // Set the value of the hidden input field to the JSON string
-    //     document.getElementById('wallets').value = JSON.stringify(wallets);
-
-    //     // Submit the form
-    //     e.currentTarget.submit();
-    // });
-
 
 </script>
 

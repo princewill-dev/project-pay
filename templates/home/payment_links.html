@@ -5,7 +5,7 @@
 {% block content %}
 
 {% include 'home/navbar.html' %}
-  
+
 {% include 'home/mobile-nav.html' %}
 
 {% include 'home/mobile-sidebar.html' %}
@@ -13,93 +13,91 @@
 <!--===== WELCOME STARTS =======-->
 
 
-<div class="about-welcome-section-area login"  >
-    <div class="space16"></div>
-    <div class="space16"></div>
-    <div class="space16"></div>
-    <div class="container">
+<div class="about-welcome-section-area login">
+	<div class="space16"></div>
+	<div class="space16"></div>
+	<div class="space16"></div>
+	<div class="container">
 
-        {% if messages %}
-            {% for message in messages %}
+		{% if messages %}
+		{% for message in messages %}
 
-            <center>
-                <p id="notify" class="alert alert-info" style="font-size: 12px;">{{ message }}</p>
-            </center>
-            
-            <script>
-                // Get the element you want to disappear
-                const element = document.getElementById('notify');
+		<center>
+			<p id="notify" class="alert alert-info" style="font-size: 12px;">{{ message }}</p>
+		</center>
 
-                // Set a timeout to hide the element after 3 seconds
-                setTimeout(function() {
-                element.style.display = 'none';
-                }, 5000);
-            </script>
+		<script>
+			// Get the element you want to disappear
+			const element = document.getElementById('notify');
 
-            {% endfor %}
-        {% endif %}
+			// Set a timeout to hide the element after 3 seconds
+			setTimeout(function () {
+				element.style.display = 'none';
+			}, 5000);
+		</script>
 
-        <div class="about-welcome-header text-center heading3">
-            <a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store links</span></a>
-            <div class="space16"></div>
-            <div class="welcome-btnarea text-center">
-                <a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
-            </div>
-        </div>
+		{% endfor %}
+		{% endif %}
 
-        
+		<div class="about-welcome-header text-center heading3">
+			<a href="{% url 'dashboard' %}">Dashboard <i class="fa-solid fa-angle-right"></i> <span>Store
+					links</span></a>
+			<div class="space16"></div>
+			<div class="welcome-btnarea text-center">
+				<a href="{% url 'create_payment_link' %}" class="header-btn">New store</a>
+			</div>
+		</div>
 
-        <div class="space50"></div>
 
-        <div class="row">
 
-            {% for link in payment_links %}
+		<div class="space50"></div>
 
-                <div class="col-md-4">
-                    <div class="price-box" style="background-color: #fff;">
-                      <div class="">
-                        <div class="pricing-area" style="padding: 20px; border-radius: 5px;">
-                          <span style="font-size: 16px;">Store ID: {{ link.link_id }}</span>
-                          <hr>
-                          <h3 style="font-size: 20px;">
-                            {% if link.link_logo %}
-                              <img src="{{link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px; border: 2px solid #000;">
-                            {% endif %}
-    
-                            {{ link.tag_name }}
-                            
-                          </h3>
-                          <div class="space16"></div>
-    
-                          <p style="font-size: 16px;">Earnings: ${{ link.total_successful_transactions }}</p>
-                          
-                          <p style="font-size: 16px;">
-                            This store accepts:
-                            <br>
-                            {% for wallet in link.wallet_set.all %}
-                              {{ wallet.crypto }}: {{ wallet.address }} <br>
-                            {% endfor %}
-                          </p>
-                          <hr>
-                          <div>
-                            <a href="{% url 'create_invoice_via_storelink' link_id=link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">create invoice</a>
-                            |
-                            <a href="{% url 'show_payment_link' link_id=link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">manage store</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+		<div class="row">
 
-            {% empty %}
-                <div class="text-center">
-                    <p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
-                    <!-- <br>
-                    <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+			{% for link in payment_links %}
+
+			<div class="col-md-4">
+				<div class="price-box" style="background-color: #fff;">
+					<div class="">
+						<div class="pricing-area" style="padding: 20px; border-radius: 5px;">
+							<span style="font-size: 16px;">Store ID: {{ link.link_id }}</span>
+							<hr>
+							<h3 style="font-size: 20px;">
+								{% if link.link_logo %}
+								<img src="{{link.link_logo.url}}" alt="" width="50px" height="50px"
+									style="border-radius: 3px; border: 2px solid #000;">
+								{% endif %}
+
+								{{ link.tag_name }}
+
+							</h3>
+							<div class="space16"></div>
+
+							<p style="font-size: 16px;">Earnings: ${{ link.total_successful_transactions }}</p>
+
+							<p style="font-size: 16px;">
+								This store accepts:
+								<br>
+								{% for wallet in link.wallet_set.all %}
+								{{ wallet.crypto }} <br>
+								{% endfor %}
+							</p>
+							<hr>
+							<div>
+								<a href="{% url 'show_payment_link' link_id=link.link_id %}" style="font-size: 16px; color: #333; padding: 10px; border-radius: 5px; margin: 5px;">manage store</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% empty %}
+			<div class="text-center">
+				<p style="color: #fff; text-align: center;">You haven't created any payment links yet.</p>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
 </div>
 <!--===== WELCOME ENDS =======-->
 

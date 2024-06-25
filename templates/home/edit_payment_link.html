@@ -55,10 +55,6 @@
                         <div class="space16"></div>
                         <p style="font-size: 12px;">website url ( e.g: expample.com ):</p>
                         <input class="form-control" type="text" name="link_url" placeholder="website link" value="{{ payment_link.link_url }}">
-
-                        <div class="space16"></div>
-                        <p style="font-size: 12px;">callback URL:</p>
-                        <input class="form-control" type="text" name="callback_url" placeholder="store name" value="{{ payment_link.callback_url }}">
                        
                         <div class="space16"></div>
                         <div class="input-area">
@@ -74,6 +70,8 @@
     </div>
 </div>
 <!--===== WELCOME ENDS =======-->
+
+{% include 'home/chat_token.html' %}
 
 
 {% endblock %}

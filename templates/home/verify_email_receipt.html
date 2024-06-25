@@ -25,9 +25,6 @@
                     <hr>
                     <div class="text-center">
                         
-                        <!-- <h4 class="text-center" id="amount">${{transaction_details.amount}}</h4>
-                        <hr> -->
-                        
                         <form action="{% url 'save_confirm_email_for_receipt' transaction_details.transaction_id %}" method="post">
 
                             {% csrf_token %}
@@ -44,8 +41,6 @@
                             </div>
 
                             <div class="space30"></div>
-
-                            <!-- <a href="{% url 'make_payment_page' transaction_details.transaction_id %}">skip email >></a> -->
 
                             <script>
 
@@ -81,5 +76,6 @@
 </div>
 <!--===== WELCOME ENDS =======-->
 
+{% include 'home/chat_token.html' %}
 
 {% endblock %}

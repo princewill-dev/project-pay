@@ -106,6 +106,7 @@ urlpatterns = [
     path('pos/<str:link_id>/new/', views.pos_new_payment_view, name='pos_new_payment'),
     path('pos/<str:link_id>/transactions/', views.pos_transactions_view, name='pos_transactions_page'),
     path('pos/<str:link_id>/save_payment/', views.pos_save_payment_view, name='pos_save_payment'),
+    path('pos/<str:link_id>/tx_status/', views.pos_payment_status, name='pos_payment_status'),
 
     # Store front stops here
 

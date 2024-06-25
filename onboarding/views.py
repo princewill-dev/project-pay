@@ -347,12 +347,6 @@ def update_payment_wallets_view(request, link_id):
             wallet_address = request.POST.get(f'{token.token_tag}_wallet')
             if wallet_address:  # Only save if a wallet address is provided
 
-                # qr_code_image = generate_qr_code(wallet_address)
-
-                # filename = f'{wallet_address}_{payment_link.link_id}.png'
-
-                # qr_code_image_file = ContentFile(qr_code_image.getvalue(), name=filename)
-
                 Wallet.objects.create(
                     user=request.user,
                     wallet_id=payment_link,
@@ -391,7 +385,7 @@ def save_payment_link_view(request):
 
         tag_name = request.POST.get('tag_name')
         link_url = request.POST.get('link_url')
-        callback_url = request.POST.get('callback_url')
+        # callback_url = request.POST.get('callback_url')
         link_description = request.POST.get('link_description')
         link_id = generate_random_string()
 
@@ -402,7 +396,7 @@ def save_payment_link_view(request):
             tag_name=tag_name,
             link_logo=content_file,
             link_url=link_url,
-            callback_url=callback_url,
+            # callback_url=callback_url,
             link_description=link_description,
         )
 
@@ -518,7 +512,7 @@ def update_payment_link_view(request, link_id):
         # Update the PaymentLink instance
         payment_link.tag_name = request.POST.get('tag_name')
         payment_link.link_url = request.POST.get('link_url')
-        payment_link.callback_url = request.POST.get('callback_url')
+        # payment_link.callback_url = request.POST.get('callback_url')
         if content_file is not None:  # Only assign content_file to link_logo if content_file is not None
             payment_link.link_logo = content_file
         payment_link.link_description = request.POST.get('link_description')
@@ -655,7 +649,8 @@ def transaction_checkout_view(request):
             amount=data['amount'],
             email=data['email'],
             item=data['item'],
-            success_url=payment_link.callback_url
+            # success_url=payment_link.callback_url
+            success_url=data['success_url'],
         )
         return JsonResponse({
             "status": True,
@@ -867,36 +862,6 @@ def get_transaction_status(tx_id):
             'status': 'error',
             'action_page': 'home/error_page.html',
         }
-
-
-# def check_invoice_status(request, invoice_id):
-#     # Check if the invoice is already successful
-#     if invoice_id.status == 'successful':
-
-#         transaction_details = {
-#             'transaction_id': invoice_id.transaction_id,
-#             'payment_link': invoice_id.payment_link.link_id,
-#             'amount': invoice_id.amount,
-#             'success_url': invoice_id.success_url,
-#             'created_at': invoice_id.created_at,
-#             'is_paid': invoice_id.is_paid,
-#             'status': invoice_id.status,
-#             'tag_name': invoice_id.payment_link.tag_name,
-#             'return_url': invoice_id.success_url,
-#             'transaction_hash': invoice_id.transaction_hash,
-#         }
-
-#         messages.success(request, 'This invoice has already been paid.')
-#         return render(request, 'home/temp_success_page.html', {'transaction_details': transaction_details})
-
-#     # Check if the current time has exceeded the completion time
-#     if invoice_id.completion_time and timezone.now() > invoice_id.completion_time:
-#         invoice_id.status = 'expired'
-#         invoice_id.save()
-#         messages.success(request, 'This invoice has expired. Please try again.')
-#         return render(request, 'home/invalid_payment.html')
-
-#     return None  # Return None if the invoice is neither successful nor expired
 
 
 def check_invoice_status(request, invoice_id):
@@ -1133,7 +1098,7 @@ def cancel_transaction_view(request, tx_id):
 
     # Mark the transaction status as "cancelled"
     transaction.status = 'cancelled'
-    transaction.success_url = f'{transaction.payment_link.callback_url}?status=cancelled&transaction_id={transaction.transaction_id}'
+    transaction.success_url = f'{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
     transaction.save()
 
     return redirect('select_transaction_crypto', tx_id=transaction.transaction_id)
@@ -1282,7 +1247,7 @@ def update_transaction_status(invoice_tx, transaction_details):
         invoice_tx.is_paid = True
         invoice_tx.business_name = invoice_tx.payment_link.tag_name
         invoice_tx.transaction_hash = f"{base_url}{transaction_details['hash']}"
-        invoice_tx.success_url = f'{invoice_tx.payment_link.callback_url}?status=successful&transaction_id={invoice_tx.transaction_id}'
+        invoice_tx.success_url = f'{invoice_tx.success_url}?status=successful&transaction_id={invoice_tx.transaction_id}'
         invoice_tx.save()
 
         send_email(invoice_tx, invoice_tx.email, True)
@@ -1354,7 +1319,7 @@ def save_invoice_view(request):
             payment_link=payment_link,
             transaction_id=invoice_id,
             amount=amount,
-            success_url=f"/store/success/",
+            success_url=f"{request.get_host()}/invoice/{invoice_id}",
         )
 
     messages.success(request, 'Your invoice has been created.')
@@ -1420,7 +1385,8 @@ def pos_save_payment_view(request, link_id):
             transaction_id=tx_id,
             amount=get_amount,
             item=get_item,
-            success_url = payment_link.callback_url,
+            # success_url = payment_link.callback_url,
+            success_url = f"/pos/{payment_link.link_id}/tx_status/",
         )
 
         # Use the 'reverse' function to dynamically create the redirect URL
@@ -1446,7 +1412,52 @@ def pos_transactions_view(request, link_id):
     # Pass the payment link and transactions to the template context
     return render(request, 'home/pos_transactions.html', context)
 
+# Configure logging
+logger = logging.getLogger(__name__)
 
+
+def pos_payment_status(request, link_id):
+    logger.debug("Received request for link_id: %s", link_id)
+    transaction_id = request.GET.get('transaction_id')
+
+    transaction_details = {}  # Initialize empty in case it needs to be passed without full details
+
+    if not transaction_id:
+        logger.error("Transaction ID is missing for link_id: %s", link_id)
+        messages.error(request, "Transaction ID is missing.")
+        return render(request, 'home/invalid_payment.html', {'link_id': link_id, 'transaction_details': transaction_details})
+
+    try:
+        payment_link = PaymentLink.objects.get(link_id=link_id)
+    except PaymentLink.DoesNotExist:
+        logger.error("Payment link not found for link_id: %s", link_id)
+        messages.error(request, 'Store not found.')
+        return render(request, 'home/invalid_payment.html', {'link_id': link_id, 'transaction_details': transaction_details})
+
+    try:
+        invoice = Payment.objects.get(transaction_id=transaction_id)
+        logger.debug("Payment found: %s", invoice.transaction_id)
+        # Update transaction_details with data available
+        transaction_details = {
+            'transaction_id': invoice.transaction_id,
+            'link_id': payment_link.link_id,
+            'amount': invoice.amount,
+            'success_url': invoice.success_url,
+            'created_at': invoice.created_at,
+            'is_paid': invoice.is_paid,
+            'status': invoice.status,
+            'tag_name': payment_link.tag_name,
+        }
+    except Payment.DoesNotExist:
+        logger.error("Payment not found for transaction_id: %s", transaction_id)
+        messages.error(request, 'Transaction not found.')
+        return render(request, 'home/pos_tx_error.html', {'link_id': link_id, 'transaction_details': transaction_details})
+
+    # Successful retrieval of both Payment and PaymentLink
+    context = {'transaction_details': transaction_details}
+    
+    logger.debug("Rendering successful transaction status for transaction_id: %s", transaction_id)
+    return render(request, 'home/pos_tx_status.html', context)
 
 
 

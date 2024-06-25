@@ -4,37 +4,29 @@
 
 {% block content %}
 
-
 <!--===== WELCOME STARTS =======-->
 <div class="about-welcome-section-area login"  >
     <div class="container">
         <div class="row">
             <div class="col-lg-4 m-auto">
+
+                <div class="about-welcome-header text-center heading3">
+                    <a href="{% url 'store_pos_page' link_id=link_id %}">Home <i class="fa-solid fa-angle-right"></i> <span>New payment</span></a>
+                </div>
                 
                 <div class="space50"></div>
                 <div class="login-boxarea heading6">
 
-                    <div class="space16"></div>
-                    <div class="icons">
-                        <img src="/static/onboarding/assets/images/icons/error-icon.png" alt="">
-                    </div>
-
-                    <div class="space32"></div>
-                    <h3 class="text-center"> Invalid Transaction </h3>
-                    <div class="space16"></div>                
-                    
                     {% if messages %}
                         {% for message in messages %}
 
-                            <p class="text-center">{{ message }}</p>
+                        <h3 class="text-center">Error</h3>
+                        <p class="text-center">{{ message }}</p>
 
                         {% endfor %}
                     {% endif %}
 
-                    <div class="space32"></div>
-                    <div class="text-center">
-                        <a class="header-btn" href="{{ transaction_details.success_url }}" target="_blank">Back to merchant</a>
-                    </div>
+                    <div class="space16"></div>
 
                 </div>
 
@@ -47,6 +39,5 @@
     </div>
 </div>
 <!--===== WELCOME ENDS =======-->
-{% include 'home/chat_token.html' %}
 
 {% endblock %}

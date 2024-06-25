@@ -894,6 +894,7 @@ def check_invoice_status(request, invoice_id):
     # Check if the current time has exceeded the completion time
     if invoice.completion_time and timezone.now() > invoice.completion_time:
         invoice.status = 'expired'
+        invoice.success_url = f'{invoice.payment_link}?transaction_id={invoice.transaction_id}&status=expired'
         invoice.save()
         messages.error(request, 'This invoice has expired. Please try again.')
         return render(request, 'home/invalid_payment.html', {'transaction_details': transaction_details})
@@ -1098,10 +1099,12 @@ def cancel_transaction_view(request, tx_id):
 
     # Mark the transaction status as "cancelled"
     transaction.status = 'cancelled'
+    # Update the success_url with query parameters indicating the transaction has been cancelled
     transaction.success_url = f'{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
     transaction.save()
 
-    return redirect('select_transaction_crypto', tx_id=transaction.transaction_id)
+    # Redirect to the success_url
+    return redirect(transaction.success_url)
     
 
 def send_email(invoice_tx, recipient, is_customer):
@@ -1142,6 +1145,7 @@ def blockchain_api_view(request, tx_id):
     # Check if the current time has exceeded the completion time
     if timezone.now() > invoice_tx.completion_time:
         invoice_tx.status = 'expired'
+        invoice_tx.success_url = f'{invoice_tx.payment_link}?transaction_id={invoice_tx.transaction_id}&status=expired'
         invoice_tx.save()
         return JsonResponse({"status": "expired", "message": "Invoice expired, please try again"}, status=400)
     
@@ -1151,6 +1155,7 @@ def blockchain_api_view(request, tx_id):
 
     if attempts > 120:
         invoice_tx.status = 'expired'
+        invoice_tx.success_url = f'{invoice_tx.payment_link}?transaction_id={invoice_tx.transaction_id}&status=expired'
         invoice_tx.save()
         return JsonResponse({"status": "expired", "message": "Invoice expired, please try again"}, status=400)
     
@@ -1386,7 +1391,7 @@ def pos_save_payment_view(request, link_id):
             amount=get_amount,
             item=get_item,
             # success_url = payment_link.callback_url,
-            success_url = f"/pos/{payment_link.link_id}/tx_status/",
+            success_url = f"{request.get_host()}/pos/{payment_link.link_id}/tx_status/",
         )
 
         # Use the 'reverse' function to dynamically create the redirect URL

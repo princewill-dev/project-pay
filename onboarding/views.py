@@ -1100,7 +1100,7 @@ def cancel_transaction_view(request, tx_id):
     # Mark the transaction status as "cancelled"
     transaction.status = 'cancelled'
     # Update the success_url with query parameters indicating the transaction has been cancelled
-    transaction.success_url = f'{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
+    transaction.success_url = f'http://{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
     transaction.save()
 
     # Redirect to the success_url

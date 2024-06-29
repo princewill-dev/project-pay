@@ -8,3 +8,4 @@ fly.toml
 old-bashfile.txt
 debug.log
 /mediafiles/*
+docs.txt

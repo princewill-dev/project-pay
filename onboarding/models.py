@@ -102,14 +102,18 @@ class PaymentLink(models.Model):
     link_country = models.CharField(max_length=200, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     api_key = models.CharField(max_length=50, null=True, blank=True)
+    access_key = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.link_id
 
     def save(self, *args, **kwargs):
-        # If the PaymentLink instance doesn't have an API key, generate one
+        # If the PaymentLink instance doesn't have an API key, generate one with the prefix "BMX_API"
         if not self.api_key:
-            self.api_key = secrets.token_urlsafe(24)  # Generate a 24-character secure random string
+            self.api_key = "BMX_API_" + secrets.token_urlsafe(20)
+        # If the PaymentLink instance doesn't have an access key, generate one with the prefix "BMX_ACCESS"
+        if not self.access_key:
+            self.access_key = "BMX_ACCESS_" + secrets.token_urlsafe(16)
         super().save(*args, **kwargs)
     
 

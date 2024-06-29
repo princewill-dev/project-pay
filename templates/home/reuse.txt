@@ -1,1 +1,13 @@
 style="background: #e4e1e1;"
+
+
+curl http://127.0.0.1:8000/api/v1/checkout/ \
+-H "Content-Type: application/json" \
+-H "BIXMERCHANT-API-KEY: OyQh8LawR0VoNuq9qNrzKYNmKFdDJSc3" \
+-d '{
+  "amount": 20,
+  "email": "demo@email.com",
+  "item": "2-for-1 promo",
+  "success_url": "http://127.0.0.1:5500/transactions.html"
+}' \
+-X POST

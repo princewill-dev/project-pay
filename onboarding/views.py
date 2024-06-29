@@ -53,8 +53,13 @@ from django.http import Http404
 
 
 
-def generate_random_string():
-    random_string = ''.join(random.choice(string.digits) for _ in range(12))
+# def generate_random_string():
+#     random_string = ''.join(random.choice(string.digits) for _ in range(12))
+#     return random_string
+
+def generate_random_string(length=15):
+    characters = string.ascii_lowercase + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
 
 
@@ -663,6 +668,39 @@ def transaction_checkout_view(request):
     except IntegrityError as e:
         logging.error(f"IntegrityError: {e}")
         return JsonResponse({"error": f"Failed to create payment: {str(e)}"}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def web_checkout_view(request):
+
+    data = request.POST
+    required_fields = ['amount', 'email', 'item', 'success_url', 'access_key']
+    if not all(field in data for field in required_fields):
+        messages.error(request, 'Missing required fields')
+        return render(request, 'home/invalid_payment.html')
+
+    try:
+        payment_link = PaymentLink.objects.get(access_key=data['access_key'])
+    except PaymentLink.DoesNotExist:
+        messages.error(request, 'Invalid access key')
+        return render(request, 'home/invalid_payment.html', {"error": "Invalid access key"})
+
+    try:
+        payment = Payment.objects.create(
+            user=payment_link.user,
+            payment_link=payment_link,
+            transaction_id=generate_random_string(),
+            amount=data['amount'],
+            email=data['email'],
+            item=data['item'],
+            success_url=data['success_url'],
+        )
+        return redirect(f"/invoice/{payment.transaction_id}")
+    except IntegrityError as e:
+        logging.error(f"IntegrityError: {e}")
+        messages.error(request, f"Failed to create payment: {str(e)}")
+        return render(request, 'home/invalid_payment.html')
     
 
 @csrf_exempt

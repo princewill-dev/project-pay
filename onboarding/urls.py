@@ -78,6 +78,12 @@ urlpatterns = [
 
     # API Links stops from here
 
+    #hosted payment links starts from here
+
+    path('web/v1/checkout/', views.web_checkout_view, name='web_checkout_view'),
+
+    #hosted payment links stops from here
+
     path('invoice/<str:tx_id>', views.select_transaction_crypto_view, name='select_transaction_crypto'),
 
     path('invoice/<str:tx_id>', require_http_methods(['POST'])(views.save_invoice_view), name='save_invoice'),

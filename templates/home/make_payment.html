@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<body style="background: #e4e1e1;">
+
 <!--===== WELCOME STARTS =======-->
 
 <div class="about-welcome-section-area login"  >
@@ -90,17 +92,15 @@
                             <img src="/static/onboarding/assets/images/icons/pending_icon.webp" alt="pending" width="20px">
                         </p>
 
+                        <div class="text-center" id="items_to_remove">
+                            <a href="{% url 'cancel_transaction' transaction_details.transaction_id %}" id="items_to_remove" style="color: #cc1313;" onclick="return confirm('Cancel Transaction ?');">x</a>
+                        </div>
+                        
                     </div>
 
                     <div class="space16"></div>
 
-                    <div class="text-center" id="items_to_remove">
-                        <a href="{% url 'cancel_transaction' transaction_details.transaction_id %}" id="items_to_remove" style="font-size: 12px; background: #cc1313; color: #fff; padding: 10px; border-radius: 5px; margin: 5px;" onclick="return confirm('Cancel Transaction ?');">cancel transaction</a>
-                    </div>
-
-                    <div class="space16"></div>
-
-                    <p class="text-center text-white" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                    <p class="text-center" id="success_message" style="font-size: 16px; color: #000;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
 
                 </div>
 
@@ -133,7 +133,7 @@
 
                     <div class="space16"></div>
 
-                    <p class="text-center text-white" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                    <p class="text-center" id="success_message" style="font-size: 16px; color: #000;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
                     
                 </div>
 
@@ -158,7 +158,7 @@
 
                     <div class="space16"></div>
 
-                    <p class="text-center text-white" id="success_message" style="font-size: 16px;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
+                    <p class="text-center" id="success_message" style="font-size: 16px; color: #000;">powered by <a href="bixmerchant.com" target="_blank">bixmerchant.com</a></p>
 
                 </div>
 

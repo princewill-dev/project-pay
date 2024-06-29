@@ -17,8 +17,6 @@
 
 <div class="about-welcome-section-area login"  >
     <div class="space16"></div>
-    <div class="space16"></div>
-    <div class="space16"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-6 m-auto">
@@ -49,7 +47,8 @@
                     {% csrf_token %}
                     <div class="login-boxarea heading6">
 
-                        <p>Create a payment invoice.</p>
+                        <p style="color: #000;">Create a payment invoice.</p>
+                        <hr>
 
                         <div class="space16"></div>
                         <div class="input-area">
@@ -66,29 +65,24 @@
                         </div>
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="email" name="recipient_email" placeholder="Enter Recipient email address">
-                        </div>
+                        <label for="recipient_email" style="font-size: 12px;">Recipient Email</label>
+                        <input class="form-control" type="email" name="recipient_email" placeholder="Enter Recipient email address">
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="tel" name="amount" placeholder="Enter Amount">
-                        </div>
+                        <label for="amount" style="font-size: 12px;">Amount</label>
+                        <input class="form-control" type="number" name="amount" placeholder="Enter Amount">
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="text" name="item" placeholder="Enter Item">
-                        </div>
+                        <label for="item" style="font-size: 12px;">Item Description</label>
+                        <textarea class="form-control" type="text" name="item" placeholder="Enter Item Description"></textarea>
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="number" name="item_quantity" placeholder="Enter Item Quantity">
-                        </div>
+                        <label for="item_quantity" style="font-size: 12px;">Item Quantity</label>
+                        <input class="form-control" type="number" name="item_quantity" placeholder="Enter Item Quantity">
 
                         <div class="space16"></div>
-                        <div class="input-area">
-                            <input type="date" name="due_date" placeholder="Due Date">
-                        </div>
+                        <label for="due_date" style="font-size: 12px;">Due Date"</label>
+                        <input class="form-control" type="date" name="due_date" placeholder="Due Date">
                         
                         <div class="space32"></div>
                         <div class="input-area">

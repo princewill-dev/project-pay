@@ -49,6 +49,9 @@ from django.core.files import File
 import logging
 from django.db import IntegrityError
 from django.http import Http404
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
 
 
 
@@ -1138,7 +1141,7 @@ def cancel_transaction_view(request, tx_id):
     # Mark the transaction status as "cancelled"
     transaction.status = 'cancelled'
     # Update the success_url with query parameters indicating the transaction has been cancelled
-    transaction.success_url = f'http://{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
+    transaction.success_url = f'{transaction.success_url}?transaction_id={transaction.transaction_id}&status=cancelled'
     transaction.save()
 
     # Redirect to the success_url
@@ -1328,7 +1331,6 @@ def create_invoice_via_storelink_view(request, link_id):
 @login_required
 def save_invoice_view(request):    
     if request.method == 'POST':
-
         payment_link_id = request.POST.get('payment_link')
         try:
             payment_link = PaymentLink.objects.get(link_id=payment_link_id)
@@ -1336,7 +1338,6 @@ def save_invoice_view(request):
             messages.error(request, 'The selected payment link does not exist.')
             return redirect('create_invoice')
         
-
         recipient_email = request.POST.get('recipient_email')
         invoice_id = generate_random_string()
         amount = request.POST.get('amount')
@@ -1365,8 +1366,28 @@ def save_invoice_view(request):
             success_url=f"{request.get_host()}/invoice/{invoice_id}",
         )
 
-    messages.success(request, 'Your invoice has been created.')
-    return redirect('show_all_invoices')
+        # Send email to recipient
+        subject = f"Invoice from {payment_link.tag_name} #{invoice_id}"
+        context = {
+            'invoice': save_invoice,
+            'payment_link': f"{request.get_host()}/invoice/{invoice_id}",
+            'sender_name': payment_link.tag_name,
+        }
+        html_message = render_to_string('home/invoice_email_template.html', context)
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
+        sender_name = "Bixmerchant Invoice"
+        from_email_with_name = f"{sender_name} <{from_email}>"
+
+        # Create and send the email
+        msg = EmailMultiAlternatives(subject, plain_message, from_email_with_name, [recipient_email])
+        msg.attach_alternative(html_message, "text/html")
+        msg.send()
+
+        messages.success(request, 'Your invoice has been created and sent to the recipient.')
+        return redirect('show_all_invoices')
+
+    return render(request, 'create_invoice.html')
 
 
 @login_required

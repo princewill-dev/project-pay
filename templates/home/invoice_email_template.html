@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+        .invoice-details {
+            margin-top: 20px;
+        }
+        .invoice-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .invoice-details th, .invoice-details td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .invoice-details th {
+            background-color: #f4f4f4;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Invoice from {{ sender_name }}</h1>
+    </div>
+    <div class="invoice-details">
+        <p>Dear valued customer,</p>
+        <p>Please find below the details of your invoice:</p>
+        <table>
+            <tr>
+                <th>Invoice ID</th>
+                <td>{{ invoice.invoice_id }}</td>
+            </tr>
+            <tr>
+                <th>Due Date</th>
+                <td>{{ invoice.due_date }}</td>
+            </tr>
+            <tr>
+                <th>Item</th>
+                <td>{{ invoice.item }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ invoice.item_quantity }}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>${{ invoice.amount }}</td>
+            </tr>
+        </table>
+        <p class="total">Total Amount Due: ${{ invoice.amount }}</p>
+        <p>To pay this invoice, please click on the following link:</p>
+        <p><a style="color: #000; border: 2px solid #000; padding: 10px;" href="http://{{ payment_link }}">Pay Now</a></p>
+    </div>
+    <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>If you have any questions, please don't hesitate to contact us.</p>
+    </div>
+</body>
+</html>

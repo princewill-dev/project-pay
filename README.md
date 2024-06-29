@@ -1,1 +1,1 @@
-a crypto payment engine
+a crypto payment gateway

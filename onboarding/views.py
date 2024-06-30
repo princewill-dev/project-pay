@@ -661,7 +661,7 @@ def transaction_checkout_view(request):
             success_url=data['success_url'],
         )
         return JsonResponse({
-            "status": True,
+            "status": payment.status,
             "amount": data['amount'],
             "message": "Payment generated successfully",
             "created_at": payment.created_at,

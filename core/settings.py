@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
     "project-pay.fly.dev",
     "bixmerchant.com",
     "themestore.pages.dev",
+    "bixmerchant.up.railway.app",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -50,6 +51,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://bixmerchant.com",
     "http://localhost",
     "https://themestore.pages.dev",
+    "https://bixmerchant.up.railway.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -61,6 +63,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://project-pay.fly.dev",
     "https://bixmerchant.com",
     "https://themestore.pages.dev",
+    "https://bixmerchant.up.railway.app",
 ]
 
 CORS_ALLOW_HEADERS = [

@@ -1,0 +1,70 @@
+{% extends 'landing/main.html' %}
+{% load static %}
+
+{% block content %}
+
+{% include 'landing/nav.html' %}
+
+
+ <!-- PageTitle -->
+ <section class="page-title">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h3 class="heading">ABOUT US</h3>
+        </div>
+        <div class="col-md-6">
+          <ul class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+            <li><p class="fs-18">/</p></li>
+            <li><p class="fs-18">ABOUT US</p></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- End PageTitle -->
+
+<section class="faq">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="block-text center">
+            <h3 class="heading">About Bixmerchant</h3>
+          </div>
+        </div>
+        <div class="col-md-12">
+            <p style="font-size: 18px;">
+                Bixmerchant is a crypto payment and gateway which was designed to remove the stress and time wastage of having to convert crypto to your currency of choice before making payments.
+                <br>
+                <br>
+                The platform was also designed to help you receive payments in crypto globally for your stores and services without service charge.
+            </p>
+        </div>
+      </div>
+    </div>
+</section>
+
+<section class="section-sale">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-7">
+          <div class="block-text">
+            <h4 class="heading">Expand your business horizon</h4>
+            <p class="desc">
+              Start Receiving payments with crypto now
+            </p>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="button">
+            <a href="{% url 'signup_page' %}">Create Account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% include 'landing/footer.html' %}
+
+{% endblock %}

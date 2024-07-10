@@ -71,8 +71,8 @@ def homepage(request):
     return render(request, 'landing/index.html')
 
 
-# def service_page_view(request):
-#     return render(request, 'landing/index.html')
+def about_page_view(request):
+    return render(request, 'landing/about.html')
 
 
 def support_page_view(request):

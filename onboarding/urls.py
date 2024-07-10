@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('', views.homepage, name='homepage'),
     # path('services/', views.service_page_view, name='service_page'),
+    path('about/', views.about_page_view, name='about_page'),
     path('support/', views.support_page_view, name='support_page'),
     path('docs/', views.homepage, name='docs_page'),
     path('services/', views.homepage, name='service_page'),

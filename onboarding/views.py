@@ -52,6 +52,7 @@ from django.http import Http404
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
+from django.core.exceptions import PermissionDenied
 
 
 
@@ -321,22 +322,50 @@ def select_coins_view(request):
     return render(request, 'home/select_coins.html', {'tokens': tokens})
 
 
+# @login_required
+# def edit_payment_wallets_view(request, link_id):
+#     tokens = Token.objects.filter(is_active=True)
+
+#     # Get the payment link associated with the provided link_id
+#     payment_link = PaymentLink.objects.get(link_id=link_id)
+
+#     # Get the wallets associated with the payment_link
+#     wallets = Wallet.objects.filter(wallet_id=payment_link)
+
+#     context = {
+#         'payment_link': payment_link,
+#         'tokens': tokens,
+#         'wallets': wallets,
+#     }
+
+#     return render(request, 'home/edit_store_wallet.html', context)
+
+
 @login_required
 def edit_payment_wallets_view(request, link_id):
+    # Get the payment link associated with the provided link_id
+    payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+
+    # Ensure that the logged-in user is the owner of the payment link
+    if payment_link.user != request.user:
+        raise PermissionDenied 
+
+    # Get active tokens
     tokens = Token.objects.filter(is_active=True)
 
-    # Get the wallets associated with the payment_link
-    wallets = Wallet.objects.filter(wallet_id=link_id)
-
-    payment_link = PaymentLink.objects.get(link_id=link_id)
+    # Get wallets associated with the payment_link
+    wallets = Wallet.objects.filter(wallet_id=payment_link)
 
     context = {
         'payment_link': payment_link,
         'tokens': tokens,
-        'wallets': wallets,
+        'wallets': wallets,  # Pass the wallets to the template
     }
 
     return render(request, 'home/edit_store_wallet.html', context)
+
+
+
 
 
 @login_required
@@ -570,16 +599,41 @@ def show_transactions_view(request):
     return render(request, 'home/transactions_table.html', context)
 
 
+# def show_payment_link_view(request, link_id):
+#     payment_link = get_object_or_404(PaymentLink, link_id=link_id)
+#     transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
+#     successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
+#     total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
+#     context = {
+#         'payment_link': payment_link,
+#         'total_successful_payments': total_successful_payments,
+#         'transactions': transactions,  # Add transactions to the context
+#     }
+#     return render(request, 'home/show_payment_link.html', context)
+
+
+@login_required
 def show_payment_link_view(request, link_id):
+    # Get the payment link and ensure it exists
     payment_link = get_object_or_404(PaymentLink, link_id=link_id)
-    transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
+
+    # Ensure that the logged-in user is the owner of the payment link
+    if payment_link.user != request.user:
+        raise PermissionDenied  # Alternatively, redirect to a "permission denied" page
+
+    # Filter transactions by payment_link
+    transactions = Payment.objects.filter(payment_link=payment_link)
+    
+    # Calculate total successful payments
     successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
     total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
+
     context = {
         'payment_link': payment_link,
         'total_successful_payments': total_successful_payments,
         'transactions': transactions,  # Add transactions to the context
     }
+
     return render(request, 'home/show_payment_link.html', context)
 
 
@@ -1302,13 +1356,8 @@ def update_transaction_status(invoice_tx, transaction_details):
     return JsonResponse(transaction_details, status=200)
 
 
-
-
 def create_invoice_view(request):
-
-    # Fetch the payment links for the current user
     payment_links = PaymentLink.objects.filter(user=request.user)
-
     return render(request, 'home/create_invoice.html', {'payment_links': payment_links})
 
 

@@ -48,6 +48,28 @@
 				</div>
 			</div>
 		</div>
+
+		{% if messages %}
+			{% for message in messages %}
+
+			<center>
+				<p id="notify" class="alert alert-info" style="font-size: 12px;">{{ message }}</p>
+			</center>
+			
+			<script>
+				// Get the element you want to disappear
+				const element = document.getElementById('notify');
+
+				// Set a timeout to hide the element after 3 seconds
+				setTimeout(function() {
+				element.style.display = 'none';
+				}, 5000);
+			</script>
+
+			{% endfor %}
+		{% endif %}
+
+
 		<!-- <div class="space60"></div> -->
 		<div class="pricing-plans">
 			<div class="container">
@@ -84,11 +106,12 @@
 										<hr> -->
 										<h3 style="font-size: 20px;">
 											{% if link.link_logo %}
-											<img src="{{link.link_logo.url}}" alt="" width="50px" height="50px"
-												style="border-radius: 3px;">
+												<img src="{{link.link_logo.url}}" alt="" width="50px" height="50px" style="border-radius: 3px;">
+											{% else %}
+												<img src="{% static 'onboarding/assets/images/all-images/storefront_icon.webp' %}" alt="" width="50px" height="50px" style="border-radius: 3px;">
 											{% endif %}
-											{{ link.tag_name }}
 
+											{{ link.tag_name }}
 										</h3>
 										<div class="space16"></div>
 
@@ -96,11 +119,16 @@
 										</p>
 
 										<p style="font-size: 16px;">
-											Accepting:
-											{% for wallet in link.wallet_set.all %}
-											{{ wallet.crypto }},
-											{% endfor %}
+											Coins: 
+											{% if link.wallet_set.exists %}
+												{% for wallet in link.wallet_set.all %}
+													<span style="border: 2px solid #000; padding: 3px;">{{ wallet.crypto }}</span>
+												{% endfor %}
+											{% else %}
+												<span style="color: #888;">Not added <span style="color: blue;"><a href="{% url 'edit_payment_wallets' link_id=link.link_id %}">(add coins)</a></span></span>
+											{% endif %}
 										</p>
+										
 										<hr>
 										<div>
 											<a href="{% url 'show_payment_link' link_id=link.link_id %}"
@@ -119,7 +147,7 @@
 						<div class="text-center">
 							<p style="color: #fff; text-align: center; font-size: 16px;">You have no store yet.</p>
 							<!-- <br>
-                    <a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
+                    			<a href="{% url 'create_payment_link' %}" target="_blank" class="header-btn1">Create link</a> -->
 							<div class="space16"></div>
 						</div>
 
@@ -171,12 +199,12 @@
 										<td>{{ transaction.created_at|date:"d-m-Y g:i a" }}</td>
 
 										<!-- {% if transaction.transaction_hash == None %}
-								<td>link unavailable</td>
-							{% else %}
-								<td>
-								<a href="{{ transaction.transaction_hash }}" target="_blank">view</a>
-								</td>
-							{% endif %} -->
+											<td>link unavailable</td>
+										{% else %}
+											<td>
+											<a href="{{ transaction.transaction_hash }}" target="_blank">view</a>
+											</td>
+										{% endif %} -->
 
 									</tr>
 

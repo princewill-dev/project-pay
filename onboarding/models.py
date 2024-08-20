@@ -7,6 +7,7 @@ import random
 from django.utils import timezone
 from django.db.models import JSONField
 import secrets
+import re
 
 
 
@@ -94,7 +95,6 @@ class PaymentLink(models.Model):
     link_logo = models.FileField(upload_to='link_logos', blank=True, null=True)
     tag_name = models.CharField(max_length=200, null=True, blank=True)
     link_url = models.URLField(null=True, blank=True)
-    # callback_url = models.URLField(null=True, blank=True)
     link_description = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     link_ip_address = models.GenericIPAddressField(null=True, blank=True)
@@ -108,14 +108,15 @@ class PaymentLink(models.Model):
         return self.link_id
 
     def save(self, *args, **kwargs):
-        # If the PaymentLink instance doesn't have an API key, generate one with the prefix "BMX_API"
         if not self.api_key:
-            self.api_key = "BMX_API_" + secrets.token_urlsafe(20)
-        # If the PaymentLink instance doesn't have an access key, generate one with the prefix "BMX_ACCESS"
+            self.api_key = "bmx_" + re.sub(r'\W+', '', secrets.token_urlsafe(30)).lower()
         if not self.access_key:
-            self.access_key = "BMX_ACCESS_" + secrets.token_urlsafe(16)
+            self.access_key = "bma_" + re.sub(r'\W+', '', secrets.token_urlsafe(30)).lower()
         super().save(*args, **kwargs)
-    
+
+    @property
+    def has_wallet(self):
+        return hasattr(self, 'wallet')
 
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

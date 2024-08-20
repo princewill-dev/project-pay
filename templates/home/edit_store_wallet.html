@@ -26,13 +26,14 @@
                     <a href="{% url 'show_payment_link' payment_link.link_id %}"> {{ payment_link.tag_name }} <i class="fa-solid fa-angle-right"></i> <span>Edit wallet</span></a>
                 </div>
                 <div class="space50"></div>
+                
                 <form id="payment-form" action="{% url 'update_payment_wallets' payment_link.link_id %}" method="post">
                     {% csrf_token %}
                     <div class="login-boxarea heading6">
-
-                        <p style="font-size: 12px; text-align: center;">Select the coins you which to accept:</p>
+                
+                        <p style="font-size: 12px; text-align: center;">Select the coins you wish to accept:</p>
                         <div class="space16"></div>
-                        
+                
                         {% for token in tokens %}
                             <div style="border: 3px dashed #000; padding: 10px; border-radius: 5px;">
                                 <button class="form-control crypto-button" type="button" id="{{ token.token_id }}" class="crypto-button">
@@ -40,21 +41,26 @@
                                     {{ token.token_name }}
                                 </button>
                                 <input type="hidden" id="{{ token.token_id }}_tag" name="{{ token.token_tag }}" value="{{ token.token_tag }}">
+                                
                                 <div id="wallet-input-{{ token.token_id }}" style="display: none;">
                                     <br>
-                                    <input class="form-control" type="text" name="{{ token.token_tag }}_wallet" placeholder="enter wallet address" style="width: 100%;">
+                                    <input class="form-control" type="text" name="{{ token.token_tag }}_wallet" 
+                                           value="{% for wallet in wallets %}{% if wallet.crypto == token.token_tag %}{{ wallet.address }}{% endif %}{% endfor %}" 
+                                           placeholder="enter wallet address" style="width: 100%;">
                                 </div>
                             </div>
                             <hr>
                         {% endfor %}
-                        
+                
                         <div class="space16"></div>
                         <div class="input-area">
                             <button type="submit" class="header-btn2">save changes</button>
                         </div>
-
+                
                     </div>
                 </form>
+                
+                
                 
             </div>
         </div>

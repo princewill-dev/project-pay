@@ -322,25 +322,6 @@ def select_coins_view(request):
     return render(request, 'home/select_coins.html', {'tokens': tokens})
 
 
-# @login_required
-# def edit_payment_wallets_view(request, link_id):
-#     tokens = Token.objects.filter(is_active=True)
-
-#     # Get the payment link associated with the provided link_id
-#     payment_link = PaymentLink.objects.get(link_id=link_id)
-
-#     # Get the wallets associated with the payment_link
-#     wallets = Wallet.objects.filter(wallet_id=payment_link)
-
-#     context = {
-#         'payment_link': payment_link,
-#         'tokens': tokens,
-#         'wallets': wallets,
-#     }
-
-#     return render(request, 'home/edit_store_wallet.html', context)
-
-
 @login_required
 def edit_payment_wallets_view(request, link_id):
     # Get the payment link associated with the provided link_id

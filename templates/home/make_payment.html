@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<body style="background: #e4e1e1;">
+<body style="background: #ffffff;">
 
 <!--===== WELCOME STARTS =======-->
 
@@ -15,7 +15,7 @@
 
                 <div id="on_load">
 
-                    <div class="login-boxarea heading6">
+                    <div class="login-boxarea heading6" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
     
                         <div class="text-center" id="items_to_remove">
                             
@@ -57,7 +57,54 @@
     
                         <div class="space16"></div>
 
-                        <p class="text-center" style="font-size: 12px;">{{transaction_details.wallet}}</p>
+                        <!-- <p class="text-center" style="font-size: 12px;">{{transaction_details.wallet}}</p> -->
+
+
+                        <p class="text-center" style="font-size: 12px;" id="wallet">
+                            {{transaction_details.wallet}}
+                            <br>
+                            <button id="copy-button" onclick="copyToClipboard()" style="font-size: 10px; padding: 0px 5px 0px 5px; border: 1px solid #000; background: #ffffff;">
+                                copy wallet
+                            </button>
+                            <span id="copy-message" style="font-size: 10px; margin-left: 10px;"></span>
+                        </p>
+                        
+                        <script>
+                            function copyToClipboard() {
+                                // Get the wallet text
+                                var walletText = document.getElementById("wallet").innerText;
+                            
+                                // Create a temporary input element
+                                var tempInput = document.createElement("input");
+                                tempInput.value = walletText;
+                            
+                                // Add the input element to the document
+                                document.body.appendChild(tempInput);
+                            
+                                // Select the text in the input element
+                                tempInput.select();
+                                tempInput.setSelectionRange(0, 99999);  // For mobile devices
+                            
+                                // Copy the text to the clipboard
+                                document.execCommand("copy");
+                            
+                                // Remove the temporary input element
+                                document.body.removeChild(tempInput);
+                            
+                                // Replace the button text with "Copied"
+                                var buttonElement = document.getElementById("copy-button");
+                                buttonElement.innerText = "Copied!";
+                            
+                                // Optionally, reset the button text after a few seconds
+                                setTimeout(function() {
+                                    buttonElement.innerText = "copy wallet";
+                                }, 2000);
+                            }
+                        </script>
+                        
+
+
+
 
                         <div class="text-center">
                             <a style="font-size: 12px;" href="{% url 'select_transaction_crypto' transaction_details.transaction_id %}" >change payment method ?</a>
@@ -151,7 +198,7 @@
                         
                         <div class="space32"></div>
                         <div class="text-center">
-                            <a class="header-btn" href="{{ transaction_details.success_url }}?transaction_id={{ transaction_details.transaction_id }}" target="_blank">Back to merchant</a>
+                            <a class="header-btn" href="{{ transaction_details.success_url }}?transaction_id={{ transaction_details.transaction_id }}">Back to merchant</a>
                         </div>
 
                     </div>

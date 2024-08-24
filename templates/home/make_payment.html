@@ -60,47 +60,48 @@
                         <!-- <p class="text-center" style="font-size: 12px;">{{transaction_details.wallet}}</p> -->
 
 
-                        <p class="text-center" style="font-size: 12px;" id="wallet">
-                            {{transaction_details.wallet}}
+                        <p class="text-center" style="font-size: 12px;">
+                            <span id="wallet">{{transaction_details.wallet}}</span>
                             <br>
-                            <button id="copy-button" onclick="copyToClipboard()" style="font-size: 10px; padding: 0px 5px 0px 5px; border: 1px solid #000; background: #ffffff;">
+                            <button id="copy-button" onclick="copyToClipboard()" style="font-size: 10px; padding: 0px 5px 0px 5px; border: 1px solid #000;">
                                 copy wallet
                             </button>
                             <span id="copy-message" style="font-size: 10px; margin-left: 10px;"></span>
                         </p>
                         
                         <script>
-                            function copyToClipboard() {
-                                // Get the wallet text
-                                var walletText = document.getElementById("wallet").innerText;
-                            
-                                // Create a temporary input element
-                                var tempInput = document.createElement("input");
-                                tempInput.value = walletText;
-                            
-                                // Add the input element to the document
-                                document.body.appendChild(tempInput);
-                            
-                                // Select the text in the input element
-                                tempInput.select();
-                                tempInput.setSelectionRange(0, 99999);  // For mobile devices
-                            
-                                // Copy the text to the clipboard
-                                document.execCommand("copy");
-                            
-                                // Remove the temporary input element
-                                document.body.removeChild(tempInput);
-                            
-                                // Replace the button text with "Copied"
-                                var buttonElement = document.getElementById("copy-button");
-                                buttonElement.innerText = "Copied!";
-                            
-                                // Optionally, reset the button text after a few seconds
-                                setTimeout(function() {
-                                    buttonElement.innerText = "copy wallet";
-                                }, 2000);
-                            }
+                        function copyToClipboard() {
+                            // Get the wallet text from the span element
+                            var walletText = document.getElementById("wallet").innerText;
+                        
+                            // Create a temporary input element
+                            var tempInput = document.createElement("input");
+                            tempInput.value = walletText;
+                        
+                            // Add the input element to the document
+                            document.body.appendChild(tempInput);
+                        
+                            // Select the text in the input element
+                            tempInput.select();
+                            tempInput.setSelectionRange(0, 99999);  // For mobile devices
+                        
+                            // Copy the text to the clipboard
+                            document.execCommand("copy");
+                        
+                            // Remove the temporary input element
+                            document.body.removeChild(tempInput);
+                        
+                            // Replace the button text with "Copied"
+                            var buttonElement = document.getElementById("copy-button");
+                            buttonElement.innerText = "Copied!";
+                        
+                            // Optionally, reset the button text after a few seconds
+                            setTimeout(function() {
+                                buttonElement.innerText = "copy wallet";
+                            }, 2000);
+                        }
                         </script>
+                        
                         
 
 

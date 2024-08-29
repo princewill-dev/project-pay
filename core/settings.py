@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [
     "bixmerchant.com",
     "themestore.pages.dev",
     "bixmerchant.up.railway.app",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -65,6 +66,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://bixmerchant.com",
     "https://themestore.pages.dev",
     "https://bixmerchant.up.railway.app",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_HEADERS = [

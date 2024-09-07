@@ -53,13 +53,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.core.exceptions import PermissionDenied
+from django.core.serializers.json import DjangoJSONEncoder
 
-
-
-
-# def generate_random_string():
-#     random_string = ''.join(random.choice(string.digits) for _ in range(12))
-#     return random_string
 
 def generate_random_string(length=15):
     characters = string.ascii_lowercase + string.digits
@@ -578,19 +573,6 @@ def show_transactions_view(request):
         'transactions': transactions,
     }
     return render(request, 'home/transactions_table.html', context)
-
-
-# def show_payment_link_view(request, link_id):
-#     payment_link = get_object_or_404(PaymentLink, link_id=link_id)
-#     transactions = Payment.objects.filter(payment_link=payment_link)  # Filter transactions by payment_link
-#     successful_payments = Payment.objects.filter(payment_link=payment_link, status='successful')
-#     total_successful_payments = successful_payments.aggregate(Sum('amount'))['amount__sum'] or 0
-#     context = {
-#         'payment_link': payment_link,
-#         'total_successful_payments': total_successful_payments,
-#         'transactions': transactions,  # Add transactions to the context
-#     }
-#     return render(request, 'home/show_payment_link.html', context)
 
 
 @login_required

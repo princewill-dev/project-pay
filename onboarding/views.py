@@ -645,8 +645,7 @@ def generate_transaction_view(request, link_id):
 @csrf_exempt
 @require_http_methods(['POST'])
 def transaction_checkout_view(request):
-
-    CUSTOM_API_KEY_HEADER = 'BIXMERCHANT_API_KEY'  # Already converted to Django's header format
+    CUSTOM_API_KEY_HEADER = 'BIXMERCHANT_API_KEY'
 
     api_key = request.META.get(f'HTTP_{CUSTOM_API_KEY_HEADER}')
     if not api_key:
@@ -662,9 +661,8 @@ def transaction_checkout_view(request):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    required_fields = ['amount', 'email', 'item']
-    if not all(field in data for field in required_fields):
-        return JsonResponse({"error": "Missing required fields"}, status=400)
+    if 'amount' not in data:
+        return JsonResponse({"error": "Missing required field: amount"}, status=400)
 
     try:
         payment = Payment.objects.create(
@@ -672,10 +670,9 @@ def transaction_checkout_view(request):
             payment_link=payment_link,
             transaction_id=generate_random_string(),
             amount=data['amount'],
-            email=data['email'],
-            item=data['item'],
-            # success_url=payment_link.callback_url
-            success_url=data['success_url'],
+            email=data.get('email', ''),
+            item=data.get('item', ''),
+            success_url=data.get('success_url', ''),
         )
         return JsonResponse({
             "status": payment.status,
@@ -694,9 +691,8 @@ def transaction_checkout_view(request):
 @require_http_methods(['POST'])
 def web_checkout_view(request):
     data = request.POST
-    required_fields = ['amount', 'email', 'item', 'success_url', 'link_id']
-    if not all(field in data for field in required_fields):
-        messages.error(request, 'Missing required fields')
+    if 'amount' not in data or 'link_id' not in data:
+        messages.error(request, 'Amount and link_id are required fields')
         return render(request, 'home/invalid_payment.html')
 
     try:
@@ -711,14 +707,47 @@ def web_checkout_view(request):
             payment_link=payment_link,
             transaction_id=generate_random_string(),
             amount=data['amount'],
-            email=data['email'],
-            item=data['item'],
-            success_url=data['success_url'],
+            email=data.get('email', ''),
+            item=data.get('item', ''),
+            success_url=data.get('success_url', ''),
         )
         return redirect(f"/invoice/{payment.transaction_id}")
     except IntegrityError as e:
         logging.error(f"IntegrityError: {e}")
         messages.error(request, f"Failed to create payment: {str(e)}")
+        return render(request, 'home/invalid_payment.html')
+    
+
+@require_http_methods(["GET"])
+def quick_checkout_view(request, link_id, amount):
+    try:
+        # Get the payment link or return a 404 if not found
+        payment_link = get_object_or_404(PaymentLink, link_id=link_id, is_active=True)
+        
+        # Convert amount to Decimal
+        amount = Decimal(amount)
+        
+        # Create a new payment
+        payment = Payment.objects.create(
+            user=payment_link.user,
+            payment_link=payment_link,
+            transaction_id=generate_random_string(),
+            amount=amount,
+            # Leave other fields empty or set to default values
+            email='',
+            item='',
+            success_url='',
+        )
+        
+        # Redirect to the invoice page
+        return redirect(f"/invoice/{payment.transaction_id}")
+    
+    except ValueError:
+        messages.error(request, 'Invalid amount')
+        return render(request, 'home/invalid_payment.html')
+    except Exception as e:
+        logging.error(f"Error in quick_checkout_view: {str(e)}")
+        messages.error(request, 'An error occurred while processing your request')
         return render(request, 'home/invalid_payment.html')
     
 

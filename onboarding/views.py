@@ -693,18 +693,17 @@ def transaction_checkout_view(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def web_checkout_view(request):
-
     data = request.POST
-    required_fields = ['amount', 'email', 'item', 'success_url', 'access_key']
+    required_fields = ['amount', 'email', 'item', 'success_url', 'link_id']
     if not all(field in data for field in required_fields):
         messages.error(request, 'Missing required fields')
         return render(request, 'home/invalid_payment.html')
 
     try:
-        payment_link = PaymentLink.objects.get(access_key=data['access_key'])
+        payment_link = PaymentLink.objects.get(link_id=data['link_id'], is_active=True)
     except PaymentLink.DoesNotExist:
-        messages.error(request, 'Invalid access key')
-        return render(request, 'home/invalid_payment.html', {"error": "Invalid access key"})
+        messages.error(request, 'Invalid or inactive payment link')
+        return render(request, 'home/invalid_payment.html', {"error": "Invalid or inactive payment link"})
 
     try:
         payment = Payment.objects.create(
